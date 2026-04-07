@@ -174,7 +174,7 @@ class LibriBrainDataset(Dataset):
         try:
             from pnpl.datasets import LibriBrainSpeech, LibriBrainPhoneme
             cls = LibriBrainSpeech if task == "speech" else LibriBrainPhoneme
-            return cls(path=data_dir, partition=partition, download=True)
+            return cls(data_path=data_dir, partition=partition, download=True)
         except ImportError:
             raise ImportError(
                 "Instala pnpl con: pip install pnpl\n"

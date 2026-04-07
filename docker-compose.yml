@@ -1,0 +1,147 @@
+# ==============================================================================
+# docker-compose.yml — Lanzamiento seguro en servidor compartido
+# ==============================================================================
+# Uso:
+#   docker compose up --build          # Primera vez (construye imagen)
+#   docker compose up                  # Ejecuciones posteriores
+#   docker compose down                # Parar y limpiar contenedor
+#   docker compose logs -f             # Ver logs en tiempo real
+#
+# Requisitos del host:
+#   - nvidia-container-toolkit instalado
+#   - docker >= 23.0
+#   - docker compose >= 2.0
+# ==============================================================================
+
+version: "3.9"
+
+services:
+  meg_training:
+    # ── Imagen ──────────────────────────────────────────────────────────────────
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Cache de capas para reconstrucciones rápidas
+      cache_from:
+        - type=local,src=/tmp/.buildx-cache
+      args:
+        BUILDKIT_INLINE_CACHE: "1"
+
+    container_name: meg_training_job
+
+    # ── GPUs: exactamente las 2 RTX 6000 ──────────────────────────────────────
+    # OPCIÓN A: Dar acceso a TODAS las GPUs disponibles
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 2          # Exactamente 2 GPUs
+              capabilities: [gpu]
+
+    # OPCIÓN B: Especificar GPUs concretas por índice (descomentar si necesitas
+    # usar GPUs específicas y no bloquear las demás del servidor)
+    # environment:
+    #   CUDA_VISIBLE_DEVICES: "0,1"   # Solo GPU 0 y GPU 1
+
+    # ── Límites de recursos (SEGURIDAD en servidor compartido) ────────────────
+    # Evitar monopolizar CPU y RAM del servidor
+    deploy:
+      resources:
+        limits:
+          # CPU: máximo 16 cores (ajustar según política del servidor)
+          # Dejar al menos cores libres para otros usuarios
+          cpus: "16"
+          # RAM: máximo 64 GB (las RTX 6000 tienen 48GB VRAM c/u)
+          # El dataloader y la CWT pueden necesitar RAM considerable
+          memory: 64G
+        reservations:
+          memory: 16G
+          devices:
+            - driver: nvidia
+              count: 2
+              capabilities: [gpu]
+
+    # ── Comando de lanzamiento (overrides Dockerfile CMD) ────────────────────
+    # torchrun gestiona automáticamente la comunicación entre GPUs (DDP)
+    command: >
+      train_ddp.py
+      --task phoneme
+      --model resnet18
+      --strategy partial_ft
+      --n_epochs 30
+      --batch_size 32
+      --data_path /workspace/libribrain_data
+      --output_dir /workspace/results
+      --checkpoint_dir /workspace/checkpoints
+      --checkpoint_every 1
+      --resume_from latest
+
+    # ── Volúmenes montados desde el host ──────────────────────────────────────
+    # CRÍTICO: montar checkpoints, resultados y datos en el host para
+    # que persistan aunque el contenedor sea eliminado
+    volumes:
+      # Datos LibriBrain (solo lectura desde el contenedor)
+      - ./libribrain_data:/workspace/libribrain_data:ro
+
+      # Checkpoints: lectura/escritura (persisten tras parada del contenedor)
+      - ./checkpoints:/workspace/checkpoints:rw
+
+      # Resultados, gráficas, métricas
+      - ./results:/workspace/results:rw
+
+      # Logs de TensorBoard
+      - ./logs:/workspace/logs:rw
+
+      # Código (montado para poder editar sin rebuild en desarrollo)
+      # En PRODUCCIÓN: quitar este mount y dejar el COPY del Dockerfile
+      # - .:/workspace:rw
+
+    # ── Variables de entorno ───────────────────────────────────────────────────
+    environment:
+      # DDP: comunicación entre procesos por NCCL (más rápido que Gloo en GPU)
+      - MASTER_ADDR=localhost
+      - MASTER_PORT=29500
+      # Nivel de log de NCCL (0=mínimo, 3=verbose para debug)
+      - NCCL_DEBUG=WARN
+      # Optimización de memoria CUDA
+      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+      # Número de GPUs (usado por torchrun)
+      - CUDA_VISIBLE_DEVICES=0,1
+
+    # ── Red: aislada, sin exposición innecesaria ───────────────────────────────
+    network_mode: host
+    # NOTA: network_mode: host es necesario para que NCCL (DDP) funcione
+    # correctamente en comunicación multi-proceso. En Docker Bridge,
+    # NCCL puede tener problemas de latencia o fallos de conexión.
+
+    # ── Logging de Docker ─────────────────────────────────────────────────────
+    # Limitar tamaño de logs para no llenar disco del servidor
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "5"
+
+    # ── Política de reinicio ───────────────────────────────────────────────────
+    # "no": no reiniciar automáticamente (seguro en servidor compartido)
+    # Si quieres recuperación automática: "on-failure:3"
+    restart: "no"
+
+    # ── IPC: compartir memoria entre procesos DDP ─────────────────────────────
+    # Necesario para DataLoader con num_workers > 0
+    ipc: host
+
+    # ── Seguridad: no privilegios innecesarios ────────────────────────────────
+    security_opt:
+      - no-new-privileges:true
+    read_only: false          # false porque necesitamos escribir checkpoints
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_PTRACE           # Necesario para torch.distributed debug
+
+    # ── Señales para parada limpia ────────────────────────────────────────────
+    # SIGTERM activa el guardado del checkpoint antes de terminar
+    stop_signal: SIGTERM
+    stop_grace_period: 120s   # 2 minutos para guardar checkpoint antes de SIGKILL

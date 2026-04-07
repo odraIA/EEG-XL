@@ -206,4 +206,10 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-/data
+libribrain_data/
+checkpoints/
+results/
+logs/
+__pycache__/
+*.pyc
+.env

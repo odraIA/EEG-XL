@@ -1,0 +1,42 @@
+# ==============================================================================
+# requirements.txt — Dependencias pinadas para reproducibilidad
+# ==============================================================================
+# Generar lock file exacto con: pip freeze > requirements.lock
+# Instalar reproducible con: pip install -r requirements.lock
+
+# ── Framework principal ────────────────────────────────────────────────────────
+# NOTA: torch y torchvision vienen ya en la imagen base Docker.
+# Si instalas fuera de Docker, descomentar:
+# torch==2.2.0
+# torchvision==0.17.0
+# torchaudio==2.2.0
+
+# ── Modelos de visión ──────────────────────────────────────────────────────────
+timm==0.9.16                  # ViT-Tiny, ViT-Base y otros backbones
+
+# ── Dataset LibriBrain ────────────────────────────────────────────────────────
+# Instalar directamente desde GitHub (librería oficial pnpl)
+# En requirements.txt usamos el nombre del paquete cuando esté en PyPI:
+pnpl>=0.1.0
+
+# ── Señal / Neuroimagen ────────────────────────────────────────────────────────
+PyWavelets==1.6.0             # CWT Morlet
+scipy==1.12.0                 # Filtros adicionales, estadísticas
+numpy==1.26.4                 # Arrays (pinado por compatibilidad con pywt)
+h5py==3.10.0                  # Lectura de archivos HDF5 de LibriBrain
+
+# ── Machine Learning / Métricas ───────────────────────────────────────────────
+scikit-learn==1.4.1           # F1-macro, balanced_accuracy, class_weight
+
+# ── Utilidades de entrenamiento ───────────────────────────────────────────────
+tqdm==4.66.2                  # Barras de progreso
+tensorboard==2.16.2           # Logging de métricas (alternativa a wandb)
+
+# ── Visualización ─────────────────────────────────────────────────────────────
+matplotlib==3.8.3
+
+# ── Logging experimentos (opcional, recomendado para servidores compartidos) ───
+# wandb==0.16.4               # Descomenta si tienes cuenta W&B
+
+# ── Monitoring GPU ────────────────────────────────────────────────────────────
+# nvidia-ml-py==12.535.77     # Para logging de uso GPU (opcional)
