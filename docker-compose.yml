@@ -82,7 +82,7 @@ services:
     # que persistan aunque el contenedor sea eliminado
     volumes:
       # Datos LibriBrain (solo lectura desde el contenedor)
-      - ./libribrain_data:/workspace/libribrain_data:ro
+      - ./libribrain_data:/workspace/libribrain_data:rw
 
       # Checkpoints: lectura/escritura (persisten tras parada del contenedor)
       - ./checkpoints:/workspace/checkpoints:rw
@@ -145,3 +145,4 @@ services:
     # SIGTERM activa el guardado del checkpoint antes de terminar
     stop_signal: SIGTERM
     stop_grace_period: 120s   # 2 minutos para guardar checkpoint antes de SIGKILL
+    user: "${UID}:${GID}"
