@@ -91,6 +91,8 @@ services:
       # Logs de TensorBoard
       - ./logs:/workspace/logs:rw
 
+      - ./hf_cache:/workspace/cache:rw 
+
       # Código (montado para poder editar sin rebuild en desarrollo)
       # En PRODUCCIÓN: quitar este mount y dejar el COPY del Dockerfile
       # - .:/workspace:rw
@@ -109,6 +111,9 @@ services:
       - HF_TOKEN=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
       - UID=${UID:-1000}
       - GID=${GID:-1000}
+      - HF_DATASET=pnpl/LibriBrain
+      - HF_HOME=/workspace/cache/huggingface
+      - XDG_CACHE_HOME=/workspace/cache 
 
     # ── Red: aislada, sin exposición innecesaria ───────────────────────────────
     network_mode: host
