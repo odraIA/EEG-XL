@@ -17,7 +17,7 @@ timm==0.9.16                  # ViT-Tiny, ViT-Base y otros backbones
 # ── Dataset LibriBrain ────────────────────────────────────────────────────────
 # Instalar directamente desde GitHub (librería oficial pnpl)
 # En requirements.txt usamos el nombre del paquete cuando esté en PyPI:
-pnpl>=0.1.0
+pnpl==0.0.8
 
 # ── Señal / Neuroimagen ────────────────────────────────────────────────────────
 PyWavelets==1.6.0             # CWT Morlet

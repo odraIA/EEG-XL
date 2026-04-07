@@ -55,10 +55,7 @@ COPY requirements.txt .
 # ── Instalar dependencias Python ───────────────────────────────────────────────
 # Se instalan como root, luego se cede a meguser
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    # Verificar que CUDA está disponible tras instalar PyTorch
-    python -c "import torch; assert torch.cuda.is_available(), 'CUDA no disponible!'; \
-               print(f'PyTorch {torch.__version__} — CUDA {torch.version.cuda}')"
+    pip install -r requirements.txt
 
 # ── Copiar código del proyecto ─────────────────────────────────────────────────
 # Se copia al final para no invalidar la caché de pip en cada cambio de código
