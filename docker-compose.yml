@@ -46,21 +46,21 @@ services:
 
     # ── Límites de recursos (SEGURIDAD en servidor compartido) ────────────────
     # Evitar monopolizar CPU y RAM del servidor
-    deploy:
-      resources:
-        limits:
-          # CPU: máximo 16 cores (ajustar según política del servidor)
-          # Dejar al menos cores libres para otros usuarios
-          cpus: "16"
-          # RAM: máximo 64 GB (las RTX 6000 tienen 48GB VRAM c/u)
-          # El dataloader y la CWT pueden necesitar RAM considerable
-          memory: 64G
-        reservations:
-          memory: 16G
-          devices:
-            - driver: nvidia
-              count: 2
-              capabilities: [gpu]
+    # deploy:
+      # resources:
+        # limits:
+        #   # CPU: máximo 16 cores (ajustar según política del servidor)
+        #   # Dejar al menos cores libres para otros usuarios
+        #   cpus: "16"
+        #   # RAM: máximo 64 GB (las RTX 6000 tienen 48GB VRAM c/u)
+        #   # El dataloader y la CWT pueden necesitar RAM considerable
+        #   memory: 64G
+        # reservations:
+        #   memory: 16G
+        #   devices:
+        #     - driver: nvidia
+        #       count: 2
+        #       capabilities: [gpu]
 
     # ── Comando de lanzamiento (overrides Dockerfile CMD) ────────────────────
     # torchrun gestiona automáticamente la comunicación entre GPUs (DDP)
