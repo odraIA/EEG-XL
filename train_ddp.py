@@ -427,7 +427,7 @@ def train_ddp(args):
         train_pnpl, n_classes, n_channels = load_libribrain(
             LibriBrainConfig(args.data_path, args.task, "train")
         )
-        val_pnpl,  _, _ = load_libribrain(LibriBrainConfig(args.data_path, args.task, "val"))
+        val_pnpl,  _, _ = load_libribrain(LibriBrainConfig(args.data_path, args.task, "validation"))
         test_pnpl, _, _ = load_libribrain(LibriBrainConfig(args.data_path, args.task, "test"))
 
     # Esperar a que rank 0 termine de escribir antes de que los demás abran los mismos archivos
@@ -438,7 +438,7 @@ def train_ddp(args):
         train_pnpl, n_classes, n_channels = load_libribrain(
             LibriBrainConfig(args.data_path, args.task, "train")
         )
-        val_pnpl,  _, _ = load_libribrain(LibriBrainConfig(args.data_path, args.task, "val"))
+        val_pnpl,  _, _ = load_libribrain(LibriBrainConfig(args.data_path, args.task, "validation"))
         test_pnpl, _, _ = load_libribrain(LibriBrainConfig(args.data_path, args.task, "test"))
 
     # ── Preprocesado y conversión imagen ─────────────────────────────────────
