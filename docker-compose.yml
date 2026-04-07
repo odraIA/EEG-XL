@@ -146,4 +146,4 @@ services:
     # SIGTERM activa el guardado del checkpoint antes de terminar
     stop_signal: SIGTERM
     stop_grace_period: 120s   # 2 minutos para guardar checkpoint antes de SIGKILL
-    user: "${UID}:${GID}"
+    user: "${CURRENT_UID}:${CURRENT_GID}"
