@@ -148,7 +148,7 @@ class LibriBrainConfig:
     """
     data_path: str = "./libribrain_data"
     task: str = "phoneme"          # "speech" | "phoneme"
-    partition: str = "train"       # "train" | "val" | "test"
+    partition: str = "train"       # "train" | "validation" | "test"
     download: bool = True
 
 
