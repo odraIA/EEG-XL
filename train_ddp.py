@@ -474,12 +474,56 @@ def train_ddp(args):
     )
 
     # ── Pesos de clase ────────────────────────────────────────────────────────
-    train_labels  = np.array([train_pnpl[i][1] for i in range(len(train_pnpl))])
-    class_weights = compute_class_weights_isns(train_labels, n_classes).to(device)
+    # Reemplaza el bloque de class_weights por:
+    if rank == 0:
+        print("[INFO] Calculando pesos de clase (solo rank 0)...")
+        if hasattr(train_pnpl, 'labels'):
+            train_labels = np.array(train_pnpl.labels)
+        elif hasattr(train_pnpl, 'targets'):
+            train_labels = np.array(train_pnpl.targets)
+        else:
+            train_labels = np.array([train_pnpl[i][1] for i in range(len(train_pnpl))])
+        class_weights = compute_class_weights_isns(train_labels, n_classes).to(device)
+    else:
+        class_weights = torch.zeros(n_classes, device=device)
+
+    # Broadcast a todos los ranks
+    dist.broadcast(class_weights, src=0)
+
+    if is_main:
+        print(f"[INFO] Pesos de clase: min={class_weights.min():.4f}, "
+            f"max={class_weights.max():.4f}")
 
     # ── Modelo ────────────────────────────────────────────────────────────────
     if is_main:
         print(f"\n[PASO 3] Construyendo modelo: {args.backbone} | {args.strategy}")
+
+    if rank == 0:
+        if is_main:
+            print(f"\n[PASO 3] Construyendo modelo: {args.backbone} | {args.strategy}")
+        # Forzar descarga (no cuesta nada si ya está cacheado)
+        import torchvision.models as tvm
+        if args.pretrained:
+            if args.backbone == "resnet18":
+                _ = tvm.resnet18(weights=tvm.ResNet18_Weights.IMAGENET1K_V1)
+            # añade aquí los demás backbones si los usas
+            elif args.backbone == "resnet50":
+                _ = tvm.resnet50(weights=tvm.ResNet50_Weights.IMAGENET1K_V1)
+            elif args.backbone == "resnet101":
+                _ = tvm.resnet101(weights=tvm.ResNet101_Weights.IMAGENET1K_V1)  
+            elif args.backbone == "resnet152":
+                _ = tvm.resnet152(weights=tvm.ResNet152_Weights.IMAGENET1K_V1)
+            elif args.backbone == "efficientnet_b0":
+                _ = tvm.efficientnet_b0(weights=tvm.EfficientNet_B0_Weights.IMAGENET1K_V1)
+            elif args.backbone == "efficientnet_b1":
+                _ = tvm.efficientnet_b1(weights=tvm.EfficientNet_B1_Weights.IMAGENET1K_V1)
+            elif args.backbone == "efficientnet_b2":
+                _ = tvm.efficientnet_b2(weights=tvm.EfficientNet_B2_Weights.IMAGENET1K_V1)
+            else:
+                print(f"[WARN] Backbone {args.backbone} no reconocido para precarga. "
+                      f"Revisa el código si usas un backbone distinto y añádelo vago.")
+            
+    dist.barrier()  # los demás ranks esperan a que rank 0 termine la descarga
 
     model = MEGImageModel(
         backbone_name=args.backbone,
@@ -493,11 +537,14 @@ def train_ddp(args):
     # ── Wrap con DDP ──────────────────────────────────────────────────────────
     # find_unused_parameters=True: necesario si algunos módulos no siempre
     # participan en el forward (ej. ramas condicionales)
+    model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
     model = DDP(
         model,
         device_ids=[local_rank],
         output_device=local_rank,
-        find_unused_parameters=False,
+        find_unused_parameters=True,   # ← partial_ft tiene parámetros congelados
+        static_graph=False,            # explícito; debe ser False con find_unused
+        gradient_as_bucket_view=True,  # bonus: ahorra memoria (~10-15%)
     )
 
     if is_main:
@@ -653,12 +700,15 @@ def train_ddp(args):
             break
 
     # ── Evaluación final en test ───────────────────────────────────────────────
-    if is_main:
-        print(f"\n[EVALUACIÓN FINAL] Evaluando en test set...")
-        # Cargar mejor modelo
-        best_path = Path(args.checkpoint_dir) / "best_model.pt"
-        if best_path.exists():
-            ckpt_manager.load("best", model, device=device)
+    # Cargar best checkpoint en TODOS los ranks antes del test eval
+    best_path = Path(args.checkpoint_dir) / "best_model.pt"
+    if best_path.exists():
+        if is_main:
+            print(f"\n[EVALUACIÓN FINAL] Cargando best checkpoint en todos los ranks...")
+        ckpt_manager.load("best", model, device=device)
+
+    # Sincronizar antes del test eval
+    dist.barrier()
 
     test_metrics = evaluate(model, test_loader, criterion, device)
 
