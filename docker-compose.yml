@@ -50,6 +50,7 @@ x-meg-base: &meg-base
   # ── Variables de entorno comunes ─────────────────────────────────────────────
   environment:
     - HF_TOKEN=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
+    - HF_DATASET=pnpl/LibriBrain
     - HF_HOME=/workspace/cache/huggingface
     - XDG_CACHE_HOME=/workspace/cache
     - MPLCONFIGDIR=/workspace/cache/matplotlib    # ← fix warning de matplotlib
