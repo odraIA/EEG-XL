@@ -302,12 +302,16 @@ def setup_ddp():
 
     # Backend NCCL: óptimo para GPU-GPU communication (NVLink o PCIe)
     # Gloo: alternativa para CPU o cuando NCCL falla
+    from datetime import timedelta
     if not dist.is_initialized():
         dist.init_process_group(
             backend="nccl",
             init_method="env://",
-            device_id=torch.device(f"cuda:{local_rank}"),  # ← además quita el warning
+            device_id=torch.device(f"cuda:{local_rank}"),
+            timeout=timedelta(minutes=10),   # falla rápido si hay deadlock
         )
+
+
 
     # Cada proceso usa su GPU asignada
     torch.cuda.set_device(local_rank)
@@ -473,26 +477,68 @@ def train_ddp(args):
         num_workers=args.num_workers,
     )
 
-    # ── Pesos de clase ────────────────────────────────────────────────────────
-    # Reemplaza el bloque de class_weights por:
+        # ── Pesos de clase ────────────────────────────────────────────────────────
+    # Lectura directa de los TSV de eventos (rápido, sin tocar los H5)
     if rank == 0:
-        print("[INFO] Calculando pesos de clase (solo rank 0)...")
-        if hasattr(train_pnpl, 'labels'):
-            train_labels = np.array(train_pnpl.labels)
-        elif hasattr(train_pnpl, 'targets'):
-            train_labels = np.array(train_pnpl.targets)
+        print("[INFO] Calculando pesos de clase desde TSVs de eventos...", flush=True)
+        import glob
+        import pandas as pd
+        
+        # Buscar todos los TSV de eventos del split de training
+        # Los TSVs están en: libribrain_data/Sherlock*/derivatives/events/*.tsv
+        tsv_files = sorted(glob.glob(
+            f"{args.data_path}/Sherlock*/derivatives/events/*_events.tsv"
+        ))
+        print(f"[INFO] Encontrados {len(tsv_files)} archivos TSV de eventos", flush=True)
+        
+        # Cargar solo las filas de phonemes
+        all_phonemes = []
+        for tsv in tsv_files:
+            try:
+                df = pd.read_csv(tsv, sep='\t')
+                # Filtrar solo eventos de tipo 'phoneme' (no 'word', 'silence', etc.)
+                phoneme_rows = df[df['type'] == 'phoneme'] if 'type' in df.columns else df
+                if 'value' in phoneme_rows.columns:
+                    all_phonemes.extend(phoneme_rows['value'].tolist())
+            except Exception as e:
+                print(f"  [WARN] Error leyendo {tsv}: {e}", flush=True)
+        
+        print(f"[INFO] Total fonemas en TSVs: {len(all_phonemes)}", flush=True)
+        
+        # Mapear strings a índices usando el mapping del propio dataset
+        if hasattr(train_pnpl, 'phoneme_to_id'):
+            ph_map = train_pnpl.phoneme_to_id
+        elif hasattr(train_pnpl, 'label_map'):
+            ph_map = train_pnpl.label_map
         else:
-            train_labels = np.array([train_pnpl[i][1] for i in range(len(train_pnpl))])
-        class_weights = compute_class_weights_isns(train_labels, n_classes).to(device)
+            # Fallback: contar strings únicos
+            unique = sorted(set(all_phonemes))
+            ph_map = {p: i for i, p in enumerate(unique)}
+        
+        # Contar ocurrencias por clase
+        counts = np.zeros(n_classes, dtype=np.float64)
+        for ph in all_phonemes:
+            if ph in ph_map and ph_map[ph] < n_classes:
+                counts[ph_map[ph]] += 1
+        
+        # Si la lectura de TSVs falló o dio cero, usar pesos uniformes
+        if counts.sum() == 0:
+            print("[WARN] No se pudieron leer labels de TSVs. Usando pesos uniformes.", flush=True)
+            class_weights = torch.ones(n_classes, device=device) / n_classes
+        else:
+            # Inverse Number of Samples (ISNS) — lo mismo que tu compute_class_weights_isns
+            counts = np.maximum(counts, 1)  # evitar division por cero
+            weights = 1.0 / np.sqrt(counts)
+            weights = weights / weights.sum() * n_classes  # normalizar
+            class_weights = torch.tensor(weights, dtype=torch.float32, device=device)
+        
+        print(f"[INFO] Pesos: min={class_weights.min():.4f} max={class_weights.max():.4f}", flush=True)
     else:
         class_weights = torch.zeros(n_classes, device=device)
 
     # Broadcast a todos los ranks
     dist.broadcast(class_weights, src=0)
-
-    if is_main:
-        print(f"[INFO] Pesos de clase: min={class_weights.min():.4f}, "
-            f"max={class_weights.max():.4f}")
+    dist.barrier()  # asegurar que todos los ranks tienen los pesos antes de continuar
 
     # ── Modelo ────────────────────────────────────────────────────────────────
     if is_main:

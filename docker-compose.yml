@@ -169,6 +169,7 @@ services:
       --strategy partial_ft
       --n_epochs 30
       --batch_size 32
+      --num_workers 2
       --data_path /workspace/libribrain_data
       --output_dir /workspace/results
       --checkpoint_dir /workspace/checkpoints

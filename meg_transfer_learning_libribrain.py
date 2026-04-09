@@ -1069,9 +1069,17 @@ def train_one_epoch(
     all_preds    = []
     all_labels   = []
 
-    for batch_x, batch_y in tqdm(loader, desc="Train", leave=False):
+    import torch.distributed as dist
+
+    for batch_idx, (batch_x, batch_y) in enumerate(tqdm(loader, desc="Train", leave=False)):
         batch_x = batch_x.to(device, non_blocking=True)
         batch_y = batch_y.to(device, non_blocking=True)
+        
+        if batch_idx % 50 == 0:
+            is_rank0 = (not dist.is_initialized()) or dist.get_rank() == 0
+            if is_rank0:
+                print(f"  [batch {batch_idx}/{len(loader)}]", flush=True)
+    
 
         optimizer.zero_grad()
 
