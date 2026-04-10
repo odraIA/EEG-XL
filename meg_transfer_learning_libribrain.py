@@ -1458,7 +1458,10 @@ def main():
     # ── PASO 5: Pesos de clase para loss ponderada ────────────────────────────
     print("\n[PASO 5] Calculando pesos de clase (ISNS: 1/sqrt(n_c))...")
     # Extraer etiquetas del conjunto de entrenamiento para calcular pesos
-    train_labels = np.array([train_pnpl[i][1] for i in range(len(train_pnpl))])
+    train_labels = np.array([
+        train_pnpl.phoneme_to_id[s[-1].rsplit('_', 1)[0]]
+        for s in train_pnpl.samples
+    ])    
     class_weights = compute_class_weights_isns(train_labels, n_classes)
     print(f"  Pesos calculados para {n_classes} clases")
 
