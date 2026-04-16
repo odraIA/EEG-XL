@@ -223,7 +223,7 @@ for TASK in "${TASKS[@]}"; do
   fi
 
   # Lanzar precompute con la tarea correcta (override del command del compose)
-  docker compose run --rm \
+  docker compose run -d --rm \
     --no-deps \
     -e "TASK_OVERRIDE=${TASK}" \
     precompute_stats \
@@ -295,7 +295,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
   fi
 
   if $DRY_RUN; then
-    log "  [DRY-RUN] docker compose run --rm meg_training_job train_ddp.py \\"
+    log "  [DRY-RUN] docker compose run -d --rm meg_training_job train_ddp.py \\"
     log "    --task ${TASK} --backbone ${BACKBONE} --strategy ${STRATEGY} \\"
     log "    --n_epochs ${N_EPOCHS} --batch_size ${BATCH_SIZE} \\"
     log "    --output_dir ${OUTPUT_DIR} --checkpoint_dir ${CKPT_DIR} \\"
@@ -307,7 +307,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
   START_TS=$(date +%s)
 
   # ── Lanzar job de entrenamiento ─────────────────────────────────────────────
-  docker compose run --rm \
+  docker compose run -d --rm \
     --no-deps \
     meg_training_job \
     train_ddp.py \
