@@ -20,6 +20,10 @@
 #   # Parar limpiamente (guarda checkpoint antes de morir):
 #   docker compose down
 #
+#   # Lanzar solo el monitor (sin training):
+#   docker compose up monitor
+#   → Acceso en: http://<ip-servidor>:8080
+#
 # Requisitos del host:
 #   - nvidia-container-toolkit instalado
 #   - docker >= 23.0
@@ -27,7 +31,6 @@
 # ==============================================================================
 
 # Bloque de configuración reutilizable (ancla YAML)
-# Evita duplicar las 30+ líneas comunes entre precompute y training
 x-meg-base: &meg-base
   build:
     context: .
@@ -37,9 +40,6 @@ x-meg-base: &meg-base
     args:
       BUILDKIT_INLINE_CACHE: "1"
 
-  # ── Volúmenes compartidos entre ambos servicios ──────────────────────────────
-  # CRÍTICO: libribrain_data en rw porque precompute escribe en los H5,
-  # y training necesita leerlos después.
   volumes:
     - ./libribrain_data:/workspace/libribrain_data:rw
     - ./checkpoints:/workspace/checkpoints:rw
@@ -47,18 +47,16 @@ x-meg-base: &meg-base
     - ./logs:/workspace/logs:rw
     - ./hf_cache:/workspace/cache:rw
 
-  # ── Variables de entorno comunes ─────────────────────────────────────────────
   environment:
     - HF_TOKEN=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
     - HF_DATASET=pnpl/LibriBrain
     - HF_HOME=/workspace/cache/huggingface
     - XDG_CACHE_HOME=/workspace/cache
-    - MPLCONFIGDIR=/workspace/cache/matplotlib    # ← fix warning de matplotlib
-    - PNPL_CACHE_DIR=/workspace/cache/pnpl        # ← fix warning de pnpl
+    - MPLCONFIGDIR=/workspace/cache/matplotlib
+    - PNPL_CACHE_DIR=/workspace/cache/pnpl
     - UID=${UID:-1000}
     - GID=${GID:-1000}
 
-  # ── Seguridad ────────────────────────────────────────────────────────────────
   security_opt:
     - no-new-privileges:true
   read_only: false
@@ -67,7 +65,6 @@ x-meg-base: &meg-base
   cap_add:
     - SYS_PTRACE
 
-  # ── Logging de Docker ────────────────────────────────────────────────────────
   logging:
     driver: "json-file"
     options:
@@ -82,15 +79,6 @@ services:
   # ============================================================================
   # SERVICIO 1: Precálculo de stats de normalización
   # ============================================================================
-  # PROPÓSITO: Escribe las stats (mean/std por canal) en los H5 de forma
-  # secuencial antes de que DDP arranque. Evita el BlockingIOError (errno=11)
-  # que ocurre cuando ambos procesos DDP intentan abrir los mismos H5 en "r+".
-  #
-  # - Usa solo 1 GPU (no necesita DDP)
-  # - Termina sola cuando acaba (no es un servicio persistente)
-  # - meg_training_job espera a que esta termine correctamente
-  # - Si las stats ya están cacheadas, pnpl las detecta y termina rápido (~1min)
-  # ============================================================================
   precompute_stats:
     <<: *meg-base
     container_name: meg_precompute_stats
@@ -101,43 +89,31 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 1            # Solo 1 GPU — proceso secuencial, no DDP
+              count: 1
               capabilities: [gpu]
 
-    # Ejecuta precompute_stats.py para train+validation+test
     command: >
       /workspace/precompute_stats.py
         --data_path /workspace/libribrain_data
         --task phoneme
 
-    # Si falla el precompute, no lanzar el training (evitar el lock error)
     restart: "no"
-
-    # IPC no necesario aquí (sin workers paralelos)
     ipc: "private"
-
     network_mode: host
-
     stop_grace_period: 30s
 
 
   # ============================================================================
   # SERVICIO 2: Entrenamiento DDP multi-GPU
   # ============================================================================
-  # Solo arranca cuando precompute_stats ha terminado correctamente.
-  # En ejecuciones posteriores, precompute termina en ~1 min (stats cacheadas)
-  # y training arranca normalmente.
-  # ============================================================================
   meg_training_job:
     <<: *meg-base
     container_name: meg_training_job
 
-    # ── Depende de precompute: espera a que termine con exit code 0 ────────────
     depends_on:
       precompute_stats:
         condition: service_completed_successfully
 
-    # ── GPUs: las 2 RTX 6000 para DDP ─────────────────────────────────────────
     deploy:
       resources:
         reservations:
@@ -146,7 +122,6 @@ services:
               count: 2
               capabilities: [gpu]
 
-    # ── Variables adicionales solo para DDP ───────────────────────────────────
     environment:
       - HF_TOKEN=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
       - HF_HOME=/workspace/cache/huggingface
@@ -162,7 +137,6 @@ services:
       - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
       - CUDA_VISIBLE_DEVICES=0,1
 
-    # ── Comando: torchrun lanza DDP con 2 procesos (uno por GPU) ──────────────
     command: >
       train_ddp.py
       --task phoneme
@@ -177,12 +151,95 @@ services:
       --checkpoint_every 1
       --resume_from none
 
-    # ── Red y memoria compartida para NCCL/DDP ────────────────────────────────
     network_mode: host
     ipc: host
 
-    # ── Parada limpia: SIGTERM activa el guardado del checkpoint ──────────────
     stop_signal: SIGTERM
-    stop_grace_period: 120s     # 2 min para guardar checkpoint antes de SIGKILL
-
+    stop_grace_period: 120s
     restart: "no"
+
+
+  # ============================================================================
+  # SERVICIO 3: Monitor de entrenamiento
+  # ============================================================================
+  # Dashboard web en tiempo real que muestra:
+  #   - Estado de cada experimento del sweep (pending/running/done/failed)
+  #   - Log en vivo del experimento seleccionado
+  #   - Leaderboard con métricas de test de los experimentos completados
+  #   - Uso de GPU en tiempo real (via nvidia-smi dentro del contenedor)
+  #
+  # Lanzamiento (independiente del training, arranca/para en cualquier momento):
+  #   docker compose up -d monitor
+  #   docker compose stop monitor
+  #
+  # Acceso:
+  #   http://<ip-servidor>:8080
+  #
+  # No necesita GPU ni construir imagen pesada: usa python:3.11-slim.
+  # Lee los volúmenes de logs/results/checkpoints en modo read-only.
+  # ============================================================================
+  monitor:
+    image: python:3.11-slim
+    container_name: meg_monitor
+    restart: unless-stopped      # Se reinicia solo si se cae; parar con 'docker compose stop monitor'
+
+    # ── Montar solo los directorios necesarios (read-only, sin datos MEG) ──────
+    volumes:
+      - ./logs:/workspace/logs:ro
+      - ./results:/workspace/results:ro
+      - ./checkpoints:/workspace/checkpoints:ro
+      - ./monitor_server.py:/workspace/monitor_server.py:ro
+      # Montar los sentinels (.exp_done_*, .precompute_done_*) para ver estado
+      - ./.precompute_done_phoneme:/workspace/.precompute_done_phoneme:ro
+      - ./.precompute_done_speech:/workspace/.precompute_done_speech:ro
+
+    # ── Acceder a nvidia-smi del host para stats de GPU ───────────────────────
+    # Nota: solo necesita acceso de lectura a /dev/nvidiactl para nvidia-smi
+    devices:
+      - /dev/nvidiactl:/dev/nvidiactl
+    volumes_from: []             # Limpio, sin herencia del anchor
+
+    environment:
+      - BASE_DIR=/workspace
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=utility   # Solo nvidia-smi, sin CUDA completo
+
+    # ── Instalar nvidia-smi y lanzar el servidor ───────────────────────────────
+    command: >
+      bash -c "
+        pip install --quiet --no-cache-dir nvidia-ml-py 2>/dev/null || true &&
+        python /workspace/monitor_server.py --port 8080 --base-dir /workspace
+      "
+
+    # ── Puerto: 8080 en el host → 8080 en el contenedor ──────────────────────
+    ports:
+      - "8080:8080"
+
+    # ── Sin GPUs (no necesita CUDA, solo lee nvidia-smi) ──────────────────────
+    # Si nvidia-smi no está disponible en el contenedor, el monitor simplemente
+    # no muestra el strip de GPU (falla silenciosamente con try/except).
+
+    # ── Seguridad ──────────────────────────────────────────────────────────────
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: false
+
+    # ── Logging ────────────────────────────────────────────────────────────────
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+    # ── Healthcheck ───────────────────────────────────────────────────────────
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/status')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+    # ── El monitor NO depende del training para arrancar ──────────────────────
+    # Puedes levantarlo antes, durante o después del sweep.
