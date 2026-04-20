@@ -50,11 +50,110 @@ ALL_EXPS   = [
     for b in BACKBONES
     for s in STRATEGIES
 ]
+PRECOMPUTE_TASKS = TASKS[:]
 
 
 # ==============================================================================
 # LÓGICA DE ESTADO
 # ==============================================================================
+
+def _tail_last_line(path: Path, max_bytes: int = 1024) -> str:
+    if not path.exists():
+        return ""
+    try:
+        with open(path, "rb") as f:
+            f.seek(0, 2)
+            size = f.tell()
+            f.seek(max(0, size - max_bytes))
+            tail = f.read().decode("utf-8", errors="replace").strip()
+        return tail.split("\n")[-1][:180]
+    except Exception:
+        return ""
+
+
+def _get_stage_status_for_task(
+    task: str,
+    sentinel_name: str,
+    log_name: str,
+) -> dict:
+    """
+    Estado por tarea para etapas de precompute.
+    status: pending | running | done | failed
+    """
+    sentinel = BASE_DIR / sentinel_name.format(task=task)
+    log_path = LOGS_DIR / log_name.format(task=task)
+
+    status = "pending"
+    elapsed_min = None
+    tail_line = _tail_last_line(log_path)
+    tail_lower = tail_line.lower()
+    done_markers = (
+        "precompute finalizado",
+        "completado",
+        "done",
+    )
+    if sentinel.exists():
+        status = "done"
+        if log_path.exists():
+            try:
+                elapsed_min = int((time.time() - log_path.stat().st_ctime) / 60)
+            except Exception:
+                elapsed_min = None
+    elif log_path.exists():
+        try:
+            age_min = (time.time() - log_path.stat().st_mtime) / 60
+            if any(marker in tail_lower for marker in done_markers):
+                status = "done"
+            else:
+                status = "running" if age_min < 10 else "failed"
+            elapsed_min = int((time.time() - log_path.stat().st_ctime) / 60)
+        except Exception:
+            status = "failed"
+
+    return {
+        "task": task,
+        "status": status,
+        "elapsed_min": elapsed_min,
+        "last_line": tail_line,
+        "log_path": str(log_path),
+    }
+
+
+def get_precompute_status() -> dict:
+    """
+    Estado agregado de precompute de stats e imágenes por tarea.
+    """
+    stats = [
+        _get_stage_status_for_task(
+            t,
+            sentinel_name=".precompute_done_{task}",
+            log_name="precompute_{task}.log",
+        )
+        for t in PRECOMPUTE_TASKS
+    ]
+    images = [
+        _get_stage_status_for_task(
+            t,
+            sentinel_name=".precompute_images_done_{task}",
+            log_name="precompute_images_{task}.log",
+        )
+        for t in PRECOMPUTE_TASKS
+    ]
+
+    def _counts(items):
+        c = {"done": 0, "running": 0, "failed": 0, "pending": 0}
+        for it in items:
+            c[it["status"]] += 1
+        return c
+
+    return {
+        "tasks": PRECOMPUTE_TASKS,
+        "stats": stats,
+        "images": images,
+        "counts_stats": _counts(stats),
+        "counts_images": _counts(images),
+    }
+
 
 def get_exp_status(exp: str) -> dict:
     """
@@ -132,6 +231,7 @@ def get_exp_status(exp: str) -> dict:
 def get_sweep_status() -> dict:
     """Estado global del sweep."""
     exps = [get_exp_status(e) for e in ALL_EXPS]
+    precompute = get_precompute_status()
     counts = {"done": 0, "running": 0, "failed": 0, "pending": 0}
     for e in exps:
         counts[e["status"]] += 1
@@ -175,6 +275,7 @@ def get_sweep_status() -> dict:
         "timestamp": datetime.now().isoformat(),
         "total": len(ALL_EXPS),
         "counts": counts,
+        "precompute": precompute,
         "experiments": exps,
         "leaderboard": completed,
         "sweep_tail": sweep_tail,
@@ -301,6 +402,54 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     color: var(--muted);
     margin-bottom: 16px;
   }
+
+  /* ── Precompute strip ── */
+  .precompute-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 1100px) { .precompute-grid { grid-template-columns: 1fr; } }
+
+  .precompute-stage {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    background: rgba(255,255,255,0.015);
+  }
+  .precompute-stage-title {
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .precompute-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 0;
+    border-top: 1px solid rgba(30,36,51,0.4);
+  }
+  .precompute-row:first-of-type { border-top: none; }
+  .precompute-task {
+    font-size: 12px;
+    color: var(--text);
+    text-transform: lowercase;
+  }
+  .status-pill {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+  .pill-done    { background: rgba(0,212,168,0.15); color: var(--done); }
+  .pill-running { background: rgba(124,107,255,0.15); color: var(--running); }
+  .pill-failed  { background: rgba(239,68,68,0.15); color: var(--failed); }
+  .pill-pending { background: rgba(51,65,85,0.35); color: var(--muted); }
 
   /* ── Stat boxes ── */
   .stats-row { display: flex; gap: 16px; margin-bottom: 20px; }
@@ -524,6 +673,25 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <!-- GPU strip -->
   <div id="gpu-strip" class="gpu-strip"></div>
 
+  <!-- Precompute status -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">Precompute</div>
+    <div class="precompute-grid">
+      <div class="precompute-stage">
+        <div class="precompute-stage-title">Stats (H5 normalización)</div>
+        <div id="precompute-stats-wrap">
+          <div class="precompute-row"><span class="precompute-task">cargando…</span></div>
+        </div>
+      </div>
+      <div class="precompute-stage">
+        <div class="precompute-stage-title">Imágenes (señal + augmentación + CWT)</div>
+        <div id="precompute-images-wrap">
+          <div class="precompute-row"><span class="precompute-task">cargando…</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Stats row -->
   <div class="stats-row">
     <div class="stat-box stat-done">
@@ -639,7 +807,34 @@ async function fetchStatus() {
   }
 }
 
+function statusPill(status) {
+  return `<span class="status-pill pill-${status}">${status}</span>`;
+}
+
+function renderPrecomputeStage(targetId, rows) {
+  const wrap = document.getElementById(targetId);
+  if (!rows || rows.length === 0) {
+    wrap.innerHTML = '<div class="precompute-row"><span class="precompute-task">sin datos</span></div>';
+    return;
+  }
+  wrap.innerHTML = rows.map(r => {
+    const elapsed = r.elapsed_min != null ? ` · ${r.elapsed_min}m` : '';
+    return `
+      <div class="precompute-row" title="${(r.last_line || '').replace(/"/g, '&quot;')}">
+        <span class="precompute-task">${r.task}${elapsed}</span>
+        ${statusPill(r.status)}
+      </div>
+    `;
+  }).join('');
+}
+
 function render(d) {
+  // Precompute (stats + imágenes)
+  if (d.precompute) {
+    renderPrecomputeStage('precompute-stats-wrap', d.precompute.stats || []);
+    renderPrecomputeStage('precompute-images-wrap', d.precompute.images || []);
+  }
+
   // Counters
   document.getElementById('cnt-done').textContent    = d.counts.done;
   document.getElementById('cnt-running').textContent = d.counts.running;

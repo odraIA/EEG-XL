@@ -70,6 +70,7 @@ REFERENCIA RÁPIDA
 # ==============================================================================
 
 import os
+import json
 import argparse
 from unittest import loader
 import warnings
@@ -470,6 +471,118 @@ class MEGToImage:
         return image.astype(np.float32)
 
 
+###############################################################################
+# Utilities de augmentación y carga de imágenes precomputadas
+###############################################################################
+
+# Parámetros de data augmentation de señal (se mantienen iguales al pipeline actual)
+AUG_TEMPORAL_SHIFT_PROB = 0.5
+AUG_TEMPORAL_SHIFT_FRAC = 0.10
+AUG_AMPLITUDE_JITTER_PROB = 0.5
+AUG_AMPLITUDE_JITTER_RANGE = 0.05
+AUG_CHANNEL_DROPOUT_PROB = 0.3
+AUG_CHANNEL_DROPOUT_FRAC = 0.10
+
+
+def apply_signal_augmentation(
+    epoch: np.ndarray,
+    rng: Optional[np.random.Generator] = None,
+) -> np.ndarray:
+    """
+    Aplica data augmentation al epoch MEG (antes de CWT), manteniendo los
+    mismos hiperparámetros que ya se usan en entrenamiento.
+    """
+    epoch_aug = np.array(epoch, dtype=np.float32, copy=True)
+    T = epoch_aug.shape[1]
+
+    if rng is None:
+        rand = np.random.rand
+        randint = np.random.randint
+        uniform = np.random.uniform
+        choice = np.random.choice
+    else:
+        rand = rng.random
+        randint = rng.integers
+        uniform = rng.uniform
+        choice = rng.choice
+
+    # 1) Temporal shift (±10% de la ventana)
+    if rand() < AUG_TEMPORAL_SHIFT_PROB:
+        max_shift = max(1, int(AUG_TEMPORAL_SHIFT_FRAC * T))
+        shift = int(randint(-max_shift, max_shift + 1))
+        epoch_aug = np.roll(epoch_aug, shift, axis=1)
+
+    # 2) Amplitude jitter (multiplicativo ±5%)
+    if rand() < AUG_AMPLITUDE_JITTER_PROB:
+        jitter = 1.0 + float(uniform(-AUG_AMPLITUDE_JITTER_RANGE, AUG_AMPLITUDE_JITTER_RANGE))
+        epoch_aug = epoch_aug * jitter
+
+    # 3) Channel dropout (zeroing del 10% de canales)
+    if rand() < AUG_CHANNEL_DROPOUT_PROB:
+        n_drop = int(AUG_CHANNEL_DROPOUT_FRAC * epoch_aug.shape[0])
+        drop_idx = choice(epoch_aug.shape[0], n_drop, replace=False)
+        epoch_aug[drop_idx] = 0.0
+
+    return epoch_aug
+
+
+def load_precomputed_manifest(precomputed_dir: Path) -> Optional[dict]:
+    """Carga `manifest.json` de un directorio de imágenes precomputadas."""
+    manifest_path = precomputed_dir / "manifest.json"
+    if not manifest_path.exists():
+        return None
+    with manifest_path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+class MEGPrecomputedImageDataset(Dataset):
+    """
+    Dataset para leer imágenes precomputadas guardadas en disco como `.npy`.
+
+    Espera:
+      - <split>_images.npy  (N, 3, 224, 224)
+      - <split>_labels.npy  (N,)
+    donde split ∈ {train, validation, test}.
+    """
+
+    _ALIASES = {"val": "validation"}
+
+    def __init__(self, precomputed_dir: Path, split: str):
+        self.precomputed_dir = Path(precomputed_dir)
+        self.split = self._ALIASES.get(split, split)
+        self.images_path = self.precomputed_dir / f"{self.split}_images.npy"
+        self.labels_path = self.precomputed_dir / f"{self.split}_labels.npy"
+
+        if not self.images_path.exists():
+            raise FileNotFoundError(f"No existe: {self.images_path}")
+        if not self.labels_path.exists():
+            raise FileNotFoundError(f"No existe: {self.labels_path}")
+
+        self._images = None
+        self._labels = None
+
+    def _ensure_loaded(self):
+        if self._images is not None and self._labels is not None:
+            return
+        self._images = np.load(self.images_path, mmap_mode="r")
+        self._labels = np.load(self.labels_path, mmap_mode="r")
+        if self._images.shape[0] != self._labels.shape[0]:
+            raise ValueError(
+                f"Mismatch en {self.split}: {self._images.shape[0]} imágenes vs "
+                f"{self._labels.shape[0]} etiquetas"
+            )
+
+    def __len__(self) -> int:
+        self._ensure_loaded()
+        return int(self._labels.shape[0])
+
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+        self._ensure_loaded()
+        image = np.array(self._images[idx], dtype=np.float32, copy=True)
+        label = int(self._labels[idx])
+        return torch.from_numpy(image), torch.tensor(label, dtype=torch.long)
+
+
 # ==============================================================================
 # SECCIÓN 4: DATASET PYTORCH CON GENERACIÓN ON-THE-FLY
 # ==============================================================================
@@ -535,34 +648,8 @@ class MEGImageDataset(Dataset):
         return image, int(label)
 
     def _apply_augmentation(self, epoch: np.ndarray) -> np.ndarray:
-        """
-        Aplica data augmentation al epoch MEG (antes de CWT).
-
-        Técnicas según ISBI 2026:
-          - Temporal shift: desplazamiento aleatorio en el tiempo (≤10%)
-          - Amplitude jitter: ruido gaussiano multiplicativo ±5%
-          - Channel dropout: zeroing aleatorio de canales (10%)
-        """
-        T = epoch.shape[1]
-
-        # 1. Temporal shift (±10% de la ventana)
-        if np.random.rand() < 0.5:
-            max_shift = max(1, int(0.10 * T))
-            shift = np.random.randint(-max_shift, max_shift + 1)
-            epoch = np.roll(epoch, shift, axis=1)
-
-        # 2. Amplitude jitter (multiplicativo ±5%)
-        if np.random.rand() < 0.5:
-            jitter = 1.0 + np.random.uniform(-0.05, 0.05)
-            epoch = epoch * jitter
-
-        # 3. Channel dropout (zeroing de canales aleatorios, p=0.1)
-        if np.random.rand() < 0.3:
-            n_drop = int(0.1 * epoch.shape[0])
-            drop_idx = np.random.choice(epoch.shape[0], n_drop, replace=False)
-            epoch[drop_idx] = 0.0
-
-        return epoch
+        """Wrapper de compatibilidad hacia la función compartida de augmentación."""
+        return apply_signal_augmentation(epoch)
 
     def __len__(self) -> int:
         return len(self.pnpl_dataset)
@@ -578,11 +665,12 @@ class MEGImageDataset(Dataset):
 
 def build_dataloaders(
     train_pnpl, val_pnpl, test_pnpl,
-    preprocessor: MEGPreprocessor,
-    img_converter: MEGToImage,
+    preprocessor: Optional[MEGPreprocessor],
+    img_converter: Optional[MEGToImage],
     batch_size: int = 32,
     num_workers: int = 4,
     precompute_train: bool = False,
+    precomputed_dir: Optional[str] = None,
 ) -> Tuple[DataLoader, DataLoader, DataLoader]:
     """
     Construye los DataLoaders de entrenamiento, validación y test.
@@ -590,18 +678,38 @@ def build_dataloaders(
     Returns:
         train_loader, val_loader, test_loader
     """
-    train_ds = MEGImageDataset(
-        train_pnpl, preprocessor, img_converter,
-        augment=True, precompute=precompute_train,
-    )
-    val_ds = MEGImageDataset(
-        val_pnpl, preprocessor, img_converter,
-        augment=False, precompute=False,
-    )
-    test_ds = MEGImageDataset(
-        test_pnpl, preprocessor, img_converter,
-        augment=False, precompute=False,
-    )
+    if precomputed_dir:
+        precomputed_root = Path(precomputed_dir)
+        manifest = load_precomputed_manifest(precomputed_root)
+        if manifest:
+            split_info = manifest.get("splits", {})
+            msg = ", ".join(
+                f"{k}={v.get('num_samples', '?')}" for k, v in split_info.items()
+            )
+            print(f"[INFO] Usando imágenes precomputadas: {precomputed_root} ({msg})")
+        else:
+            print(f"[INFO] Usando imágenes precomputadas: {precomputed_root}")
+
+        train_ds = MEGPrecomputedImageDataset(precomputed_root, split="train")
+        val_ds   = MEGPrecomputedImageDataset(precomputed_root, split="validation")
+        test_ds  = MEGPrecomputedImageDataset(precomputed_root, split="test")
+    else:
+        if preprocessor is None or img_converter is None:
+            raise ValueError(
+                "preprocessor e img_converter son obligatorios cuando no se usa precomputed_dir."
+            )
+        train_ds = MEGImageDataset(
+            train_pnpl, preprocessor, img_converter,
+            augment=True, precompute=precompute_train,
+        )
+        val_ds = MEGImageDataset(
+            val_pnpl, preprocessor, img_converter,
+            augment=False, precompute=False,
+        )
+        test_ds = MEGImageDataset(
+            test_pnpl, preprocessor, img_converter,
+            augment=False, precompute=False,
+        )
 
     train_loader = DataLoader(
         train_ds, batch_size=batch_size, shuffle=True,
@@ -800,6 +908,19 @@ class MEGImageModel(nn.Module):
         else:
             raise ValueError(f"Estrategia desconocida: {strategy}")
 
+    def _set_frozen_backbone_bn_eval(self):
+        """Evita drift de running stats en BatchNorm congeladas."""
+        for mod in self.backbone.modules():
+            if isinstance(mod, nn.modules.batchnorm._BatchNorm):
+                if not any(p.requires_grad for p in mod.parameters()):
+                    mod.eval()
+
+    def train(self, mode: bool = True):
+        super().train(mode)
+        if mode:
+            self._set_frozen_backbone_bn_eval()
+        return self
+
     def get_param_groups(self, lr_head: float = 1e-3, lr_backbone: float = 1e-4):
         """
         Devuelve grupos de parámetros con learning rates diferenciados.
@@ -883,6 +1004,16 @@ class MEGImageModelEndToEnd(nn.Module):
         self.backbone   = _dummy.backbone
         self.classifier = _dummy.classifier
         self.backbone_name = backbone_name
+        self.register_buffer(
+            "imagenet_mean",
+            torch.tensor([0.485, 0.456, 0.406], dtype=torch.float32).view(1, 3, 1, 1),
+            persistent=False,
+        )
+        self.register_buffer(
+            "imagenet_std",
+            torch.tensor([0.229, 0.224, 0.225], dtype=torch.float32).view(1, 3, 1, 1),
+            persistent=False,
+        )
 
     def get_param_groups(self, lr_head: float = 1e-3, lr_backbone: float = 1e-4):
         backbone_params = [p for p in self.backbone.parameters() if p.requires_grad]
@@ -894,6 +1025,18 @@ class MEGImageModelEndToEnd(nn.Module):
             {"params": head_params,     "lr": lr_head,     "name": "head"},
             {"params": backbone_params, "lr": lr_backbone, "name": "backbone"},
         ]
+
+    def _set_frozen_backbone_bn_eval(self):
+        for mod in self.backbone.modules():
+            if isinstance(mod, nn.modules.batchnorm._BatchNorm):
+                if not any(p.requires_grad for p in mod.parameters()):
+                    mod.eval()
+
+    def train(self, mode: bool = True):
+        super().train(mode)
+        if mode:
+            self._set_frozen_backbone_bn_eval()
+        return self
 
     def forward(self, scalograms: torch.Tensor) -> torch.Tensor:
         """
@@ -909,6 +1052,13 @@ class MEGImageModelEndToEnd(nn.Module):
         # Resize bilineal a 224×224
         x = F.interpolate(x, size=(self.img_size, self.img_size),
                           mode="bilinear", align_corners=False)
+
+        # Mantener la misma escala que en el pipeline CPU (MEGToImage):
+        # min-max por canal y normalización ImageNet antes del backbone.
+        x_min = x.amin(dim=(2, 3), keepdim=True)
+        x_max = x.amax(dim=(2, 3), keepdim=True)
+        x = (x - x_min) / (x_max - x_min + 1e-8)
+        x = (x - self.imagenet_mean) / self.imagenet_std
 
         # Backbone ImageNet
         features = self.backbone(x)  # (batch, feature_dim)
@@ -1409,6 +1559,15 @@ def parse_args():
                         help="Bins de frecuencia para CWT (96 como en ISBI 2026)")
     parser.add_argument("--precompute", action="store_true", default=False,
                         help="Precomputar imágenes TF (más rápido en GPU, requiere RAM)")
+    parser.add_argument(
+        "--precomputed_dir",
+        type=str,
+        default=None,
+        help=(
+            "Directorio con imágenes precomputadas en disco. "
+            "Si se define, entrenamiento usa esas imágenes y no genera CWT on-the-fly."
+        ),
+    )
     return parser.parse_args()
 
 def get_labels_fast(dataset) -> np.ndarray:
@@ -1442,31 +1601,39 @@ def main():
     val_pnpl,   _,         _          = load_libribrain(val_cfg)
     test_pnpl,  _,         _          = load_libribrain(test_cfg)
 
-    # ── PASO 2: Configurar preprocesado ───────────────────────────────────────
-    print("\n[PASO 2] Configurando preprocesado MEG...")
+    preprocessor = None
+    img_converter = None
 
-    # Instance normalization: clave para generalización en holdout (MEGConformer)
-    preprocessor = MEGPreprocessor(
-        use_instance_norm=True,
-        baseline_samples=None,  # LibriBrain no tiene pre-cue definido
-        clip_std=5.0,
-    )
+    if args.precomputed_dir:
+        print("\n[PASO 2] Usando imágenes precomputadas")
+        print(f"  - Directorio: {args.precomputed_dir}")
+        print("  - Se omite CWT/augmentación on-the-fly en el Dataset de entrenamiento")
+    else:
+        # ── PASO 2: Configurar preprocesado ───────────────────────────────────
+        print("\n[PASO 2] Configurando preprocesado MEG...")
 
-    # ── PASO 3: Configurar conversión a imagen TF ─────────────────────────────
-    print("\n[PASO 3] Configurando representación imagen tiempo-frecuencia (CWT)...")
-    print(f"  - CWT Morlet: {args.n_freqs} frecuencias log, 1–125 Hz")
-    print(f"  - Imagen destino: 224×224×3 (compatible con ImageNet)")
-    print(f"  - Proyección de canales: PCA-3 (estática, conv learnable en modelo)")
+        # Instance normalization: clave para generalización en holdout (MEGConformer)
+        preprocessor = MEGPreprocessor(
+            use_instance_norm=True,
+            baseline_samples=None,  # LibriBrain no tiene pre-cue definido
+            clip_std=5.0,
+        )
 
-    img_converter = MEGToImage(
-        sfreq=250.0,
-        n_freqs=args.n_freqs,
-        f_min=1.0,
-        f_max=125.0,     # Nyquist para fs=250 Hz
-        img_size=224,
-        wavelet="cmor1.5-1.0",  # Morlet complejo (ISBI 2026)
-        projection="pca",       # PCA estática; conv learnable está en el modelo
-    )
+        # ── PASO 3: Configurar conversión a imagen TF ─────────────────────────
+        print("\n[PASO 3] Configurando representación imagen tiempo-frecuencia (CWT)...")
+        print(f"  - CWT Morlet: {args.n_freqs} frecuencias log, 1–125 Hz")
+        print(f"  - Imagen destino: 224×224×3 (compatible con ImageNet)")
+        print(f"  - Proyección de canales: PCA-3 (estática, conv learnable en modelo)")
+
+        img_converter = MEGToImage(
+            sfreq=250.0,
+            n_freqs=args.n_freqs,
+            f_min=1.0,
+            f_max=125.0,     # Nyquist para fs=250 Hz
+            img_size=224,
+            wavelet="cmor1.5-1.0",  # Morlet complejo (ISBI 2026)
+            projection="pca",       # PCA estática; conv learnable está en el modelo
+        )
 
     # ── PASO 4: Construir DataLoaders ─────────────────────────────────────────
     print("\n[PASO 4] Construyendo DataLoaders...")
@@ -1476,6 +1643,7 @@ def main():
         batch_size=args.batch_size,
         num_workers=4,
         precompute_train=args.precompute,
+        precomputed_dir=args.precomputed_dir,
     )
 
     # ── PASO 5: Pesos de clase para loss ponderada ────────────────────────────

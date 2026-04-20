@@ -76,12 +76,8 @@ from meg_gpu_cwt import CWTLayer, MEGRawDataset, build_raw_dataloaders, zscore_s
 # señales raw (B, 306, T); cwt_layer las convierte a escalogramas en GPU antes
 # del forward del modelo.
 #
-# También aplican normalización ImageNet tras el min-max, necesaria porque
-# ResNet18 fue preentrenado con esas estadísticas. MEGImageModelEndToEnd no la
-# aplica internamente, así que la hacemos aquí.
-
-_IMAGENET_MEAN = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
-_IMAGENET_STD  = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
+# La normalización min-max + ImageNet se aplica dentro de
+# MEGImageModelEndToEnd.forward(), justo antes del backbone.
 
 
 def _apply_cwt_and_normalize(cwt_layer, batch_x: torch.Tensor) -> torch.Tensor:
