@@ -208,7 +208,6 @@ __marimo__/
 
 libribrain_data/
 checkpoints/
-results/
 logs/
 __pycache__/
 *.pyc
