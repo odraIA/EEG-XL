@@ -41,6 +41,7 @@ x-meg-base: &meg-base
   # CRÍTICO: libribrain_data en rw porque precompute escribe en los H5,
   # y training necesita leerlos después.
   volumes:
+    - ./:/workspace:rw
     - ./libribrain_data:/workspace/libribrain_data:rw
     - ./checkpoints:/workspace/checkpoints:rw
     - ./results:/workspace/results:rw

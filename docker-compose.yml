@@ -41,6 +41,7 @@ x-meg-base: &meg-base
       BUILDKIT_INLINE_CACHE: "1"
 
   volumes:
+    - ./:/workspace:rw
     - ./libribrain_data:/workspace/libribrain_data:rw
     - ./checkpoints:/workspace/checkpoints:rw
     - ./results:/workspace/results:rw
