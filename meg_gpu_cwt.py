@@ -48,10 +48,12 @@ class MEGRawDataset(Dataset):
         pnpl_dataset,
         preprocessor,          # MEGPreprocessor
         augment: bool = False,
+        speech_label_threshold: float = 0.5,
     ):
         self.pnpl_dataset = pnpl_dataset
         self.preprocessor = preprocessor
         self.augment = augment
+        self.speech_label_threshold = speech_label_threshold
 
     def __len__(self) -> int:
         return len(self.pnpl_dataset)
@@ -59,7 +61,7 @@ class MEGRawDataset(Dataset):
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
         sample = self.pnpl_dataset[idx]
         epoch  = np.array(sample[0], dtype=np.float32)  # (306, T)
-        label  = int(sample[1])
+        label  = self._label_to_index(sample[1])
 
         # Preprocesado en CPU (solo normalización, ~0.5ms)
         epoch = self.preprocessor(epoch)
@@ -69,6 +71,33 @@ class MEGRawDataset(Dataset):
             epoch = self._augment(epoch)
 
         return torch.from_numpy(epoch), torch.tensor(label, dtype=torch.long)
+
+    def _label_to_index(self, raw_label) -> int:
+        """
+        Convierte etiquetas de pnpl a índice de clase entero.
+
+        Notas:
+          - Phoneme entrega etiquetas escalares (int / tensor escalar).
+          - Speech puede entregar una secuencia binaria por ventana; la
+            colapsamos a clase binaria según mayoría en la ventana.
+        """
+        if isinstance(raw_label, torch.Tensor):
+            if raw_label.numel() == 1:
+                return int(raw_label.item())
+            return int(raw_label.float().mean().item() >= self.speech_label_threshold)
+
+        if isinstance(raw_label, np.ndarray):
+            if raw_label.size == 1:
+                return int(raw_label.reshape(-1)[0])
+            return int(raw_label.astype(np.float32).mean() >= self.speech_label_threshold)
+
+        if isinstance(raw_label, (list, tuple)):
+            arr = np.asarray(raw_label)
+            if arr.size == 1:
+                return int(arr.reshape(-1)[0])
+            return int(arr.astype(np.float32).mean() >= self.speech_label_threshold)
+
+        return int(raw_label)
 
     def _augment(self, epoch: np.ndarray) -> np.ndarray:
         """Mismas augmentaciones que MEGImageDataset._apply_augmentation."""

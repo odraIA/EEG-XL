@@ -171,14 +171,16 @@ def evaluate_raw(
     Versión de evaluate que acepta señales MEG raw (B, 306, T).
     """
     from sklearn.metrics import f1_score, balanced_accuracy_score
+    import torch.distributed as dist
     from tqdm import tqdm
 
     model.eval()
     total_loss = 0.0
     all_preds  = []
     all_labels = []
+    is_main = (not dist.is_initialized()) or dist.get_rank() == 0
 
-    for batch_x, batch_y in tqdm(loader, desc="Eval", leave=False):
+    for batch_x, batch_y in tqdm(loader, desc="Eval", leave=False, disable=not is_main):
         batch_x = batch_x.to(device, non_blocking=True)
         batch_y = batch_y.to(device, non_blocking=True)
 
@@ -194,6 +196,89 @@ def evaluate_raw(
     f1       = f1_score(all_labels, all_preds, average="macro", zero_division=0)
     bal_acc  = balanced_accuracy_score(all_labels, all_preds)
     return {"loss": avg_loss, "f1_macro": f1, "balanced_acc": bal_acc}
+
+
+def _speech_window_to_scalar(raw_label, threshold: float = 0.5) -> Optional[int]:
+    """
+    Convierte una etiqueta de speech de pnpl a clase binaria escalar.
+
+    pnpl puede devolver:
+      - escalar (0/1), o
+      - vector binario por ventana (longitud T).
+    """
+    if isinstance(raw_label, torch.Tensor):
+        if raw_label.numel() == 0:
+            return None
+        if raw_label.numel() == 1:
+            return int(raw_label.item())
+        return int(raw_label.float().mean().item() >= threshold)
+
+    arr = np.asarray(raw_label)
+    if arr.size == 0:
+        return None
+    if arr.size == 1:
+        return int(arr.reshape(-1)[0])
+    return int(arr.astype(np.float32).mean() >= threshold)
+
+
+def _extract_train_labels_fast(train_pnpl, task: str, n_classes: int) -> np.ndarray:
+    """
+    Extrae etiquetas del split de train sin iterar el DataLoader.
+
+    Usamos `train_pnpl.samples`, que contiene metadata ligera:
+      - phoneme: etiqueta string en `sample[5]` (ej. "ae_I")
+      - speech:  etiqueta vectorial binaria o escalar en `sample[5]`
+    """
+    samples = getattr(train_pnpl, "samples", None)
+    if not samples:
+        return np.array([], dtype=np.int64)
+
+    labels = []
+
+    if task == "phoneme":
+        label_map = (
+            getattr(train_pnpl, "phoneme_to_id", None)
+            or getattr(train_pnpl, "label_to_id", None)
+            or getattr(train_pnpl, "label_map", None)
+            or {}
+        )
+
+        for sample in samples:
+            raw = sample[5] if len(sample) > 5 else None
+            if raw is None:
+                continue
+
+            if isinstance(raw, str):
+                base = raw.split("_")[0]
+                if base in label_map:
+                    labels.append(int(label_map[base]))
+                    continue
+                if base.lower() in label_map:
+                    labels.append(int(label_map[base.lower()]))
+                    continue
+                try:
+                    labels.append(int(base))
+                except Exception:
+                    continue
+            else:
+                try:
+                    labels.append(int(raw))
+                except Exception:
+                    continue
+
+    elif task == "speech":
+        for sample in samples:
+            raw = sample[5] if len(sample) > 5 else None
+            label = _speech_window_to_scalar(raw)
+            if label is not None:
+                labels.append(int(label))
+
+    if not labels:
+        return np.array([], dtype=np.int64)
+
+    arr = np.asarray(labels, dtype=np.int64)
+    arr = arr[(arr >= 0) & (arr < n_classes)]
+    return arr
 
 
 # ==============================================================================
@@ -549,7 +634,6 @@ def train_ddp(args):
     dist.barrier()  # Asegurar que rank 0 terminó antes de continuar
 
     # ── Setup DDP ─────────────────────────────────────────────────────────────
-    rank, local_rank, world_size, device = setup_ddp()
     is_main = (rank == 0)  # Solo el proceso 0 imprime y guarda
 
     # ── Manejador de señales (todos los procesos) ─────────────────────────────
@@ -612,82 +696,25 @@ def train_ddp(args):
         world_size=dist.get_world_size(),
     )
 
-        # ── Pesos de clase ────────────────────────────────────────────────────────
-    # Lectura directa de los TSV de eventos (rápido, sin tocar los H5)
+    # ── Pesos de clase ────────────────────────────────────────────────────────
+    # Se calculan desde `train_pnpl.samples` para evitar parseos frágiles de TSV.
     if rank == 0:
-        print("[INFO] Calculando pesos de clase desde TSVs de eventos...", flush=True)
-        import glob
-        import pandas as pd
-        
-        # Buscar todos los TSV de eventos del split de training
-        # Los TSVs están en: libribrain_data/Sherlock*/derivatives/events/*.tsv
-        tsv_files = sorted(glob.glob(
-            f"{args.data_path}/Sherlock*/derivatives/events/*_events.tsv"
-        ))
-        print(f"[INFO] Encontrados {len(tsv_files)} archivos TSV de eventos", flush=True)
-        
-        # Contar distribución de clases según la tarea (phoneme vs speech)
-        counts = np.zeros(n_classes, dtype=np.float64)
+        print("[INFO] Calculando pesos de clase desde etiquetas de train_pnpl...", flush=True)
 
-        if args.task == "phoneme":
-            # Fonemas: labels son strings (e.g. "AE", "T"...) → mapear a índice
-            all_labels_str = []
-            for tsv in tsv_files:
-                try:
-                    df = pd.read_csv(tsv, sep='\t')
-                    rows = df[df['type'] == 'phoneme'] if 'type' in df.columns else df
-                    if 'value' in rows.columns:
-                        all_labels_str.extend(rows['value'].tolist())
-                except Exception as e:
-                    print(f"  [WARN] Error leyendo {tsv}: {e}", flush=True)
+        train_labels = _extract_train_labels_fast(train_pnpl, args.task, n_classes)
+        print(f"[INFO] Etiquetas válidas para class-weights: {train_labels.size}", flush=True)
 
-            print(f"[INFO] Total fonemas en TSVs: {len(all_labels_str)}", flush=True)
-
-            if hasattr(train_pnpl, 'phoneme_to_id'):
-                label_map = train_pnpl.phoneme_to_id
-            elif hasattr(train_pnpl, 'label_map'):
-                label_map = train_pnpl.label_map
-            else:
-                unique = sorted(set(all_labels_str))
-                label_map = {p: i for i, p in enumerate(unique)}
-
-            for lbl in all_labels_str:
-                if lbl in label_map and label_map[lbl] < n_classes:
-                    counts[label_map[lbl]] += 1
-
-        elif args.task == "speech":
-            # Speech: binario (0=no-speech, 1=speech). Labels son enteros.
-            all_labels_int = []
-            for tsv in tsv_files:
-                try:
-                    df = pd.read_csv(tsv, sep='\t')
-                    rows = df[df['type'] == 'speech'] if 'type' in df.columns else df
-                    if 'value' in rows.columns:
-                        all_labels_int.extend(rows['value'].astype(int).tolist())
-                except Exception as e:
-                    print(f"  [WARN] Error leyendo {tsv}: {e}", flush=True)
-
-            print(f"[INFO] Total eventos speech en TSVs: {len(all_labels_int)}", flush=True)
-            for lbl in all_labels_int:
-                if 0 <= lbl < n_classes:
-                    counts[lbl] += 1
-            print(f"[INFO] Speech counts: no-speech={counts[0]:.0f}, speech={counts[1]:.0f}", flush=True)
-
+        if train_labels.size == 0:
+            print("[WARN] No se pudieron extraer etiquetas de entrenamiento. Usando pesos uniformes.", flush=True)
+            class_weights = torch.ones(n_classes, device=device, dtype=torch.float32)
         else:
-            print(f"[WARN] Tarea desconocida '{args.task}' para pesos de clase. Usando uniformes.", flush=True)
-        
-        # Si la lectura de TSVs falló o dio cero, usar pesos uniformes
-        if counts.sum() == 0:
-            print("[WARN] No se pudieron leer labels de TSVs. Usando pesos uniformes.", flush=True)
-            class_weights = torch.ones(n_classes, device=device) / n_classes
-        else:
-            # Inverse Number of Samples (ISNS) — lo mismo que tu compute_class_weights_isns
-            counts = np.maximum(counts, 1)  # evitar division por cero
-            weights = 1.0 / np.sqrt(counts)
-            weights = weights / weights.sum() * n_classes  # normalizar
-            class_weights = torch.tensor(weights, dtype=torch.float32, device=device)
-        
-        print(f"[INFO] Pesos: min={class_weights.min():.4f} max={class_weights.max():.4f}", flush=True)
+            counts = np.bincount(train_labels, minlength=n_classes).astype(np.float64)
+            if args.task == "speech" and n_classes >= 2:
+                print(f"[INFO] Speech counts: no-speech={counts[0]:.0f}, speech={counts[1]:.0f}", flush=True)
+
+            class_weights = compute_class_weights_isns(train_labels, n_classes).to(device)
+
+        print(f"[INFO] Pesos: min={class_weights.min().item():.4f} max={class_weights.max().item():.4f}", flush=True)
     else:
         class_weights = torch.zeros(n_classes, device=device)
 

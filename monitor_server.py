@@ -79,17 +79,17 @@ def get_exp_status(exp: str) -> dict:
     }
 
     # ── Completado ────────────────────────────────────────────────────────────
-    if done_sentinel.exists():
+    # `final_results.json` es la evidencia más fiable de finalización.
+    if final_results.exists() or done_sentinel.exists():
         result["status"] = "done"
-        if final_results.exists():
-            try:
-                with open(final_results) as f:
-                    d = json.load(f)
-                result["f1_macro"]    = d.get("test_f1_macro")
-                result["balanced_acc"] = d.get("test_balanced_acc")
-                result["best_val_f1"] = d.get("best_val_f1")
-            except Exception:
-                pass
+        try:
+            with open(final_results) as f:
+                d = json.load(f)
+            result["f1_macro"]    = d.get("test_f1_macro")
+            result["balanced_acc"] = d.get("test_balanced_acc")
+            result["best_val_f1"] = d.get("best_val_f1")
+        except Exception:
+            pass
         return result
 
     # ── En curso: el log existe y tiene actividad reciente ────────────────────
