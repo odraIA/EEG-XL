@@ -65,6 +65,7 @@ x-meg-base: &meg-base
     - ALL
   cap_add:
     - SYS_PTRACE
+  init: true
 
   logging:
     driver: "json-file"
@@ -183,6 +184,7 @@ services:
     image: python:3.11-slim
     container_name: meg_monitor
     restart: unless-stopped      # Se reinicia solo si se cae; parar con 'docker compose stop monitor'
+    init: true
 
     # ── Montar proyecto completo en read-only para que el monitor vea:
     #    logs/results/checkpoints y sentinels (.precompute_*, .exp_done_*) ─────

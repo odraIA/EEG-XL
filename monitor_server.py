@@ -221,6 +221,7 @@ def get_exp_status(exp: str) -> dict:
         "best_val_f1": None,
         "elapsed_min": None,
         "last_line": "",
+        "log_mtime": None,
     }
 
     # ── Completado ────────────────────────────────────────────────────────────
@@ -241,6 +242,7 @@ def get_exp_status(exp: str) -> dict:
     if job_log.exists():
         try:
             mtime = job_log.stat().st_mtime
+            result["log_mtime"] = mtime
             age_min = (time.time() - mtime) / 60
             # Si el log se modificó hace menos de 10 min, está corriendo
             if age_min < 10:
@@ -812,6 +814,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <script>
 const REFRESH = REFRESH_SECS * 1000;
 let selectedExp = '__sweep__';
+let autoPickedRunningExp = false;
 
 function selectExp(exp) {
   selectedExp = exp;
@@ -951,6 +954,19 @@ function render(d) {
       select.appendChild(opt);
     }
   });
+
+  // Al abrir por primera vez, saltar automáticamente al experimento activo
+  // más reciente para no quedarse mostrando un sweep antiguo.
+  if (!autoPickedRunningExp && selectedExp === '__sweep__') {
+    const running = d.experiments
+      .filter(e => e.status === 'running')
+      .sort((a, b) => (b.log_mtime || 0) - (a.log_mtime || 0));
+    if (running.length > 0) {
+      select.value = running[0].exp;
+      selectExp(running[0].exp);
+      autoPickedRunningExp = true;
+    }
+  }
 
   // Leaderboard
   const tbody = document.getElementById('leaderboard-body');

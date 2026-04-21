@@ -119,7 +119,7 @@ if $SPEECH_IMAGE_SWEEP; then
     fi
 
     if $DRY_RUN; then
-      log "  [DRY-RUN] docker compose run -d --rm --entrypoint python meg_training_job \\"
+      log "  [DRY-RUN] docker compose run -d --init --rm --entrypoint python meg_training_job \\"
       log "    /workspace/run_speech_image_experiments.py \\"
       log "    --experiment ${EXP_ID} --data_path /workspace/libribrain_data \\"
       log "    --output_dir ${OUT_DIR} --epochs 20 --stage1_epochs 6 \\"
@@ -130,6 +130,7 @@ if $SPEECH_IMAGE_SWEEP; then
 
     START_TS=$(date +%s)
     CONTAINER_ID=$(docker compose run -d \
+      --init \
       --no-deps \
       --entrypoint python \
       meg_training_job \
@@ -282,6 +283,7 @@ for TASK in "${TASKS[@]}"; do
 
   # Lanzar precompute desacoplado de la sesión SSH y esperar a que termine
   PRECOMPUTE_CID=$(docker compose run -d \
+    --init \
     --no-deps \
     -e "TASK_OVERRIDE=${TASK}" \
     precompute_stats \
@@ -331,6 +333,7 @@ if $PRECOMPUTE_IMAGES; then
     fi
 
     PRECOMP_IMG_CID=$(docker compose run -d \
+      --init \
       --no-deps \
       precompute_stats \
       /workspace/precompute_meg_images.py \
@@ -435,14 +438,14 @@ for STRATEGY in "${STRATEGIES[@]}"; do
 
   if $DRY_RUN; then
     if $USE_PRECOMPUTED_IMAGES_FOR_TRAIN; then
-      log "  [DRY-RUN] docker compose run -d --rm --entrypoint python meg_training_job \\"
+      log "  [DRY-RUN] docker compose run -d --init --rm --entrypoint python meg_training_job \\"
       log "    /workspace/meg_transfer_learning_libribrain.py \\"
       log "    --task ${TASK} --model ${BACKBONE} --strategy ${STRATEGY} \\"
       log "    --n_epochs ${N_EPOCHS} --batch_size ${BATCH_SIZE} \\"
       log "    --data_path ${DATA_PATH} --output_dir ${OUTPUT_DIR} \\"
       log "    --precomputed_dir ${PRECOMP_DIR}"
     else
-      log "  [DRY-RUN] docker compose run -d --rm meg_training_job train_ddp.py \\"
+      log "  [DRY-RUN] docker compose run -d --init --rm meg_training_job train_ddp.py \\"
       log "    --task ${TASK} --backbone ${BACKBONE} --strategy ${STRATEGY} \\"
       log "    --n_epochs ${N_EPOCHS} --batch_size ${BATCH_SIZE} \\"
       log "    --output_dir ${OUTPUT_DIR} --checkpoint_dir ${CKPT_DIR} \\"
@@ -457,6 +460,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
   # ── Lanzar job desacoplado de la sesión SSH ────────────────────────────────
   if $USE_PRECOMPUTED_IMAGES_FOR_TRAIN; then
     CONTAINER_ID=$(docker compose run -d \
+      --init \
       --no-deps \
       --entrypoint python \
       meg_training_job \
@@ -471,6 +475,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
         --precomputed_dir "${PRECOMP_DIR}")
   else
     CONTAINER_ID=$(docker compose run -d \
+      --init \
       --no-deps \
       meg_training_job \
       train_ddp.py \
