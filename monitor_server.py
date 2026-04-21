@@ -40,17 +40,54 @@ RESULTS_DIR  = BASE_DIR / "results"
 CKPT_DIR     = BASE_DIR / "checkpoints"
 REFRESH_SECS = 8
 
-# Espacio de búsqueda (debe coincidir con run_sweep.sh)
+# Espacio clásico (fallback cuando no hay sweep_mode explícito)
 TASKS      = ["phoneme", "speech"]
 BACKBONES  = ["resnet18", "efficientnet_b0", "vit_tiny"]
 STRATEGIES = ["frozen", "partial_ft"]
-ALL_EXPS   = [
+CLASSIC_EXPS = [
     f"{t}__{b}__{s}"
     for t in TASKS
     for b in BACKBONES
     for s in STRATEGIES
 ]
 PRECOMPUTE_TASKS = TASKS[:]
+
+
+def get_sweep_mode() -> str:
+    mode_file = BASE_DIR / ".sweep_mode"
+    if not mode_file.exists():
+        return "classic"
+    try:
+        mode = mode_file.read_text(encoding="utf-8").strip().lower()
+        return mode or "classic"
+    except Exception:
+        return "classic"
+
+
+def discover_experiments() -> list[str]:
+    """
+    Descubre experimentos automáticamente para soportar:
+      - modo clásico: task__backbone__strategy
+      - modo speech-image: speech_image__<exp_id>
+    """
+    mode = get_sweep_mode()
+    if mode == "classic":
+        return CLASSIC_EXPS[:]
+
+    # speech_image y otros modos: descubrir por sentinels, logs y results
+    exps = set()
+
+    for p in BASE_DIR.glob(".exp_done_*"):
+        exps.add(p.name.replace(".exp_done_", "", 1))
+    for p in LOGS_DIR.glob("*.log"):
+        n = p.stem
+        if n.startswith("sweep_") or n.startswith("precompute_"):
+            continue
+        exps.add(n)
+    for p in RESULTS_DIR.glob("*/final_results.json"):
+        exps.add(p.parent.name)
+
+    return sorted(exps)
 
 
 # ==============================================================================
@@ -123,6 +160,15 @@ def get_precompute_status() -> dict:
     """
     Estado agregado de precompute de stats e imágenes por tarea.
     """
+    if get_sweep_mode() != "classic":
+        return {
+            "tasks": [],
+            "stats": [],
+            "images": [],
+            "counts_stats": {"done": 0, "running": 0, "failed": 0, "pending": 0},
+            "counts_images": {"done": 0, "running": 0, "failed": 0, "pending": 0},
+        }
+
     stats = [
         _get_stage_status_for_task(
             t,
@@ -230,7 +276,8 @@ def get_exp_status(exp: str) -> dict:
 
 def get_sweep_status() -> dict:
     """Estado global del sweep."""
-    exps = [get_exp_status(e) for e in ALL_EXPS]
+    all_exps = discover_experiments()
+    exps = [get_exp_status(e) for e in all_exps]
     precompute = get_precompute_status()
     counts = {"done": 0, "running": 0, "failed": 0, "pending": 0}
     for e in exps:
@@ -273,13 +320,14 @@ def get_sweep_status() -> dict:
 
     return {
         "timestamp": datetime.now().isoformat(),
-        "total": len(ALL_EXPS),
+        "total": len(all_exps),
         "counts": counts,
         "precompute": precompute,
         "experiments": exps,
         "leaderboard": completed,
         "sweep_tail": sweep_tail,
         "gpu_info": gpu_info,
+        "sweep_mode": get_sweep_mode(),
     }
 
 
@@ -842,7 +890,7 @@ function render(d) {
   document.getElementById('cnt-pending').textContent = d.counts.pending;
 
   // Progress
-  const pct = Math.round(d.counts.done / d.total * 100);
+  const pct = d.total > 0 ? Math.round(d.counts.done / d.total * 100) : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-text').textContent = `${d.counts.done} / ${d.total}`;
 
@@ -874,7 +922,7 @@ function render(d) {
   grid.innerHTML = d.experiments.map(e => {
     const parts = e.exp.split('__');
     const shortName = parts.slice(1).join(' · ');
-    const taskBadge = parts[0];
+    const taskBadge = parts[0] === 'speech_image' ? 'speech' : parts[0];
     const epochInfo = e.epoch_current
       ? `<div class="exp-epoch">Epoch ${e.epoch_current}</div>
          <div class="epoch-bar"><div class="epoch-fill" style="width:${Math.round(e.epoch_current/50*100)}%"></div></div>`
@@ -911,7 +959,7 @@ function render(d) {
   } else {
     tbody.innerHTML = d.leaderboard.map((e, i) => {
       const parts = e.exp.split('__');
-      const task = parts[0];
+      const task = parts[0] === 'speech_image' ? 'speech' : parts[0];
       const name = parts.slice(1).join(' · ');
       const rankCls = i === 0 ? 'rank-1' : 'rank';
       const taskCls = `task-${task}`;

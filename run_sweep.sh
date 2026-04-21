@@ -9,6 +9,8 @@
 #   bash run_sweep.sh --resume     # reanudar experimentos fallidos (resume_from=latest)
 #   bash run_sweep.sh --ddp        # forzar modo train_ddp.py (raw+CWT)
 #   bash run_sweep.sh --precomputed-train  # forzar modo imágenes precomputadas
+#   bash run_sweep.sh --speech-image        # sweep A–F (imagen TF + ImageNet)
+#   bash run_sweep.sh --speech-image --low-freq-bias
 #
 # Prerrequisitos:
 #   - docker compose up --build  (al menos una vez para construir la imagen)
@@ -34,12 +36,18 @@ set -euo pipefail
 DRY_RUN=false
 RESUME_FAILED=false
 USE_PRECOMPUTED_IMAGES_FOR_TRAIN=true
+SPEECH_IMAGE_SWEEP=false
+USE_WANDB=false
+LOW_FREQ_BIAS=false
 for arg in "$@"; do
   case $arg in
     --dry-run) DRY_RUN=true ;;
     --resume)  RESUME_FAILED=true ;;
     --ddp)     USE_PRECOMPUTED_IMAGES_FOR_TRAIN=false ;;
     --precomputed-train) USE_PRECOMPUTED_IMAGES_FOR_TRAIN=true ;;
+    --speech-image) SPEECH_IMAGE_SWEEP=true ;;
+    --use-wandb) USE_WANDB=true ;;
+    --low-freq-bias) LOW_FREQ_BIAS=true ;;
   esac
 done
 
@@ -58,6 +66,155 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 mkdir -p "${PROJECT_DIR}/logs"
 SWEEP_LOG="${PROJECT_DIR}/logs/sweep_$(date +%Y%m%d_%H%M%S).log"
 touch "$SWEEP_LOG"
+
+# ==============================================================================
+# MODO ALTERNATIVO: SWEEP DE SPEECH IMAGE EXPERIMENTS (A–F)
+# ==============================================================================
+if $SPEECH_IMAGE_SWEEP; then
+  echo "speech_image" > "${PROJECT_DIR}/.sweep_mode"
+  log_step "MODO SPEECH-IMAGE: lanzando experimentos A–F"
+
+  SPEECH_EXPERIMENTS=(
+    "baseline_image_resnet18"
+    "baseline_image_vittiny"
+    "ablation_projection"
+    "ablation_finetuning"
+    "ablation_window_length"
+    "ablation_augmentations"
+  )
+  if $LOW_FREQ_BIAS; then
+    SPEECH_EXPERIMENTS+=("low_freq_bias_variant")
+  fi
+
+  TOTAL=${#SPEECH_EXPERIMENTS[@]}
+  PASSED=()
+  FAILED=()
+  SKIPPED=()
+  EXP_NUM=0
+
+  for EXP_ID in "${SPEECH_EXPERIMENTS[@]}"; do
+    EXP_NUM=$(( EXP_NUM + 1 ))
+    EXP="speech_image__${EXP_ID}"
+    JOB_LOG="${PROJECT_DIR}/logs/${EXP}.log"
+    OUT_DIR="/workspace/results/${EXP}"
+    DONE_SENTINEL="${PROJECT_DIR}/.exp_done_${EXP}"
+
+    log ""
+    log "━━━ [${EXP_NUM}/${TOTAL}] ${EXP} ━━━"
+
+    if [[ -f "$DONE_SENTINEL" ]] && ! $RESUME_FAILED; then
+      log_ok "  Ya completado (sentinel existente). Saltando."
+      SKIPPED+=("$EXP")
+      continue
+    fi
+
+    TF_VARIANT="full_band_tf"
+    if [[ "$EXP_ID" == "low_freq_bias_variant" ]]; then
+      TF_VARIANT="low_freq_biased_tf"
+    fi
+
+    WB_FLAGS=""
+    if $USE_WANDB; then
+      WB_FLAGS="--use_wandb"
+    fi
+
+    if $DRY_RUN; then
+      log "  [DRY-RUN] docker compose run -d --rm --entrypoint python meg_training_job \\"
+      log "    /workspace/run_speech_image_experiments.py \\"
+      log "    --experiment ${EXP_ID} --data_path /workspace/libribrain_data \\"
+      log "    --output_dir ${OUT_DIR} --epochs 20 --stage1_epochs 6 \\"
+      log "    --batch_size 32 --num_workers 4 --seeds 42,43,44 --tf_variant ${TF_VARIANT} ${WB_FLAGS}"
+      PASSED+=("$EXP [dry-run]")
+      continue
+    fi
+
+    START_TS=$(date +%s)
+    CONTAINER_ID=$(docker compose run -d \
+      --no-deps \
+      --entrypoint python \
+      meg_training_job \
+      /workspace/run_speech_image_experiments.py \
+        --experiment "${EXP_ID}" \
+        --data_path /workspace/libribrain_data \
+        --output_dir "${OUT_DIR}" \
+        --epochs 20 \
+        --stage1_epochs 6 \
+        --batch_size 32 \
+        --num_workers 4 \
+        --seeds 42,43,44 \
+        --tf_variant "${TF_VARIANT}" \
+        ${WB_FLAGS})
+
+    log "  Contenedor: ${CONTAINER_ID:0:12}"
+    docker logs -f "$CONTAINER_ID" 2>&1 | tee "$JOB_LOG" &
+    LOGS_PID=$!
+
+    EXIT_CODE=$(docker wait "$CONTAINER_ID")
+    kill $LOGS_PID 2>/dev/null || true
+    docker rm "$CONTAINER_ID" 2>/dev/null || true
+    ELAPSED=$(( $(date +%s) - START_TS ))
+    ELAPSED_MIN=$(( ELAPSED / 60 ))
+
+    if [[ "$EXIT_CODE" -eq 0 ]]; then
+      touch "$DONE_SENTINEL"
+      log_ok "  Completado en ${ELAPSED_MIN}min → ${JOB_LOG}"
+      PASSED+=("$EXP")
+    else
+      log_err "  FALLIDO (exit ${EXIT_CODE}) en ${ELAPSED_MIN}min → ${JOB_LOG}"
+      FAILED+=("$EXP")
+    fi
+  done
+
+  log_step "RESUMEN DEL SWEEP (SPEECH-IMAGE)"
+  log "Completados OK (${#PASSED[@]}/${TOTAL}):"
+  for e in "${PASSED[@]:-}"; do log_ok "  ${e}"; done
+  if [[ ${#SKIPPED[@]} -gt 0 ]]; then
+    log "Saltados (ya existían) (${#SKIPPED[@]}):"
+    for e in "${SKIPPED[@]}"; do log "  ⏭  ${e}"; done
+  fi
+  if [[ ${#FAILED[@]} -gt 0 ]]; then
+    log "Fallidos (${#FAILED[@]}):"
+    for e in "${FAILED[@]}"; do log_err "  ${e}"; done
+  fi
+
+  log_step "RESULTADOS (SPEECH-IMAGE)"
+  python3 - << 'PYEOF'
+import json, os, glob, sys
+from pathlib import Path
+
+results_base = Path(os.environ.get("PROJECT_DIR", ".")) / "results"
+jsons = sorted(glob.glob(str(results_base / "speech_image__*" / "final_results.json")))
+if not jsons:
+    print("  No hay resultados disponibles todavía.")
+    sys.exit(0)
+
+rows = []
+for path in jsons:
+    with open(path) as f:
+        d = json.load(f)
+    exp = Path(path).parent.name
+    rows.append((exp, d))
+
+rows.sort(key=lambda x: x[1].get("test_f1_macro", 0), reverse=True)
+print(f"\n{'Experimento':<38} {'Backbone':<10} {'Proj':<26} {'FT':<12} {'F1':>7} {'BalAcc':>7}")
+print("─" * 114)
+for exp, d in rows:
+    print(
+        f"  {exp:<36} "
+        f"{str(d.get('backbone','?')):<10} "
+        f"{str(d.get('projection_type','?')):<26} "
+        f"{str(d.get('fine_tuning_type','?')):<12} "
+        f"{float(d.get('test_f1_macro',0)):.4f} "
+        f"{float(d.get('test_balanced_acc',0)):.4f}"
+    )
+print()
+PYEOF
+
+  log_ok "Sweep speech-image finalizado."
+  exit 0
+fi
+
+echo "classic" > "${PROJECT_DIR}/.sweep_mode"
 
 # ==============================================================================
 # ESPACIO DE BÚSQUEDA
