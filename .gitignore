@@ -212,3 +212,5 @@ logs/
 __pycache__/
 *.pyc
 .codex
+
+results/precomputed_images
