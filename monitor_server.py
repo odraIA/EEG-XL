@@ -366,6 +366,16 @@ def _artifact_belongs_to_current_run(path: Path, started_at: float | None, slack
         return False
 
 
+def _artifact_age_min(path: Path) -> float | None:
+    if not path.exists():
+        return None
+    try:
+        stat = path.stat()
+        return (time.time() - max(stat.st_mtime, stat.st_ctime)) / 60
+    except Exception:
+        return None
+
+
 def discover_experiments() -> list[str]:
     """
     Descubre experimentos automáticamente para soportar:
@@ -374,12 +384,32 @@ def discover_experiments() -> list[str]:
     """
     plan = load_sweep_plan()
     planned_entries = _normalize_plan_experiment_entries(plan)
+    planned_exps = set(planned_entries.keys())
+    recent_exps = set()
+
+    for p in LOGS_DIR.glob("*.log"):
+        if p.stem.startswith("sweep_") or p.stem.startswith("precompute_"):
+            continue
+        age_min = _artifact_age_min(p)
+        if age_min is not None and age_min < 30:
+            recent_exps.add(p.stem)
+
+    for p in CKPT_DIR.glob("*/training_state.json"):
+        age_min = _artifact_age_min(p)
+        if age_min is not None and age_min < 30:
+            recent_exps.add(p.parent.name)
+
+    for p in CKPT_DIR.glob("*/checkpoint_latest.pt"):
+        age_min = _artifact_age_min(p)
+        if age_min is not None and age_min < 30:
+            recent_exps.add(p.parent.name)
+
     if planned_entries:
-        return list(planned_entries.keys())
+        return sorted(planned_exps | recent_exps)
 
     mode = get_sweep_mode()
     if mode == "classic":
-        return CLASSIC_EXPS[:]
+        return sorted(set(CLASSIC_EXPS) | recent_exps)
 
     # speech_image y otros modos: descubrir por sentinels, logs y results
     exps = set()
@@ -686,13 +716,56 @@ def get_exp_status(exp: str, ctx: dict | None = None) -> dict:
     current_done_sentinel = _artifact_belongs_to_current_run(done_sentinel, started_at)
     current_job_log = _artifact_belongs_to_current_run(job_log, started_at)
     current_training_state = _artifact_belongs_to_current_run(training_state, started_at)
+    checkpoint_latest = CKPT_DIR / exp / "checkpoint_latest.pt"
+    current_checkpoint = _artifact_belongs_to_current_run(checkpoint_latest, started_at)
 
-    if result["status"] == "skipped":
+    job_log_age_min = _artifact_age_min(job_log)
+    training_state_age_min = _artifact_age_min(training_state)
+    checkpoint_age_min = _artifact_age_min(checkpoint_latest)
+    recent_job_log = current_job_log and job_log_age_min is not None and job_log_age_min < 10
+    recent_training_state = (
+        current_training_state and training_state_age_min is not None and training_state_age_min < 20
+    )
+    recent_checkpoint = current_checkpoint and checkpoint_age_min is not None and checkpoint_age_min < 20
+    has_recent_live_artifact = recent_job_log or recent_training_state or recent_checkpoint
+
+    if result["status"] == "skipped" and not has_recent_live_artifact:
         return result
+
+    # ── En curso ──────────────────────────────────────────────────────────────
+    # En relanzamientos, pueden quedar final_results/sentinels/logs antiguos.
+    # Si hay artefactos vivos recientes, deben ganar sobre un "done" heredado.
+    if has_recent_live_artifact:
+        result["status"] = "running"
+        if job_log_age_min is not None:
+            result["log_mtime"] = job_log.stat().st_mtime
+        try:
+            if current_training_state:
+                with open(training_state) as f:
+                    ts = json.load(f)
+                result["epoch_current"] = ts.get("epoch")
+                result["best_val_f1"] = ts.get("metrics", {}).get("val_f1_macro")
+        except Exception:
+            pass
+        result["last_line"] = _tail_last_line(job_log)
+        if job_log.exists():
+            try:
+                result["elapsed_min"] = int((time.time() - job_log.stat().st_ctime) / 60)
+            except Exception:
+                pass
+        elif training_state.exists():
+            try:
+                result["elapsed_min"] = int((time.time() - training_state.stat().st_ctime) / 60)
+            except Exception:
+                pass
+        return result
+
+    if result["status"] == "done" and not (current_results or current_done_sentinel):
+        result["status"] = "pending"
 
     # ── Completado ────────────────────────────────────────────────────────────
     # `final_results.json` es la evidencia más fiable de finalización.
-    if result["status"] == "done" or current_results or current_done_sentinel:
+    if (result["status"] == "done" and (current_results or current_done_sentinel)) or current_results or current_done_sentinel:
         result["status"] = "done"
         try:
             with open(final_results) as f:
