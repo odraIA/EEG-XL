@@ -209,7 +209,6 @@ __marimo__/
 data/
 libribrain_data/
 checkpoints/
-logs/
 __pycache__/
 *.pyc
 .codex

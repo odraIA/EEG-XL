@@ -130,6 +130,25 @@ log_step() { echo -e "\n${BLUE}━━━━━━━━━━━━━━━━�
              echo -e "${BLUE}  $*${NC}" | tee -a "$SWEEP_LOG"
              echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" | tee -a "$SWEEP_LOG"; }
 
+find_resume_checkpoint() {
+  local ckpt_dir="$1"
+  local latest_link="${ckpt_dir}/checkpoint_latest.pt"
+
+  if [[ -f "$latest_link" ]]; then
+    printf '%s\n' "$latest_link"
+    return 0
+  fi
+
+  local latest_epoch=""
+  latest_epoch="$(find "$ckpt_dir" -maxdepth 1 -type f -name 'checkpoint_epoch_*.pt' 2>/dev/null | sort | tail -n 1)"
+  if [[ -n "$latest_epoch" ]]; then
+    printf '%s\n' "$latest_epoch"
+    return 0
+  fi
+
+  return 1
+}
+
 # ── Directorios ───────────────────────────────────────────────────────────────
 SWEEP_RUN_TS="${SWEEP_RUN_TS:-$(date +%Y%m%d_%H%M%S)}"
 SWEEP_LOG="${PROJECT_DIR}/logs/sweep_${SWEEP_RUN_TS}.log"
@@ -642,11 +661,17 @@ for STRATEGY in "${STRATEGIES[@]}"; do
   # ── Determinar resume_from ──────────────────────────────────────────────────
   RESUME_FROM="none"
   if $RESUME_FAILED; then
-    # Si hay checkpoint previo para este experimento, reanudar desde él
-    CKPT_LOCAL="${PROJECT_DIR}/checkpoints/${EXP}/checkpoint_latest.pt"
-    if [[ -f "$CKPT_LOCAL" ]]; then
-      RESUME_FROM="latest"
-      log_warn "  Reanudando desde checkpoint: ${CKPT_LOCAL}"
+    # Si hay checkpoint previo para este experimento, reanudar desde él.
+    # Fallback: si el proceso cayó tras guardar el .pt pero antes del symlink
+    # "latest", usar el checkpoint_epoch_*.pt más reciente.
+    CKPT_LOCAL_DIR="${PROJECT_DIR}/checkpoints/${EXP}"
+    if RESUME_CKPT="$(find_resume_checkpoint "$CKPT_LOCAL_DIR")"; then
+      if [[ "$RESUME_CKPT" == "${CKPT_LOCAL_DIR}/checkpoint_latest.pt" ]]; then
+        RESUME_FROM="latest"
+      else
+        RESUME_FROM="$RESUME_CKPT"
+      fi
+      log_warn "  Reanudando desde checkpoint: ${RESUME_CKPT}"
     fi
   fi
 
