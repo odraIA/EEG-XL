@@ -59,7 +59,7 @@ while [[ $# -gt 0 ]]; do
     --resume)  RESUME_FAILED=true ;;
     --rerun|--force) FORCE_RERUN=true ;;
     --rerun-precompute|--force-precompute) RERUN_PRECOMPUTE=true ;;
-    --detach|--daemon|--bg) DETACH_REQUESTED=true; continue ;;
+    --detach|--daemon|--bg) DETACH_REQUESTED=true; shift; continue ;;
     --ddp)     ;;
     --speech-image) SPEECH_IMAGE_SWEEP=true ;;
     --use-wandb) USE_WANDB=true ;;
