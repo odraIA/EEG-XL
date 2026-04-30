@@ -114,6 +114,7 @@ services:
   meg_training_job:
     <<: *meg-base
     container_name: meg_training_job
+    entrypoint: ["torchrun", "--nproc_per_node=${TRAIN_GPUS:-2}", "--nnodes=1"]
 
     depends_on:
       precompute_stats:
@@ -124,7 +125,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 2
+              count: ${TRAIN_GPUS:-2}
               capabilities: [gpu]
 
     environment:
@@ -143,16 +144,19 @@ services:
       - NCCL_DEBUG=WARNING
       - NCCL_DEBUG_SUBSYS=ALL
       - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
-      - CUDA_VISIBLE_DEVICES=0,1
+      - CUDA_VISIBLE_DEVICES=${TRAIN_CUDA_VISIBLE_DEVICES:-0,1}
 
     command: >
       train_ddp.py
       --task phoneme
       --backbone resnet18
       --strategy partial_ft
-      --n_epochs 30
-      --batch_size 256
-      --num_workers 12
+      --n_epochs ${TRAIN_EPOCHS:-30}
+      --batch_size ${TRAIN_BATCH_SIZE:-256}
+      --eval_batch_size ${TRAIN_EVAL_BATCH_SIZE:-256}
+      --n_freqs ${TRAIN_N_FREQS:-96}
+      --num_workers ${TRAIN_NUM_WORKERS:-12}
+      --eval_num_workers ${TRAIN_EVAL_NUM_WORKERS:-2}
       --data_path /workspace/libribrain_data
       --output_dir /workspace/results
       --checkpoint_dir /workspace/checkpoints

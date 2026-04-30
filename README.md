@@ -67,6 +67,36 @@ bash run_sweep.sh --dry-run
 `run_sweep.sh` mantiene el uso de `docker compose run` detached sobre los
 servicios `precompute_stats` y `meg_training_job`.
 
+### Ajustar uso de GPU
+
+El entrenamiento DDP usa 2 GPUs por defecto. No es obligatorio usar ambas, pero
+con 2 GPUs el `batch_size` es por GPU y el batch global es
+`BATCH_SIZE × numero_de_GPUs`.
+
+Para aumentar uso sin ir directo al maximo, sube primero el batch por GPU:
+
+```bash
+bash run_sweep.sh --batch-size 160 --eval-batch-size 160 --detach
+bash run_sweep.sh --batch-size 192 --eval-batch-size 192 --detach
+```
+
+Si aparece `CUDA out of memory`, baja `BATCH_SIZE` o reduce la resolucion CWT:
+
+```bash
+bash run_sweep.sh --batch-size 160 --n-freqs 64 --detach
+```
+
+El log de cada epoca muestra el pico de memoria CUDA para decidir el siguiente
+incremento. Para `docker compose up meg_training_job`, los equivalentes son
+`TRAIN_BATCH_SIZE`, `TRAIN_EVAL_BATCH_SIZE`, `TRAIN_N_FREQS`,
+`TRAIN_NUM_WORKERS` y `TRAIN_EVAL_NUM_WORKERS`.
+
+Para lanzar con una sola GPU:
+
+```bash
+bash run_sweep.sh --train-gpus 1 --cuda-visible-devices 0 --batch-size 192 --detach
+```
+
 ## Logs del sweep
 
 Ver el coordinador:

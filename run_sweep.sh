@@ -51,6 +51,19 @@ DETACH_REQUESTED=false
 SOURCE_RETRAIN_BEST=false
 SOURCE_PROJECTION_PATH=""
 SOURCE_VARIANT_NAME="source_lcmv"
+N_EPOCHS_OVERRIDE="${N_EPOCHS:-}"
+BATCH_SIZE_OVERRIDE="${BATCH_SIZE:-}"
+EVAL_BATCH_SIZE_OVERRIDE="${EVAL_BATCH_SIZE:-}"
+N_FREQS_OVERRIDE="${N_FREQS:-}"
+NUM_WORKERS_OVERRIDE="${NUM_WORKERS:-}"
+EVAL_NUM_WORKERS_OVERRIDE="${EVAL_NUM_WORKERS:-}"
+TRAIN_GPUS_OVERRIDE="${TRAIN_GPUS:-}"
+TRAIN_CUDA_VISIBLE_DEVICES_OVERRIDE="${TRAIN_CUDA_VISIBLE_DEVICES:-}"
+SPEECH_IMAGE_EPOCHS_OVERRIDE="${SPEECH_IMAGE_EPOCHS:-}"
+SPEECH_IMAGE_STAGE1_EPOCHS_OVERRIDE="${SPEECH_IMAGE_STAGE1_EPOCHS:-}"
+SPEECH_IMAGE_BATCH_SIZE_OVERRIDE="${SPEECH_IMAGE_BATCH_SIZE:-}"
+SPEECH_IMAGE_NUM_WORKERS_OVERRIDE="${SPEECH_IMAGE_NUM_WORKERS:-}"
+SPEECH_IMAGE_SEEDS_OVERRIDE="${SPEECH_IMAGE_SEEDS:-}"
 FORWARD_ARGS=()
 while [[ $# -gt 0 ]]; do
   arg="$1"
@@ -65,6 +78,75 @@ while [[ $# -gt 0 ]]; do
     --use-wandb) USE_WANDB=true ;;
     --low-freq-bias) LOW_FREQ_BIAS=true ;;
     --source-retrain-best) SOURCE_RETRAIN_BEST=true ;;
+    --epochs=*) N_EPOCHS_OVERRIDE="${arg#*=}" ;;
+    --epochs)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--epochs requiere un valor" >&2; exit 2; }
+      N_EPOCHS_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --batch-size=*) BATCH_SIZE_OVERRIDE="${arg#*=}" ;;
+    --batch-size)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--batch-size requiere un valor" >&2; exit 2; }
+      BATCH_SIZE_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --eval-batch-size=*) EVAL_BATCH_SIZE_OVERRIDE="${arg#*=}" ;;
+    --eval-batch-size)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--eval-batch-size requiere un valor" >&2; exit 2; }
+      EVAL_BATCH_SIZE_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --n-freqs=*) N_FREQS_OVERRIDE="${arg#*=}" ;;
+    --n-freqs)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--n-freqs requiere un valor" >&2; exit 2; }
+      N_FREQS_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --num-workers=*) NUM_WORKERS_OVERRIDE="${arg#*=}" ;;
+    --num-workers)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--num-workers requiere un valor" >&2; exit 2; }
+      NUM_WORKERS_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --eval-num-workers=*) EVAL_NUM_WORKERS_OVERRIDE="${arg#*=}" ;;
+    --eval-num-workers)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--eval-num-workers requiere un valor" >&2; exit 2; }
+      EVAL_NUM_WORKERS_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --train-gpus=*) TRAIN_GPUS_OVERRIDE="${arg#*=}" ;;
+    --train-gpus)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--train-gpus requiere un valor" >&2; exit 2; }
+      TRAIN_GPUS_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --cuda-visible-devices=*) TRAIN_CUDA_VISIBLE_DEVICES_OVERRIDE="${arg#*=}" ;;
+    --cuda-visible-devices)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--cuda-visible-devices requiere un valor" >&2; exit 2; }
+      TRAIN_CUDA_VISIBLE_DEVICES_OVERRIDE="$1"
+      arg="$1"
+      ;;
+    --speech-image-epochs=*) SPEECH_IMAGE_EPOCHS_OVERRIDE="${arg#*=}" ;;
+    --speech-image-stage1-epochs=*) SPEECH_IMAGE_STAGE1_EPOCHS_OVERRIDE="${arg#*=}" ;;
+    --speech-image-batch-size=*) SPEECH_IMAGE_BATCH_SIZE_OVERRIDE="${arg#*=}" ;;
+    --speech-image-num-workers=*) SPEECH_IMAGE_NUM_WORKERS_OVERRIDE="${arg#*=}" ;;
+    --speech-image-seeds=*) SPEECH_IMAGE_SEEDS_OVERRIDE="${arg#*=}" ;;
     --source-projection-path=*)
       SOURCE_PROJECTION_PATH="${arg#*=}"
       SOURCE_RETRAIN_BEST=true
@@ -97,6 +179,18 @@ while [[ $# -gt 0 ]]; do
   FORWARD_ARGS+=("$arg")
   shift
 done
+
+# Docker instalado vía snap en algunos hosts falla si hereda variables arbitrarias.
+# Conservamos los valores en variables locales y las quitamos del entorno antes
+# de llamar a docker compose.
+export -n \
+  N_EPOCHS BATCH_SIZE EVAL_BATCH_SIZE N_FREQS NUM_WORKERS EVAL_NUM_WORKERS \
+  TRAIN_GPUS TRAIN_CUDA_VISIBLE_DEVICES \
+  SPEECH_IMAGE_EPOCHS SPEECH_IMAGE_STAGE1_EPOCHS SPEECH_IMAGE_BATCH_SIZE \
+  SPEECH_IMAGE_NUM_WORKERS SPEECH_IMAGE_SEEDS 2>/dev/null || true
+
+TRAIN_GPUS="${TRAIN_GPUS_OVERRIDE:-2}"
+TRAIN_CUDA_VISIBLE_DEVICES="${TRAIN_CUDA_VISIBLE_DEVICES_OVERRIDE:-0,1}"
 
 if $SOURCE_RETRAIN_BEST && [[ -z "$SOURCE_PROJECTION_PATH" ]]; then
   echo "--source-retrain-best requiere --source-projection-path <matriz>" >&2
@@ -323,10 +417,10 @@ cleanup_pid_file() {
 trap cleanup_pid_file EXIT
 
 # ── Compatibilidad docker compose run ─────────────────────────────────────────
-DOCKER_COMPOSE_RUN_FLAGS=(-d --no-deps)
+DOCKER_COMPOSE_RUN_FLAGS=(-d --no-deps -e "CUDA_VISIBLE_DEVICES=${TRAIN_CUDA_VISIBLE_DEVICES}")
 if command -v docker >/dev/null 2>&1; then
   if docker compose run --help 2>/dev/null | grep -q -- '--init'; then
-    DOCKER_COMPOSE_RUN_FLAGS=(-d --init --no-deps)
+    DOCKER_COMPOSE_RUN_FLAGS=(-d --init --no-deps -e "CUDA_VISIBLE_DEVICES=${TRAIN_CUDA_VISIBLE_DEVICES}")
   else
     log_warn "docker compose run no soporta --init; se ejecutará sin ese flag."
   fi
@@ -360,6 +454,12 @@ if $SPEECH_IMAGE_SWEEP; then
   echo "speech_image" > "${PROJECT_DIR}/.sweep_mode"
   export SWEEP_PLAN
   log_step "MODO SPEECH-IMAGE: lanzando experimentos A–F"
+
+  SPEECH_IMAGE_EPOCHS="${SPEECH_IMAGE_EPOCHS_OVERRIDE:-20}"
+  SPEECH_IMAGE_STAGE1_EPOCHS="${SPEECH_IMAGE_STAGE1_EPOCHS_OVERRIDE:-6}"
+  SPEECH_IMAGE_BATCH_SIZE="${SPEECH_IMAGE_BATCH_SIZE_OVERRIDE:-32}"
+  SPEECH_IMAGE_NUM_WORKERS="${SPEECH_IMAGE_NUM_WORKERS_OVERRIDE:-4}"
+  SPEECH_IMAGE_SEEDS="${SPEECH_IMAGE_SEEDS_OVERRIDE:-42,43,44}"
 
   SPEECH_EXPERIMENTS=(
     "baseline_image_resnet18"
@@ -456,8 +556,8 @@ PYEOF
       log "  [DRY-RUN] docker compose run ${DOCKER_COMPOSE_RUN_FLAGS_STR} --rm --entrypoint python meg_training_job \\"
       log "    /workspace/run_speech_image_experiments.py \\"
       log "    --experiment ${EXP_ID} --data_path /workspace/libribrain_data \\"
-      log "    --output_dir ${OUT_DIR} --epochs 20 --stage1_epochs 6 \\"
-      log "    --batch_size 32 --num_workers 4 --seeds 42,43,44 --tf_variant ${TF_VARIANT} ${WB_FLAGS}"
+      log "    --output_dir ${OUT_DIR} --epochs ${SPEECH_IMAGE_EPOCHS} --stage1_epochs ${SPEECH_IMAGE_STAGE1_EPOCHS} \\"
+      log "    --batch_size ${SPEECH_IMAGE_BATCH_SIZE} --num_workers ${SPEECH_IMAGE_NUM_WORKERS} --seeds ${SPEECH_IMAGE_SEEDS} --tf_variant ${TF_VARIANT} ${WB_FLAGS}"
       PASSED+=("$EXP [dry-run]")
       continue
     fi
@@ -471,11 +571,11 @@ PYEOF
         --experiment "${EXP_ID}" \
         --data_path /workspace/libribrain_data \
         --output_dir "${OUT_DIR}" \
-        --epochs 20 \
-        --stage1_epochs 6 \
-        --batch_size 32 \
-        --num_workers 4 \
-        --seeds 42,43,44 \
+        --epochs "${SPEECH_IMAGE_EPOCHS}" \
+        --stage1_epochs "${SPEECH_IMAGE_STAGE1_EPOCHS}" \
+        --batch_size "${SPEECH_IMAGE_BATCH_SIZE}" \
+        --num_workers "${SPEECH_IMAGE_NUM_WORKERS}" \
+        --seeds "${SPEECH_IMAGE_SEEDS}" \
         --tf_variant "${TF_VARIANT}" \
         ${WB_FLAGS})
 
@@ -562,9 +662,12 @@ BACKBONES=("resnet18" "efficientnet_b0" "vit_tiny")
 STRATEGIES=("frozen" "partial_ft")
 
 # Hiperparámetros comunes (se pueden hacer arrays para grid search)
-N_EPOCHS=50
-BATCH_SIZE=128       # Por GPU — batch global = 256 × 2 GPUs = 512
-NUM_WORKERS=4
+N_EPOCHS="${N_EPOCHS_OVERRIDE:-50}"
+BATCH_SIZE="${BATCH_SIZE_OVERRIDE:-128}"       # Por GPU — batch global = BATCH_SIZE × nº GPUs
+EVAL_BATCH_SIZE="${EVAL_BATCH_SIZE_OVERRIDE:-$BATCH_SIZE}"
+N_FREQS="${N_FREQS_OVERRIDE:-96}"
+NUM_WORKERS="${NUM_WORKERS_OVERRIDE:-4}"
+EVAL_NUM_WORKERS="${EVAL_NUM_WORKERS_OVERRIDE:-2}"
 CHECKPOINT_EVERY=5   # Guardar checkpoint cada 5 epochs (no cada 1, para no llenar disco)
 DATA_PATH="/workspace/libribrain_data"
 export SWEEP_PLAN
@@ -704,6 +807,10 @@ log "  Backbones:   ${BACKBONES[*]}"
 log "  Estrategias: ${STRATEGIES[*]}"
 log "  Total:       ${TOTAL} experimentos"
 log "  Epochs/exp:  ${N_EPOCHS}"
+log "  Batch/GPU:   ${BATCH_SIZE} train | ${EVAL_BATCH_SIZE} eval"
+log "  CWT freqs:   ${N_FREQS}"
+log "  GPUs:        ${TRAIN_GPUS} visibles=${TRAIN_CUDA_VISIBLE_DEVICES}"
+log "  Workers/GPU: ${NUM_WORKERS} train | ${EVAL_NUM_WORKERS} eval"
 log "  Modo train:  DDP raw+CWT (train_ddp.py)"
 log ""
 
@@ -759,9 +866,10 @@ for STRATEGY in "${STRATEGIES[@]}"; do
   fi
 
   if $DRY_RUN; then
-    log "  [DRY-RUN] docker compose run ${DOCKER_COMPOSE_RUN_FLAGS_STR} --rm meg_training_job train_ddp.py \\"
+    log "  [DRY-RUN] docker compose run ${DOCKER_COMPOSE_RUN_FLAGS_STR} --rm --entrypoint 'torchrun --nproc_per_node=${TRAIN_GPUS} --nnodes=1' meg_training_job train_ddp.py \\"
     log "    --task ${TASK} --backbone ${BACKBONE} --strategy ${STRATEGY} \\"
     log "    --n_epochs ${N_EPOCHS} --batch_size ${BATCH_SIZE} \\"
+    log "    --eval_batch_size ${EVAL_BATCH_SIZE} --n_freqs ${N_FREQS} \\"
     log "    --output_dir ${OUTPUT_DIR} --checkpoint_dir ${CKPT_DIR} \\"
     log "    --checkpoint_every ${CHECKPOINT_EVERY} --resume_from ${RESUME_FROM}"
     PASSED+=("$EXP [dry-run]")
@@ -773,6 +881,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
 
   # ── Lanzar job desacoplado de la sesión SSH ────────────────────────────────
   CONTAINER_ID=$(compose_run_detached \
+    --entrypoint "torchrun --nproc_per_node=${TRAIN_GPUS} --nnodes=1" \
     meg_training_job \
     train_ddp.py \
       --task          "${TASK}" \
@@ -780,7 +889,10 @@ for STRATEGY in "${STRATEGIES[@]}"; do
       --strategy      "${STRATEGY}" \
       --n_epochs      "${N_EPOCHS}" \
       --batch_size    "${BATCH_SIZE}" \
+      --eval_batch_size "${EVAL_BATCH_SIZE}" \
+      --n_freqs       "${N_FREQS}" \
       --num_workers   "${NUM_WORKERS}" \
+      --eval_num_workers "${EVAL_NUM_WORKERS}" \
       --data_path     "${DATA_PATH}" \
       --output_dir    "${OUTPUT_DIR}" \
       --checkpoint_dir "${CKPT_DIR}" \
@@ -885,10 +997,11 @@ PYEOF
       log_ok "  Fuente ya completado (sentinel existente). Saltando."
       SKIPPED+=("$SOURCE_EXP")
     elif $DRY_RUN; then
-      log "  [DRY-RUN] docker compose run ${DOCKER_COMPOSE_RUN_FLAGS_STR} --rm meg_training_job train_ddp.py \\"
+      log "  [DRY-RUN] docker compose run ${DOCKER_COMPOSE_RUN_FLAGS_STR} --rm --entrypoint 'torchrun --nproc_per_node=${TRAIN_GPUS} --nnodes=1' meg_training_job train_ddp.py \\"
       log "    --task ${BEST_TASK} --backbone ${BEST_BACKBONE} --strategy ${BEST_STRATEGY} \\"
       log "    --source_projection_path ${SOURCE_PROJECTION_CONTAINER_PATH} --source_variant_name ${SOURCE_VARIANT_NAME} \\"
       log "    --n_epochs ${N_EPOCHS} --batch_size ${BATCH_SIZE} \\"
+      log "    --eval_batch_size ${EVAL_BATCH_SIZE} --n_freqs ${N_FREQS} \\"
       log "    --output_dir ${SOURCE_OUTPUT_DIR} --checkpoint_dir ${SOURCE_CKPT_DIR}"
       PASSED+=("$SOURCE_EXP [dry-run]")
     else
@@ -900,6 +1013,7 @@ PYEOF
       START_TS=$(date +%s)
       plan_set_experiment_status "$SOURCE_EXP" "running"
       SOURCE_CONTAINER_ID=$(compose_run_detached \
+        --entrypoint "torchrun --nproc_per_node=${TRAIN_GPUS} --nnodes=1" \
         meg_training_job \
         train_ddp.py \
           --task          "${BEST_TASK}" \
@@ -907,7 +1021,10 @@ PYEOF
           --strategy      "${BEST_STRATEGY}" \
           --n_epochs      "${N_EPOCHS}" \
           --batch_size    "${BATCH_SIZE}" \
+          --eval_batch_size "${EVAL_BATCH_SIZE}" \
+          --n_freqs       "${N_FREQS}" \
           --num_workers   "${NUM_WORKERS}" \
+          --eval_num_workers "${EVAL_NUM_WORKERS}" \
           --data_path     "${DATA_PATH}" \
           --output_dir    "${SOURCE_OUTPUT_DIR}" \
           --checkpoint_dir "${SOURCE_CKPT_DIR}" \

@@ -819,6 +819,7 @@ def train_ddp(args):
     if is_main:
         print(f"\n[PASO 2] Construyendo DataLoaders distribuidos")
         print(f"  Batch por GPU: {args.batch_size} | Batch global: {args.batch_size * world_size}")
+        print(f"  CWT frecuencias: {args.n_freqs}")
 
     train_loader, val_loader, test_loader, train_sampler = build_raw_dataloaders(
         train_pnpl, val_pnpl, test_pnpl,
@@ -914,13 +915,13 @@ def train_ddp(args):
     dist.barrier()  # los demás ranks esperan a que rank 0 termine la descarga
 
     cwt_layer = CWTLayer(
-        sfreq=250.0, n_freqs=96, f_min=1.0, f_max=125.0, B=1.5, C=1.0).to(device)
+        sfreq=250.0, n_freqs=args.n_freqs, f_min=1.0, f_max=125.0, B=1.5, C=1.0).to(device)
 
     model = MEGImageModelEndToEnd(
         backbone_name=args.backbone,
         n_classes=n_classes,
         n_meg_channels=n_model_channels,
-        n_freqs=96,
+        n_freqs=args.n_freqs,
         img_size=224,
         pretrained=True,
         strategy=args.strategy,
@@ -997,6 +998,8 @@ def train_ddp(args):
 
     for epoch in range(start_epoch, args.n_epochs + 1):
         train_ddp._current_epoch = epoch  # Para el checkpoint de emergencia
+        if device.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(device)
 
         # ── Verificar señal de parada ─────────────────────────────────────────
         if killer.kill_now:
@@ -1038,6 +1041,12 @@ def train_ddp(args):
             if is_best:
                 best_val_f1 = val_metrics["f1_macro"]
 
+            cuda_mem = ""
+            if device.type == "cuda":
+                allocated_gb = torch.cuda.max_memory_allocated(device) / (1024 ** 3)
+                reserved_gb = torch.cuda.max_memory_reserved(device) / (1024 ** 3)
+                cuda_mem = f" │ CUDA peak: {allocated_gb:.1f}G alloc / {reserved_gb:.1f}G reserved"
+
             print(
                 f"Epoch {epoch:04d}/{args.n_epochs} │ "
                 f"Train Loss: {train_metrics['loss']:.4f} │ "
@@ -1047,6 +1056,7 @@ def train_ddp(args):
                 f"Val AUROC: {val_metrics['auroc']:.4f} "
                 f"{'★ BEST' if is_best else ''} │ "
                 f"Tiempo: {train_time:.1f}s"
+                f"{cuda_mem}"
             )
 
             # TensorBoard
@@ -1131,6 +1141,8 @@ def train_ddp(args):
                 "representation": representation,
                 "source_projection_path": args.source_projection_path,
                 "n_meg_channels": n_model_channels,
+                "n_freqs": args.n_freqs,
+                "batch_size_per_gpu": args.batch_size,
                 "test_f1_macro": test_metrics["f1_macro"],
                 "test_f1_per_class": test_metrics.get("f1_per_class"),
                 "test_balanced_acc": test_metrics["balanced_acc"],
