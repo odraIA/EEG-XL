@@ -141,6 +141,14 @@ Comprobar el entrypoint de entrenamiento:
 docker compose run --rm meg_training_job train_ddp.py --help
 ```
 
+Probar las variantes de proyección sensor->RGB:
+
+```bash
+docker compose run --rm meg_training_job train_ddp.py --sensor_projection mean
+docker compose run --rm meg_training_job train_ddp.py --sensor_projection pca
+bash run_sweep.sh --sensor-projections conv,mean,pca
+```
+
 ## Shell de depuracion
 
 Levantar una shell persistente:

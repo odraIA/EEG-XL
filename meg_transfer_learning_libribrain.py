@@ -409,7 +409,7 @@ class MEGToImage:
         f_max: float = 125.0,           # Frecuencia máxima (Hz, Nyquist = 125)
         img_size: int = 224,            # Tamaño imagen destino (ImageNet standard)
         wavelet: str = "cmor1.5-1.0",   # Morlet complejo (igual que ISBI 2026)
-        projection: str = "pca",        # "pca" (fija) | "learned" (requiere nn.Conv2d externo)
+        projection: str = "pca",        # "pca" | "mean" | "learned" (requiere nn.Conv2d externo)
         n_pca_components: int = 3,
     ):
         self.sfreq = sfreq
@@ -530,6 +530,10 @@ class MEGToImage:
         if self.projection == "pca":
             # Variante estática PCA (más rápida, menor rendimiento)
             projected = self.project_channels_pca(scalograms)  # (3, 96, T)
+        elif self.projection == "mean":
+            # Baseline gris: media de todos los sensores y repetición a 3 canales
+            gray = scalograms.mean(axis=0, keepdims=True)      # (1, 96, T)
+            projected = np.repeat(gray, 3, axis=0)             # (3, 96, T)
         elif self.projection == "learned":
             # La proyección learnable (Conv 1×1) se aplica en el modelo nn.
             # Aquí simplemente tomamos 3 canales representativos como placeholder.
@@ -786,6 +790,157 @@ class SensorMixer(nn.Module):
         return self.conv(x)
 
 
+class SensorMeanMixer(nn.Module):
+    """
+    Baseline sin parámetros: media todos los sensores y replica el mapa en RGB.
+
+    Transforma: (batch, n_channels, n_freqs, T) -> (batch, 3, n_freqs, T)
+    """
+
+    def __init__(self, n_input_channels: int = 306, n_output_channels: int = 3):
+        super().__init__()
+        self.n_input_channels = n_input_channels
+        self.n_output_channels = n_output_channels
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        gray = x.mean(dim=1, keepdim=True)
+        return gray.expand(-1, self.n_output_channels, -1, -1)
+
+
+class SensorPCAMixer(nn.Module):
+    """
+    Proyección PCA fija a 3 componentes, ajustada en el primer batch.
+
+    En DDP, rank 0 ajusta los componentes y los difunde al resto de ranks para
+    que todos entrenen exactamente con la misma proyección fija.
+    """
+
+    def __init__(
+        self,
+        n_input_channels: int = 306,
+        n_output_channels: int = 3,
+        max_fit_samples: int = 65_536,
+    ):
+        super().__init__()
+        if n_input_channels < n_output_channels:
+            raise ValueError(
+                f"PCA requiere al menos {n_output_channels} canales; "
+                f"recibido {n_input_channels}."
+            )
+        self.n_input_channels = n_input_channels
+        self.n_output_channels = n_output_channels
+        self.max_fit_samples = max_fit_samples
+        self.register_buffer(
+            "components",
+            torch.zeros(n_output_channels, n_input_channels, dtype=torch.float32),
+        )
+        self.register_buffer(
+            "channel_mean",
+            torch.zeros(n_input_channels, dtype=torch.float32),
+        )
+        self.register_buffer("fitted", torch.tensor(0, dtype=torch.uint8))
+
+    @torch.no_grad()
+    def _compute_pca(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        batch, channels, _, _ = x.shape
+        flat = x.detach().float().reshape(batch, channels, -1)
+        n_timefreq = flat.shape[-1]
+        total_samples = batch * n_timefreq
+        n_samples = min(total_samples, self.max_fit_samples)
+
+        if n_samples < self.n_output_channels:
+            raise ValueError(
+                f"No hay suficientes muestras para PCA-{self.n_output_channels}: "
+                f"{n_samples} muestras."
+            )
+
+        if total_samples > n_samples:
+            indices = torch.linspace(
+                0,
+                total_samples - 1,
+                steps=n_samples,
+                device=x.device,
+                dtype=torch.float64,
+            ).long()
+        else:
+            indices = torch.arange(total_samples, device=x.device)
+
+        batch_idx = indices // n_timefreq
+        tf_idx = indices % n_timefreq
+        samples = flat[batch_idx, :, tf_idx]  # (n_samples, channels)
+
+        mean = samples.mean(dim=0)
+        samples = samples - mean
+        cov = samples.T @ samples
+        cov = cov / max(int(samples.shape[0]) - 1, 1)
+
+        _, eigenvectors = torch.linalg.eigh(cov)
+        components = eigenvectors[:, -self.n_output_channels :].T.flip(0)
+
+        # Fijar el signo de cada componente para evitar flips arbitrarios.
+        max_abs_idx = components.abs().argmax(dim=1, keepdim=True)
+        max_abs_value = components.gather(1, max_abs_idx)
+        signs = torch.ones_like(max_abs_value)
+        signs[max_abs_value < 0] = -1.0
+        components = components * signs
+
+        return components.contiguous(), mean.contiguous()
+
+    @torch.no_grad()
+    def _fit_once(self, x: torch.Tensor):
+        import torch.distributed as dist
+
+        is_dist = dist.is_available() and dist.is_initialized()
+        rank = dist.get_rank() if is_dist else 0
+
+        if rank == 0:
+            components, mean = self._compute_pca(x)
+            self.components.copy_(components.to(self.components.device))
+            self.channel_mean.copy_(mean.to(self.channel_mean.device))
+            self.fitted.fill_(1)
+
+        if is_dist:
+            dist.broadcast(self.components, src=0)
+            dist.broadcast(self.channel_mean, src=0)
+            dist.broadcast(self.fitted, src=0)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if not bool(self.fitted.item()):
+            self._fit_once(x)
+
+        batch, channels, n_freqs, n_times = x.shape
+        flat = x.float().reshape(batch, channels, -1)
+        centered = flat - self.channel_mean.view(1, channels, 1)
+        projected = torch.einsum("oc,bcn->bon", self.components, centered)
+        projected = projected.reshape(
+            batch, self.n_output_channels, n_freqs, n_times
+        )
+        return projected.to(x.dtype)
+
+
+def build_sensor_mixer(
+    sensor_projection: str,
+    n_input_channels: int,
+    n_output_channels: int = 3,
+    pca_max_fit_samples: int = 65_536,
+) -> nn.Module:
+    """Construye la proyección sensor->RGB usada antes del backbone ImageNet."""
+    if sensor_projection == "conv":
+        return SensorMixer(n_input_channels, n_output_channels)
+    if sensor_projection == "mean":
+        return SensorMeanMixer(n_input_channels, n_output_channels)
+    if sensor_projection == "pca":
+        return SensorPCAMixer(
+            n_input_channels,
+            n_output_channels,
+            max_fit_samples=pca_max_fit_samples,
+        )
+    raise ValueError(
+        f"sensor_projection desconocido: {sensor_projection}. "
+        "Usar 'conv', 'mean' o 'pca'."
+    )
+
+
 class MEGImageModel(nn.Module):
     """
     Modelo completo: SensorMixer + backbone preentrenado + cabeza de clasificación.
@@ -986,16 +1141,15 @@ class MEGImageModel(nn.Module):
 
 class MEGImageModelEndToEnd(nn.Module):
     """
-    Variante end-to-end: el SensorMixer opera sobre los escalogramas raw
-    (ANTES de crear la imagen), permitiendo aprendizaje conjunto.
+    Variante end-to-end: la proyección sensor->RGB opera sobre los
+    escalogramas raw (ANTES de crear la imagen).
 
     Flujo:
-      (batch, 306, 96, T) → SensorMixer → (batch, 3, 96, T)
+      (batch, 306, 96, T) → conv/media/PCA → (batch, 3, 96, T)
           → resize a (batch, 3, 224, 224) → backbone → classifier
 
-    Esta variante es más precisa al paper ISBI 2026, donde la conv 1×1
-    se aplica sobre los escalogramas (no sobre la imagen resizeada).
-    Requiere pasar los escalogramas directamente al modelo.
+    La opción conv reproduce el SensorMixer 1×1 aprendible; mean y pca son
+    baselines sin parámetros para comparar contra esa mezcla aprendida.
     """
 
     def __init__(
@@ -1008,13 +1162,21 @@ class MEGImageModelEndToEnd(nn.Module):
         pretrained: bool = True,
         strategy: str = "partial_ft",
         dropout_rate: float = 0.5,
+        sensor_projection: str = "conv",
+        pca_max_fit_samples: int = 65_536,
     ):
         super().__init__()
 
         self.img_size = img_size
+        self.sensor_projection = sensor_projection
 
-        # SensorMixer sobre escalogramas (conv 1×1 en dim. canales)
-        self.sensor_mixer = SensorMixer(n_meg_channels, 3)
+        # Proyección sensor->RGB sobre escalogramas.
+        self.sensor_mixer = build_sensor_mixer(
+            sensor_projection=sensor_projection,
+            n_input_channels=n_meg_channels,
+            n_output_channels=3,
+            pca_max_fit_samples=pca_max_fit_samples,
+        )
 
         # Construir backbone (reutilizamos MEGImageModel internamente)
         _dummy = MEGImageModel(
@@ -1065,7 +1227,7 @@ class MEGImageModelEndToEnd(nn.Module):
         Returns:
             logits: (batch, n_classes)
         """
-        # SensorMixer: 306 → 3 canales (conv 1×1 en dimensión de sensores)
+        # Proyección sensor->RGB: conv learnable, media gris o PCA fija.
         x = self.sensor_mixer(scalograms)  # (batch, 3, n_freqs, T)
 
         # Resize bilineal a 224×224
@@ -1107,6 +1269,8 @@ class TrainingConfig:
     strategy: str = "partial_ft"        # frozen | partial_ft | full_ft
     n_classes: int = 39                 # 2 (speech) | 39 (phoneme)
     dropout_rate: float = 0.5
+    sensor_projection: str = "conv"     # conv | mean | pca
+    pca_max_fit_samples: int = 65_536
 
     # ── Optimización ──────────────────────────────────────────────────────────
     lr_head: float = 1e-3               # LR para SensorMixer + classification head
@@ -1926,6 +2090,13 @@ def parse_args():
                         help="Workers de DataLoader")
     parser.add_argument("--n_freqs",    type=int, default=96,
                         help="Bins de frecuencia para CWT (96 como en ISBI 2026)")
+    parser.add_argument("--image_projection", type=str, default="pca",
+                        choices=["pca", "mean", "learned"],
+                        help=(
+                            "Proyección usada por la ruta CPU MEGToImage: "
+                            "pca=PCA-3 fija; mean=media gris de sensores; "
+                            "learned=placeholder de 3 canales para rutas con modelo aprendible."
+                        ))
     parser.add_argument("--source_retrain_best", action="store_true",
                         help="Al final, repetir el mejor entrenamiento con proyección fuente antes de CWT")
     parser.add_argument("--source_projection_path", type=str, default=None,
@@ -1996,6 +2167,7 @@ def main():
     print("\n[PASO 3] Configurando representación imagen tiempo-frecuencia (CWT)...")
     print(f"  - CWT Morlet: {args.n_freqs} frecuencias log, 1–125 Hz")
     print(f"  - Imagen destino: 224×224×3 (compatible con ImageNet)")
+    print(f"  - Proyección sensores->RGB: {args.image_projection}")
     print("  - Generación on-the-fly en cada batch")
 
     img_converter = MEGToImage(
@@ -2005,7 +2177,7 @@ def main():
         f_max=125.0,     # Nyquist para fs=250 Hz
         img_size=224,
         wavelet="cmor1.5-1.0",  # Morlet complejo (ISBI 2026)
-        projection="pca",
+        projection=args.image_projection,
     )
 
     # ── PASO 4: Construir DataLoaders ─────────────────────────────────────────

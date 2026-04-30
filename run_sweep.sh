@@ -57,6 +57,7 @@ EVAL_BATCH_SIZE_OVERRIDE="${EVAL_BATCH_SIZE:-}"
 N_FREQS_OVERRIDE="${N_FREQS:-}"
 NUM_WORKERS_OVERRIDE="${NUM_WORKERS:-}"
 EVAL_NUM_WORKERS_OVERRIDE="${EVAL_NUM_WORKERS:-}"
+SENSOR_PROJECTIONS_OVERRIDE="${SENSOR_PROJECTIONS:-}"
 TRAIN_GPUS_OVERRIDE="${TRAIN_GPUS:-}"
 TRAIN_CUDA_VISIBLE_DEVICES_OVERRIDE="${TRAIN_CUDA_VISIBLE_DEVICES:-}"
 SPEECH_IMAGE_EPOCHS_OVERRIDE="${SPEECH_IMAGE_EPOCHS:-}"
@@ -126,6 +127,14 @@ while [[ $# -gt 0 ]]; do
       EVAL_NUM_WORKERS_OVERRIDE="$1"
       arg="$1"
       ;;
+    --sensor-projections=*) SENSOR_PROJECTIONS_OVERRIDE="${arg#*=}" ;;
+    --sensor-projections)
+      FORWARD_ARGS+=("$arg")
+      shift
+      [[ $# -gt 0 ]] || { echo "--sensor-projections requiere un valor" >&2; exit 2; }
+      SENSOR_PROJECTIONS_OVERRIDE="$1"
+      arg="$1"
+      ;;
     --train-gpus=*) TRAIN_GPUS_OVERRIDE="${arg#*=}" ;;
     --train-gpus)
       FORWARD_ARGS+=("$arg")
@@ -185,7 +194,7 @@ done
 # de llamar a docker compose.
 export -n \
   N_EPOCHS BATCH_SIZE EVAL_BATCH_SIZE N_FREQS NUM_WORKERS EVAL_NUM_WORKERS \
-  TRAIN_GPUS TRAIN_CUDA_VISIBLE_DEVICES \
+  SENSOR_PROJECTIONS TRAIN_GPUS TRAIN_CUDA_VISIBLE_DEVICES \
   SPEECH_IMAGE_EPOCHS SPEECH_IMAGE_STAGE1_EPOCHS SPEECH_IMAGE_BATCH_SIZE \
   SPEECH_IMAGE_NUM_WORKERS SPEECH_IMAGE_SEEDS 2>/dev/null || true
 
@@ -668,13 +677,23 @@ EVAL_BATCH_SIZE="${EVAL_BATCH_SIZE_OVERRIDE:-$BATCH_SIZE}"
 N_FREQS="${N_FREQS_OVERRIDE:-96}"
 NUM_WORKERS="${NUM_WORKERS_OVERRIDE:-4}"
 EVAL_NUM_WORKERS="${EVAL_NUM_WORKERS_OVERRIDE:-2}"
+SENSOR_PROJECTIONS_RAW="${SENSOR_PROJECTIONS_OVERRIDE:-conv}"
+IFS=',' read -r -a SENSOR_PROJECTIONS <<< "$SENSOR_PROJECTIONS_RAW"
+for i in "${!SENSOR_PROJECTIONS[@]}"; do
+  SENSOR_PROJECTIONS[$i]="$(echo "${SENSOR_PROJECTIONS[$i]}" | xargs)"
+  case "${SENSOR_PROJECTIONS[$i]}" in
+    conv|mean|pca) ;;
+    *) echo "sensor projection no soportada: ${SENSOR_PROJECTIONS[$i]} (usa conv,mean,pca)" >&2; exit 2 ;;
+  esac
+done
 CHECKPOINT_EVERY=5   # Guardar checkpoint cada 5 epochs (no cada 1, para no llenar disco)
 DATA_PATH="/workspace/libribrain_data"
 export SWEEP_PLAN
-export TASKS_CSV BACKBONES_CSV STRATEGIES_CSV
+export TASKS_CSV BACKBONES_CSV STRATEGIES_CSV SENSOR_PROJECTIONS_CSV
 TASKS_CSV="$(IFS=,; echo "${TASKS[*]}")"
 BACKBONES_CSV="$(IFS=,; echo "${BACKBONES[*]}")"
 STRATEGIES_CSV="$(IFS=,; echo "${STRATEGIES[*]}")"
+SENSOR_PROJECTIONS_CSV="$(IFS=,; echo "${SENSOR_PROJECTIONS[*]}")"
 python3 - <<'PYEOF'
 import itertools
 import json
@@ -684,7 +703,18 @@ from datetime import datetime
 tasks = [x.strip() for x in os.environ.get("TASKS_CSV", "").split(",") if x.strip()]
 backbones = [x.strip() for x in os.environ.get("BACKBONES_CSV", "").split(",") if x.strip()]
 strategies = [x.strip() for x in os.environ.get("STRATEGIES_CSV", "").split(",") if x.strip()]
+sensor_projections = [
+    x.strip()
+    for x in os.environ.get("SENSOR_PROJECTIONS_CSV", "conv").split(",")
+    if x.strip()
+]
 now = datetime.now().isoformat()
+
+def exp_name(task, backbone, strategy, projection):
+    base = f"{task}__{backbone}__{strategy}"
+    if len(sensor_projections) == 1 and projection == "conv":
+        return base
+    return f"{base}__{projection}"
 
 payload = {
     "generated_at": now,
@@ -693,11 +723,13 @@ payload = {
     "sweep_log": f"logs/{os.path.basename(os.environ['SWEEP_LOG'])}",
     "experiments": [
         {
-            "name": f"{t}__{b}__{s}",
+            "name": exp_name(t, b, s, p),
             "status": "pending",
             "updated_at": now,
         }
-        for t, b, s in itertools.product(tasks, backbones, strategies)
+        for t, b, s, p in itertools.product(
+            tasks, backbones, strategies, sensor_projections
+        )
     ],
     "precompute": {
         "stats": [
@@ -800,11 +832,12 @@ done
 log_step "PASO 2: Iniciando sweep de entrenamiento"
 
 # Calcular total de experimentos
-TOTAL=$(( ${#TASKS[@]} * ${#BACKBONES[@]} * ${#STRATEGIES[@]} ))
+TOTAL=$(( ${#TASKS[@]} * ${#BACKBONES[@]} * ${#STRATEGIES[@]} * ${#SENSOR_PROJECTIONS[@]} ))
 log "Espacio de búsqueda:"
 log "  Tareas:      ${TASKS[*]}"
 log "  Backbones:   ${BACKBONES[*]}"
 log "  Estrategias: ${STRATEGIES[*]}"
+log "  Sensor proj: ${SENSOR_PROJECTIONS[*]}"
 log "  Total:       ${TOTAL} experimentos"
 log "  Epochs/exp:  ${N_EPOCHS}"
 log "  Batch/GPU:   ${BATCH_SIZE} train | ${EVAL_BATCH_SIZE} eval"
@@ -822,9 +855,13 @@ EXP_NUM=0
 for TASK in "${TASKS[@]}"; do
 for BACKBONE in "${BACKBONES[@]}"; do
 for STRATEGY in "${STRATEGIES[@]}"; do
+for SENSOR_PROJECTION in "${SENSOR_PROJECTIONS[@]}"; do
 
   EXP_NUM=$(( EXP_NUM + 1 ))
   EXP="${TASK}__${BACKBONE}__${STRATEGY}"
+  if [[ ${#SENSOR_PROJECTIONS[@]} -ne 1 || "$SENSOR_PROJECTION" != "conv" ]]; then
+    EXP="${EXP}__${SENSOR_PROJECTION}"
+  fi
   JOB_LOG="${PROJECT_DIR}/logs/${EXP}.log"
   OUTPUT_DIR="/workspace/results/${EXP}"
   CKPT_DIR="/workspace/checkpoints/${EXP}"
@@ -868,6 +905,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
   if $DRY_RUN; then
     log "  [DRY-RUN] docker compose run ${DOCKER_COMPOSE_RUN_FLAGS_STR} --rm --entrypoint 'torchrun --nproc_per_node=${TRAIN_GPUS} --nnodes=1' meg_training_job train_ddp.py \\"
     log "    --task ${TASK} --backbone ${BACKBONE} --strategy ${STRATEGY} \\"
+    log "    --sensor_projection ${SENSOR_PROJECTION} \\"
     log "    --n_epochs ${N_EPOCHS} --batch_size ${BATCH_SIZE} \\"
     log "    --eval_batch_size ${EVAL_BATCH_SIZE} --n_freqs ${N_FREQS} \\"
     log "    --output_dir ${OUTPUT_DIR} --checkpoint_dir ${CKPT_DIR} \\"
@@ -887,6 +925,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
       --task          "${TASK}" \
       --backbone      "${BACKBONE}" \
       --strategy      "${STRATEGY}" \
+      --sensor_projection "${SENSOR_PROJECTION}" \
       --n_epochs      "${N_EPOCHS}" \
       --batch_size    "${BATCH_SIZE}" \
       --eval_batch_size "${EVAL_BATCH_SIZE}" \
@@ -924,6 +963,7 @@ for STRATEGY in "${STRATEGIES[@]}"; do
     # Continuar con el siguiente experimento (no abortar el sweep)
   fi
 
+done  # SENSOR_PROJECTION
 done  # STRATEGY
 done  # BACKBONE
 done  # TASK
@@ -948,6 +988,11 @@ results_base = Path(os.environ.get("PROJECT_DIR", ".")) / "results"
 allowed_tasks = {x.strip() for x in os.environ.get("TASKS_CSV", "").split(",") if x.strip()}
 allowed_backbones = {x.strip() for x in os.environ.get("BACKBONES_CSV", "").split(",") if x.strip()}
 allowed_strategies = {x.strip() for x in os.environ.get("STRATEGIES_CSV", "").split(",") if x.strip()}
+allowed_sensor_projections = {
+    x.strip()
+    for x in os.environ.get("SENSOR_PROJECTIONS_CSV", "conv").split(",")
+    if x.strip()
+}
 rows = []
 for path in glob.glob(str(results_base / "*" / "final_results.json")):
     try:
@@ -960,6 +1005,7 @@ for path in glob.glob(str(results_base / "*" / "final_results.json")):
     task = d.get("task")
     backbone = d.get("backbone")
     strategy = d.get("strategy")
+    sensor_projection = d.get("sensor_projection", "conv")
     f1 = d.get("test_f1_macro")
     if allowed_tasks and task not in allowed_tasks:
         continue
@@ -967,29 +1013,35 @@ for path in glob.glob(str(results_base / "*" / "final_results.json")):
         continue
     if allowed_strategies and strategy not in allowed_strategies:
         continue
+    if allowed_sensor_projections and sensor_projection not in allowed_sensor_projections:
+        continue
     if task and backbone and strategy and isinstance(f1, (int, float)):
-        rows.append((float(f1), task, backbone, strategy))
+        rows.append((float(f1), task, backbone, strategy, sensor_projection))
 
 if not rows:
     sys.exit(1)
 
 rows.sort(reverse=True)
-f1, task, backbone, strategy = rows[0]
-print(f"{task}\t{backbone}\t{strategy}\t{f1:.8f}")
+f1, task, backbone, strategy, sensor_projection = rows[0]
+print(f"{task}\t{backbone}\t{strategy}\t{sensor_projection}\t{f1:.8f}")
 PYEOF
   )" || BEST_SPEC=""
 
   if [[ -z "$BEST_SPEC" ]]; then
     log_warn "No se encontró un final_results.json válido para elegir el mejor experimento. Saltando fuente."
   else
-    IFS=$'\t' read -r BEST_TASK BEST_BACKBONE BEST_STRATEGY BEST_F1 <<< "$BEST_SPEC"
-    SOURCE_EXP="${BEST_TASK}__${BEST_BACKBONE}__${BEST_STRATEGY}__${SOURCE_VARIANT_NAME}"
+    IFS=$'\t' read -r BEST_TASK BEST_BACKBONE BEST_STRATEGY BEST_SENSOR_PROJECTION BEST_F1 <<< "$BEST_SPEC"
+    SOURCE_EXP="${BEST_TASK}__${BEST_BACKBONE}__${BEST_STRATEGY}"
+    if [[ ${#SENSOR_PROJECTIONS[@]} -ne 1 || "$BEST_SENSOR_PROJECTION" != "conv" ]]; then
+      SOURCE_EXP="${SOURCE_EXP}__${BEST_SENSOR_PROJECTION}"
+    fi
+    SOURCE_EXP="${SOURCE_EXP}__${SOURCE_VARIANT_NAME}"
     SOURCE_JOB_LOG="${PROJECT_DIR}/logs/${SOURCE_EXP}.log"
     SOURCE_OUTPUT_DIR="/workspace/results/${SOURCE_EXP}"
     SOURCE_CKPT_DIR="/workspace/checkpoints/${SOURCE_EXP}"
     SOURCE_SENTINEL="${PROJECT_DIR}/.exp_done_${SOURCE_EXP}"
 
-    log "Mejor experimento sensor: ${BEST_TASK} | ${BEST_BACKBONE} | ${BEST_STRATEGY} (F1=${BEST_F1})"
+    log "Mejor experimento sensor: ${BEST_TASK} | ${BEST_BACKBONE} | ${BEST_STRATEGY} | ${BEST_SENSOR_PROJECTION} (F1=${BEST_F1})"
     log "Proyección fuente: ${SOURCE_PROJECTION_PATH} -> ${SOURCE_PROJECTION_CONTAINER_PATH}"
 
     if [[ -f "$SOURCE_SENTINEL" ]] && ! $RESUME_FAILED && ! $FORCE_RERUN; then
@@ -999,6 +1051,7 @@ PYEOF
     elif $DRY_RUN; then
       log "  [DRY-RUN] docker compose run ${DOCKER_COMPOSE_RUN_FLAGS_STR} --rm --entrypoint 'torchrun --nproc_per_node=${TRAIN_GPUS} --nnodes=1' meg_training_job train_ddp.py \\"
       log "    --task ${BEST_TASK} --backbone ${BEST_BACKBONE} --strategy ${BEST_STRATEGY} \\"
+      log "    --sensor_projection ${BEST_SENSOR_PROJECTION} \\"
       log "    --source_projection_path ${SOURCE_PROJECTION_CONTAINER_PATH} --source_variant_name ${SOURCE_VARIANT_NAME} \\"
       log "    --n_epochs ${N_EPOCHS} --batch_size ${BATCH_SIZE} \\"
       log "    --eval_batch_size ${EVAL_BATCH_SIZE} --n_freqs ${N_FREQS} \\"
@@ -1019,6 +1072,7 @@ PYEOF
           --task          "${BEST_TASK}" \
           --backbone      "${BEST_BACKBONE}" \
           --strategy      "${BEST_STRATEGY}" \
+          --sensor_projection "${BEST_SENSOR_PROJECTION}" \
           --n_epochs      "${N_EPOCHS}" \
           --batch_size    "${BATCH_SIZE}" \
           --eval_batch_size "${EVAL_BATCH_SIZE}" \

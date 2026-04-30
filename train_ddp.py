@@ -77,8 +77,8 @@ from meg_gpu_cwt import CWTLayer, MEGRawDataset, build_raw_dataloaders, zscore_s
 # señales raw (B, 306, T); cwt_layer las convierte a escalogramas en GPU antes
 # del forward del modelo.
 #
-# La normalización min-max + ImageNet se aplica dentro de
-# MEGImageModelEndToEnd.forward(), justo antes del backbone.
+# La proyección sensor->RGB y la normalización min-max + ImageNet se aplican
+# dentro de MEGImageModelEndToEnd.forward(), justo antes del backbone.
 
 
 def _apply_source_projection(
@@ -98,7 +98,8 @@ def _apply_cwt_and_normalize(
 ) -> torch.Tensor:
     """
     Aplica CWT + z-score en GPU. Sin gradientes (el CWT no es diferenciable
-    en nuestro pipeline; los gradientes fluyen desde el SensorMixer en adelante).
+    en nuestro pipeline; los gradientes fluyen desde la proyección sensor->RGB
+    en adelante cuando esa proyección tiene parámetros.
 
     Args:
         cwt_layer : CWTLayer en el mismo device que batch_x
@@ -885,11 +886,17 @@ def train_ddp(args):
 
     # ── Modelo ────────────────────────────────────────────────────────────────
     if is_main:
-        print(f"\n[PASO 3] Construyendo modelo: {args.backbone} | {args.strategy}")
+        print(
+            f"\n[PASO 3] Construyendo modelo: {args.backbone} | "
+            f"{args.strategy} | sensor_projection={args.sensor_projection}"
+        )
 
     if rank == 0:
         if is_main:
-            print(f"\n[PASO 3] Construyendo modelo: {args.backbone} | {args.strategy}")
+            print(
+                f"\n[PASO 3] Construyendo modelo: {args.backbone} | "
+                f"{args.strategy} | sensor_projection={args.sensor_projection}"
+            )
         # Forzar descarga (no cuesta nada si ya está cacheado)
         import torchvision.models as tvm
         if args.pretrained:
@@ -923,8 +930,10 @@ def train_ddp(args):
         n_meg_channels=n_model_channels,
         n_freqs=args.n_freqs,
         img_size=224,
-        pretrained=True,
+        pretrained=args.pretrained,
         strategy=args.strategy,
+        sensor_projection=args.sensor_projection,
+        pca_max_fit_samples=args.pca_max_fit_samples,
     ).to(device)
     model = DDP(model, device_ids=[local_rank])
 
@@ -936,11 +945,18 @@ def train_ddp(args):
     # ── Configuración de entrenamiento ────────────────────────────────────────
     config = TrainingConfig(
         backbone=args.backbone,
+        pretrained=args.pretrained,
         strategy=args.strategy,
         n_classes=n_classes,
+        sensor_projection=args.sensor_projection,
+        pca_max_fit_samples=args.pca_max_fit_samples,
         n_epochs=args.n_epochs,
         batch_size=args.batch_size,
         output_dir=args.output_dir,
+        experiment_name=(
+            f"{args.task}__{args.backbone}__{args.strategy}"
+            f"__{args.sensor_projection}"
+        ),
     )
 
     # ── Optimizador ───────────────────────────────────────────────────────────
@@ -1139,6 +1155,8 @@ def train_ddp(args):
                 "strategy": args.strategy,
                 "task": args.task,
                 "representation": representation,
+                "sensor_projection": args.sensor_projection,
+                "pca_max_fit_samples": args.pca_max_fit_samples,
                 "source_projection_path": args.source_projection_path,
                 "n_meg_channels": n_model_channels,
                 "n_freqs": args.n_freqs,
@@ -1186,6 +1204,16 @@ def parse_args():
     parser.add_argument("--num_workers",     type=int,   default=4)
     parser.add_argument("--eval_num_workers", type=int,  default=None,
                         help="Workers por rank para validación/test. Por defecto min(--num_workers, 2).")
+    parser.add_argument("--sensor_projection", default="conv",
+                        choices=["conv", "mean", "pca"],
+                        help=(
+                            "Proyección sensor->RGB antes del backbone: "
+                            "conv=SensorMixer 1x1 learnable; "
+                            "mean=media de sensores repetida en RGB; "
+                            "pca=PCA-3 fija ajustada en el primer batch."
+                        ))
+    parser.add_argument("--pca_max_fit_samples", type=int, default=65536,
+                        help="Máximo de puntos tiempo-frecuencia usados para ajustar PCA-3.")
 
     # Checkpointing
     parser.add_argument("--checkpoint_dir",   default="./checkpoints")
