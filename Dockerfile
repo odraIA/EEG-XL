@@ -1,21 +1,34 @@
 FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04
 
-WORKDIR /app
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_LINK_MODE=copy \
+    HF_HOME=/workspace/hf_cache \
+    TRANSFORMERS_CACHE=/workspace/hf_cache/transformers \
+    MPLCONFIGDIR=/workspace/hf_cache/matplotlib \
+    WANDB_DIR=/workspace/wandb \
+    PATH="/opt/venv/bin:/root/.local/bin:${PATH}"
 
 RUN apt-get update && apt-get install -y \
-    python3.12 python3.12-venv curl git build-essential \
+    ca-certificates \
+    curl \
+    git \
+    build-essential \
+    python3.12 \
+    python3.12-dev \
+    python3.12-venv \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:${PATH}"
 
-COPY requirements.txt .
-RUN uv venv --python python3.12 /app/.venv
-ENV PATH="/app/.venv/bin:${PATH}"
+WORKDIR /workspace
 
-RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
-RUN uv pip install -r requirements.txt
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-install-project
 
 COPY . .
+RUN uv pip install --no-deps -e .
 
-CMD ["python", "brainstorm/train_criss_cross_multi.py", "--config-name=train_criss_cross_multi_50hz_med"]
+CMD ["uv", "run", "--no-sync", "python", "-m", "brainstorm.evaluate_criss_cross_word_classification", "--config-name=eval_criss_cross_word_classification_libribrain"]

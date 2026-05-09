@@ -24,7 +24,7 @@ data:
   dataset_type: "libribrain"
 
   # Dataset root directory
-  root: "/path/to/LibriBrain"
+  root: "./datasets/libribrain"
   cache_dir: "./data/cache"
 
   # Max channel dimension (Elekta Neuromag system has 306 MEG channels)

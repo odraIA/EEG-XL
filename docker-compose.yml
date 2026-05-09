@@ -1,21 +1,104 @@
+x-megxl-eval-env: &megxl-eval-env
+  CRISS_CROSS_CHECKPOINT: ${CRISS_CROSS_CHECKPOINT:-./checkpoints/baseline/meg-xl-med.ckpt}
+  HF_HOME: /workspace/hf_cache
+  HF_TOKEN: ${HF_TOKEN:-}
+  HYDRA_FULL_ERROR: "1"
+  LIBRIBRAIN_ROOT: ${LIBRIBRAIN_ROOT:-./datasets/libribrain}
+  MPLCONFIGDIR: /workspace/hf_cache/matplotlib
+  OMP_NUM_THREADS: ${OMP_NUM_THREADS:-8}
+  TOKENIZERS_PARALLELISM: "false"
+  TRANSFORMERS_CACHE: /workspace/hf_cache/transformers
+  UV_PROJECT_ENVIRONMENT: /opt/venv
+  WANDB_API_KEY: ${WANDB_API_KEY:-}
+  WANDB_DIR: /workspace/wandb
+  WANDB_MODE: ${WANDB_MODE:-offline}
+
+x-megxl-eval-base: &megxl-eval-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: scrabrain-megxl:latest
+  working_dir: /workspace
+  init: true
+  shm_size: "${SHM_SIZE:-64gb}"
+  volumes:
+    - .:/workspace
+    - ${DATASETS_DIR:-./datasets}:/workspace/datasets:ro
+    - ${CHECKPOINTS_DIR:-./checkpoints}:/workspace/checkpoints
+    - ./logs:/workspace/logs
+    - ./data:/workspace/data
+    - ./embeddings_cache:/workspace/embeddings_cache
+    - ./hf_cache:/workspace/hf_cache
+    - ./wandb:/workspace/wandb
+  environment: *megxl-eval-env
+
 services:
-  megxl:
-    build: .
-    image: megxl:latest
-    working_dir: /app
-    shm_size: "32gb"
+  monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scrabrain-megxl:latest
+    container_name: scrabrain_monitor
+    working_dir: /workspace
+    init: true
+    ports:
+      - "${MONITOR_PORT:-8080}:8080"
     volumes:
-      - ./checkpoints:/app/checkpoints
-      - ./logs:/app/logs
-      - ./data:/app/data
-      - /server/path/to/datasets:/datasets:ro
-      - /server/path/to/weights:/weights:ro
+      - .:/workspace
+      - ${DATASETS_DIR:-./datasets}:/workspace/datasets:ro
+      - ${CHECKPOINTS_DIR:-./checkpoints}:/workspace/checkpoints:ro
+      - ./logs:/workspace/logs:ro
+      - ./data:/workspace/data:ro
+      - ./embeddings_cache:/workspace/embeddings_cache:ro
+      - ./hf_cache:/workspace/hf_cache:ro
+      - ./wandb:/workspace/wandb:ro
+      - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
     environment:
-      WANDB_API_KEY: ${WANDB_API_KEY}
+      BASE_DIR: /workspace
+      DOCKER_SOCKET: /var/run/docker.sock
+      PYTHONUNBUFFERED: "1"
+    command: >
+      bash -lc 'uv run --no-sync python monitor_server.py
+      --host 0.0.0.0
+      --port 8080
+      --base-dir /workspace'
+
+  eval_libribrain:
+    <<: *megxl-eval-base
+    container_name: scrabrain_eval_libribrain
+    environment:
+      <<: *megxl-eval-env
+      NVIDIA_VISIBLE_DEVICES: ${EVAL_GPU:-0}
+    command: >
+      bash -lc 'uv run --no-sync python -m brainstorm.evaluate_criss_cross_word_classification
+      --config-name=eval_criss_cross_word_classification_libribrain
+      model.criss_cross_checkpoint="$${CRISS_CROSS_CHECKPOINT}"
+      data.root="$${LIBRIBRAIN_ROOT}"
+      hydra.run.dir="./logs/hydra/eval_libribrain/$$(date +%Y%m%d_%H%M%S)"'
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
+              device_ids: ["${EVAL_GPU:-0}"]
+              capabilities: [gpu]
+
+  eval_libribrain_linear_probe:
+    <<: *megxl-eval-base
+    container_name: scrabrain_eval_libribrain_linear_probe
+    environment:
+      <<: *megxl-eval-env
+      NVIDIA_VISIBLE_DEVICES: ${LINEAR_PROBE_GPU:-1}
+    command: >
+      bash -lc 'uv run --no-sync python -m brainstorm.evaluate_criss_cross_word_classification_linear_probe
+      --config-name=eval_criss_cross_word_classification_linear_probe_libribrain
+      model.criss_cross_checkpoint="$${CRISS_CROSS_CHECKPOINT}"
+      data.root="$${LIBRIBRAIN_ROOT}"
+      hydra.run.dir="./logs/hydra/eval_libribrain_linear_probe/$$(date +%Y%m%d_%H%M%S)"'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${LINEAR_PROBE_GPU:-1}"]
               capabilities: [gpu]
