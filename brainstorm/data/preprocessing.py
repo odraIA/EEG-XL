@@ -3,10 +3,12 @@
 import h5py
 import mne
 import numpy as np
+import os
 from pathlib import Path
 from typing import Dict, Any, Optional, Callable, Tuple
 import hashlib
 import json
+import time
 import warnings
 
 
@@ -424,6 +426,7 @@ def cache_preprocessed(
         Name/identifier for the channel filter function used
     """
     cache_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = cache_path.with_suffix(cache_path.suffix + ".lock")
 
     # Get data and sensor positions
     data = raw.get_data()  # Shape: (n_channels, n_samples)
@@ -431,36 +434,99 @@ def cache_preprocessed(
 
     chunks = (data.shape[0], round(raw.info['sfreq'])) # Chunk by channels and 1 second of data
 
-    # Save to HDF5
-    with h5py.File(cache_path, 'w') as f:
-        # Store MEG data
-        f.create_dataset('data', data=data, chunks=chunks, compression=None)
+    with _cache_write_lock(lock_path):
+        if is_hdf5_cache_readable(cache_path):
+            return
 
-        # Store sensor positions
-        f.create_dataset('sensor_xyzdir', data=sensor_xyzdir, compression=None)
-        f.create_dataset('sensor_types', data=sensor_types, compression=None)
+        tmp_path = cache_path.with_name(f"{cache_path.name}.tmp-{os.getpid()}-{time.time_ns()}")
+        try:
+            # Save to HDF5, then atomically publish the completed file.
+            with h5py.File(tmp_path, 'w') as f:
+                # Store MEG data
+                f.create_dataset('data', data=data, chunks=chunks, compression=None)
 
-        # Store channel names
-        ch_names_bytes = [name.encode('utf-8') for name in raw.ch_names]
-        f.create_dataset('channel_names', data=ch_names_bytes, compression=None)
+                # Store sensor positions
+                f.create_dataset('sensor_xyzdir', data=sensor_xyzdir, compression=None)
+                f.create_dataset('sensor_types', data=sensor_types, compression=None)
 
-        # Store metadata as attributes
-        f.attrs['sample_freq'] = raw.info['sfreq']
-        f.attrs['n_channels'] = len(raw.ch_names)
-        f.attrs['n_samples'] = data.shape[1]
+                # Store channel names
+                ch_names_bytes = [name.encode('utf-8') for name in raw.ch_names]
+                f.create_dataset('channel_names', data=ch_names_bytes, compression=None)
 
-        # Store preprocessing parameters for verification
-        f.attrs['preproc_l_freq'] = l_freq
-        f.attrs['preproc_h_freq'] = h_freq
-        f.attrs['preproc_target_sfreq'] = target_sfreq
-        f.attrs['preproc_channel_filter'] = channel_filter_name
-        f.attrs['preproc_hash'] = compute_preproc_hash(l_freq, h_freq, target_sfreq, channel_filter_name)
+                # Store metadata as attributes
+                f.attrs['sample_freq'] = raw.info['sfreq']
+                f.attrs['n_channels'] = len(raw.ch_names)
+                f.attrs['n_samples'] = data.shape[1]
 
-        for key, value in metadata.items():
-            f.attrs[key] = value
+                # Store preprocessing parameters for verification
+                f.attrs['preproc_l_freq'] = l_freq
+                f.attrs['preproc_h_freq'] = h_freq
+                f.attrs['preproc_target_sfreq'] = target_sfreq
+                f.attrs['preproc_channel_filter'] = channel_filter_name
+                f.attrs['preproc_hash'] = compute_preproc_hash(l_freq, h_freq, target_sfreq, channel_filter_name)
 
-        # Ensure data is flushed to disk (important for NFS/cluster filesystems)
-        f.flush()
+                for key, value in metadata.items():
+                    f.attrs[key] = value
+
+                # Ensure data is flushed to disk (important for NFS/cluster filesystems)
+                f.flush()
+
+            os.replace(tmp_path, cache_path)
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+
+def is_hdf5_cache_readable(cache_path: Path) -> bool:
+    """Return True only for complete cache files that HDF5 can open."""
+    if not cache_path.exists():
+        return False
+
+    try:
+        with h5py.File(cache_path, 'r') as f:
+            return all(key in f for key in ('data', 'sensor_xyzdir', 'sensor_types', 'channel_names'))
+    except OSError:
+        return False
+
+
+class _cache_write_lock:
+    """Small cross-process lock based on atomic lock-file creation."""
+
+    def __init__(self, lock_path: Path, poll_seconds: float = 1.0, stale_seconds: float = 60 * 60 * 6):
+        self.lock_path = lock_path
+        self.poll_seconds = poll_seconds
+        self.stale_seconds = stale_seconds
+        self.fd: Optional[int] = None
+
+    def __enter__(self) -> "_cache_write_lock":
+        while True:
+            try:
+                self.fd = os.open(self.lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                os.write(self.fd, f"pid={os.getpid()}\n".encode("utf-8"))
+                return self
+            except FileExistsError:
+                self._remove_stale_lock()
+                time.sleep(self.poll_seconds)
+
+    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        if self.fd is not None:
+            os.close(self.fd)
+            self.fd = None
+        try:
+            self.lock_path.unlink()
+        except FileNotFoundError:
+            pass
+
+    def _remove_stale_lock(self) -> None:
+        try:
+            age_seconds = time.time() - self.lock_path.stat().st_mtime
+        except FileNotFoundError:
+            return
+        if age_seconds > self.stale_seconds:
+            try:
+                self.lock_path.unlink()
+            except FileNotFoundError:
+                pass
 
 
 def load_cached(cache_path: Path) -> h5py.File:

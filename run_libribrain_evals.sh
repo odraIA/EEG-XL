@@ -5,7 +5,7 @@ usage() {
   cat <<'USAGE'
 Usage: bash run_libribrain_evals.sh [options]
 
-Launches the two LibriBrain MEG-XL evaluation containers in detached mode:
+Launches the two LibriBrain MEG-XL evaluation containers sequentially:
   - eval_libribrain on EVAL_GPU
   - eval_libribrain_linear_probe on LINEAR_PROBE_GPU
   - monitor on MONITOR_PORT
@@ -200,6 +200,57 @@ fi
 
 if [[ "$build" -eq 1 ]]; then
   docker compose build "${services[@]}"
+fi
+
+if [[ " ${services[*]} " == *" eval_libribrain "* ]] &&
+   [[ " ${services[*]} " == *" eval_libribrain_linear_probe "* ]]; then
+  if [[ " ${services[*]} " == *" monitor "* ]]; then
+    docker compose up -d monitor
+    docker compose ps monitor
+    echo "Monitor: http://localhost:${MONITOR_PORT}"
+    echo
+  fi
+
+  echo "Running LibriBrain evals sequentially."
+  echo "Stop:"
+  echo "  docker compose stop eval_libribrain eval_libribrain_linear_probe"
+  echo
+
+  for service in eval_libribrain eval_libribrain_linear_probe; do
+    echo "Starting ${service}..."
+    docker compose up -d "$service"
+    docker compose ps "$service"
+    echo "Logs:"
+    echo "  docker compose logs -f ${service}"
+
+    log_pid=""
+    if [[ "$follow_logs" -eq 1 ]]; then
+      docker compose logs -f "$service" &
+      log_pid="$!"
+    fi
+
+    container_id="$(docker compose ps -q "$service")"
+    if [[ -z "$container_id" ]]; then
+      echo "Could not find container id for ${service}." >&2
+      exit 1
+    fi
+
+    exit_code="$(docker wait "$container_id")"
+    if [[ -n "$log_pid" ]]; then
+      wait "$log_pid" || true
+    fi
+
+    if [[ "$exit_code" != "0" ]]; then
+      echo "${service} exited with status ${exit_code}; not starting the next eval." >&2
+      exit "$exit_code"
+    fi
+
+    echo "${service} completed successfully."
+    echo
+  done
+
+  echo "All selected LibriBrain evals completed successfully."
+  exit 0
 fi
 
 docker compose up -d "${services[@]}"

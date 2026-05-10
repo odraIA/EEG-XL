@@ -14,6 +14,7 @@ from .preprocessing import (
     get_libribrain_task_dirs,
     preprocess_libribrain_h5,
     cache_preprocessed,
+    is_hdf5_cache_readable,
     load_cached,
     get_cache_path,
     preprocess_segment_with_subsegments,
@@ -311,7 +312,7 @@ class LibriBrainMEGDataset(Dataset):
                 # Need to re-preprocess
                 rec["use_original"] = False
 
-                if not rec["cache_path"].exists():
+                if not is_hdf5_cache_readable(rec["cache_path"]):
                     print(f"Re-preprocessing recording {i+1}/{len(self.recordings)}: "
                           f"{rec['subject']} {rec['session']} {rec['task']} {rec['run']}")
 
