@@ -349,7 +349,8 @@ class LibriBrainMEGDataset(Dataset):
                           f"{rec['subject']} {rec['session']} {rec['task']} {rec['run']}")
                     
                     # Map channel names to sensor info
-                    ch_names_bytes = h5py.File(rec["cache_path"], 'r')['channel_names'][:]
+                    with h5py.File(rec["cache_path"], 'r') as h5_file:
+                        ch_names_bytes = h5_file['channel_names'][:]
                     # Bytes to strings
                     ch_names = [name.decode('utf-8') for name in ch_names_bytes]
                     # Filter channels according to channel_filter

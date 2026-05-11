@@ -1,5 +1,6 @@
 x-megxl-eval-env: &megxl-eval-env
   CRISS_CROSS_CHECKPOINT: ${CRISS_CROSS_CHECKPOINT:-./checkpoints/baseline/meg-xl-med.ckpt}
+  HDF5_USE_FILE_LOCKING: "FALSE"
   HF_HOME: /workspace/hf_cache
   HF_TOKEN: ${HF_TOKEN:-}
   HYDRA_FULL_ERROR: "1"

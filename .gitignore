@@ -213,6 +213,6 @@ checkpoints/
 __pycache__/
 *.pyc
 .codex
-
+.agents
 
 .DS_Store
