@@ -3,30 +3,25 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: bash run_armeni_gwilliams_evals.sh [options]
+Usage: bash run_armeni_evals.sh [options]
 
-Launches the Armeni and Gwilliams MEG-XL evaluation containers sequentially:
+Launches the Armeni MEG-XL evaluation container:
   - eval_armeni on ARMENI_GPU
-  - eval_gwilliams on GWILLIAMS_GPU
   - monitor on MONITOR_PORT
 
 Options:
-  --no-build        Do not run docker compose build first.
-  --no-monitor      Do not launch the monitor service.
-  --monitor-only    Launch only the monitor service.
-  --armeni-only     Launch only eval_armeni.
-  --gwilliams-only  Launch only eval_gwilliams.
-  --logs            Follow logs for each evaluation while it runs.
-  -h, --help        Show this help.
+  --no-build      Do not run docker compose build first.
+  --no-monitor    Do not launch the monitor service.
+  --monitor-only  Launch only the monitor service.
+  --logs          Follow logs for the evaluation while it runs.
+  -h, --help      Show this help.
 
 Environment overrides:
   ARMENI_GPU=0
-  GWILLIAMS_GPU=0
   EVAL_GPU=0
   MONITOR_PORT=8080
   DATASETS_DIR=./datasets
   ARMENI_ROOT=./datasets/armeni
-  GWILLIAMS_ROOT=./datasets/gwilliams
   CHECKPOINTS_DIR=./checkpoints
   CRISS_CROSS_CHECKPOINT=./checkpoints/baseline/meg-xl-med.ckpt
   WANDB_MODE=offline
@@ -35,7 +30,7 @@ USAGE
 
 build=1
 follow_logs=0
-eval_services=(eval_armeni eval_gwilliams)
+eval_service="eval_armeni"
 launch_monitor=1
 validate_eval_inputs=1
 
@@ -50,17 +45,9 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --monitor-only)
-      eval_services=()
+      eval_service=""
       launch_monitor=1
       validate_eval_inputs=0
-      shift
-      ;;
-    --armeni-only)
-      eval_services=(eval_armeni)
-      shift
-      ;;
-    --gwilliams-only)
-      eval_services=(eval_gwilliams)
       shift
       ;;
     --logs)
@@ -81,11 +68,9 @@ done
 
 export EVAL_GPU="${EVAL_GPU:-0}"
 export ARMENI_GPU="${ARMENI_GPU:-$EVAL_GPU}"
-export GWILLIAMS_GPU="${GWILLIAMS_GPU:-$EVAL_GPU}"
 export MONITOR_PORT="${MONITOR_PORT:-8080}"
 export DATASETS_DIR="${DATASETS_DIR:-./datasets}"
 export ARMENI_ROOT="${ARMENI_ROOT:-./datasets/armeni}"
-export GWILLIAMS_ROOT="${GWILLIAMS_ROOT:-./datasets/gwilliams}"
 export CHECKPOINTS_DIR="${CHECKPOINTS_DIR:-./checkpoints}"
 export CRISS_CROSS_CHECKPOINT="${CRISS_CROSS_CHECKPOINT:-./checkpoints/baseline/meg-xl-med.ckpt}"
 export WANDB_MODE="${WANDB_MODE:-offline}"
@@ -181,6 +166,8 @@ validate_armeni_ctf_recordings() {
       echo "  ... and $((invalid - 5)) more incomplete .ds directories" >&2
     fi
     echo "Re-fetch or repair the raw Armeni dataset before launching eval_armeni." >&2
+    echo "You can sync the missing CTF files with:" >&2
+    echo "  python3 scripts/download_armeni_webdav_missing.py" >&2
     exit 1
   fi
 }
@@ -195,24 +182,18 @@ if [[ "$validate_eval_inputs" -eq 1 ]]; then
 
   if [[ ! -d "$DATASETS_DIR" ]]; then
     echo "Dataset mount directory not found: $DATASETS_DIR" >&2
-    echo "Set DATASETS_DIR=/path/to/datasets so it contains the requested dataset roots." >&2
+    echo "Set DATASETS_DIR=/path/to/datasets so it contains the requested dataset root." >&2
     exit 1
   fi
 
-  for service in "${eval_services[@]}"; do
-    case "$service" in
-      eval_armeni)
-        validate_dataset_root "armeni" "$ARMENI_ROOT"
-        validate_armeni_ctf_recordings "$ARMENI_ROOT"
-        ;;
-      eval_gwilliams)
-        validate_dataset_root "gwilliams" "$GWILLIAMS_ROOT"
-        ;;
-    esac
-  done
+  validate_dataset_root "armeni" "$ARMENI_ROOT"
+  validate_armeni_ctf_recordings "$ARMENI_ROOT"
 fi
 
-services=("${eval_services[@]}")
+services=()
+if [[ -n "$eval_service" ]]; then
+  services+=("$eval_service")
+fi
 if [[ "$launch_monitor" -eq 1 ]]; then
   services+=(monitor)
 fi
@@ -233,49 +214,44 @@ if [[ "$launch_monitor" -eq 1 ]]; then
   echo
 fi
 
-if [[ "${#eval_services[@]}" -eq 0 ]]; then
+if [[ -z "$eval_service" ]]; then
   echo "Monitor launched detached."
   echo "Logs:"
   echo "  docker compose logs -f monitor"
   exit 0
 fi
 
-echo "Running Armeni/Gwilliams evals sequentially."
+echo "Running Armeni eval."
 echo "Stop:"
-echo "  docker compose stop ${eval_services[*]}"
+echo "  docker compose stop ${eval_service}"
 echo
 
-for service in "${eval_services[@]}"; do
-  echo "Starting ${service}..."
-  docker compose up -d "$service"
-  docker compose ps "$service"
-  echo "Logs:"
-  echo "  docker compose logs -f ${service}"
+echo "Starting ${eval_service}..."
+docker compose up -d "$eval_service"
+docker compose ps "$eval_service"
+echo "Logs:"
+echo "  docker compose logs -f ${eval_service}"
 
-  log_pid=""
-  if [[ "$follow_logs" -eq 1 ]]; then
-    docker compose logs -f "$service" &
-    log_pid="$!"
-  fi
+log_pid=""
+if [[ "$follow_logs" -eq 1 ]]; then
+  docker compose logs -f "$eval_service" &
+  log_pid="$!"
+fi
 
-  container_id="$(docker compose ps -q "$service")"
-  if [[ -z "$container_id" ]]; then
-    echo "Could not find container id for ${service}." >&2
-    exit 1
-  fi
+container_id="$(docker compose ps -q "$eval_service")"
+if [[ -z "$container_id" ]]; then
+  echo "Could not find container id for ${eval_service}." >&2
+  exit 1
+fi
 
-  exit_code="$(docker wait "$container_id")"
-  if [[ -n "$log_pid" ]]; then
-    wait "$log_pid" || true
-  fi
+exit_code="$(docker wait "$container_id")"
+if [[ -n "$log_pid" ]]; then
+  wait "$log_pid" || true
+fi
 
-  if [[ "$exit_code" != "0" ]]; then
-    echo "${service} exited with status ${exit_code}; not starting the next eval." >&2
-    exit "$exit_code"
-  fi
+if [[ "$exit_code" != "0" ]]; then
+  echo "${eval_service} exited with status ${exit_code}." >&2
+  exit "$exit_code"
+fi
 
-  echo "${service} completed successfully."
-  echo
-done
-
-echo "All selected Armeni/Gwilliams evals completed successfully."
+echo "${eval_service} completed successfully."

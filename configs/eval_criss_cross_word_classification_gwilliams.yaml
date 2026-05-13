@@ -7,7 +7,7 @@ model:
 
   # Path to pretrained CrissCrossTransformer checkpoint
   # (Used for loading weights when train_from_scratch=false, or just architecture when train_from_scratch=true)
-  criss_cross_checkpoint: "./checkpoints/criss-cross-multi-dataset-pretrain-50Hz/c5z56xy8/last.ckpt"
+  criss_cross_checkpoint: "./checkpoints/baseline/meg-xl-med.ckpt" # CamCAN
 
   # Path to BioCodec tokenizer checkpoint
   tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"

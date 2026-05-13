@@ -8,7 +8,7 @@ model:
   # Path to pretrained CrissCrossTransformer checkpoint
   # (Used for loading weights when train_from_scratch=false, or just architecture when train_from_scratch=true)
   # criss_cross_checkpoint: "./checkpoints/criss-cross-multi-dataset-pretrain/dphy4ltd/last.ckpt"
-  criss_cross_checkpoint: "./checkpoints/criss-cross-multi-dataset-pretrain-50Hz/c5z56xy8/last.ckpt" # CamCAN
+  criss_cross_checkpoint: "./checkpoints/baseline/meg-xl-med.ckpt" # CamCAN
 
   # Path to BioCodec tokenizer checkpoint
   tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
@@ -29,7 +29,7 @@ data:
   cache_dir: "./data/cache"
 
   # Max channel dimension (CTF system has 306 MEG channels)
-  max_channel_dim: 306
+  # max_channel_dim: 306
 
   # Subjects to include (all 3 subjects)
   subjects:
