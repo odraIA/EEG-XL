@@ -25,7 +25,7 @@ data:
   dataset_type: "armeni"
 
   # Dataset root directory
-  root: "./datasets/armeni/di.dccn.DSC_3011085.05_995"
+  root: "./datasets/armeni"
   cache_dir: "./data/cache"
 
   # Max channel dimension (CTF system has 306 MEG channels)

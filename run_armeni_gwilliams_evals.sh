@@ -25,7 +25,7 @@ Environment overrides:
   EVAL_GPU=0
   MONITOR_PORT=8080
   DATASETS_DIR=./datasets
-  ARMENI_ROOT=./datasets/armeni/di.dccn.DSC_3011085.05_995
+  ARMENI_ROOT=./datasets/armeni
   GWILLIAMS_ROOT=./datasets/gwilliams
   CHECKPOINTS_DIR=./checkpoints
   CRISS_CROSS_CHECKPOINT=./checkpoints/baseline/meg-xl-med.ckpt
@@ -84,7 +84,7 @@ export ARMENI_GPU="${ARMENI_GPU:-$EVAL_GPU}"
 export GWILLIAMS_GPU="${GWILLIAMS_GPU:-$EVAL_GPU}"
 export MONITOR_PORT="${MONITOR_PORT:-8080}"
 export DATASETS_DIR="${DATASETS_DIR:-./datasets}"
-export ARMENI_ROOT="${ARMENI_ROOT:-./datasets/armeni/di.dccn.DSC_3011085.05_995}"
+export ARMENI_ROOT="${ARMENI_ROOT:-./datasets/armeni}"
 export GWILLIAMS_ROOT="${GWILLIAMS_ROOT:-./datasets/gwilliams}"
 export CHECKPOINTS_DIR="${CHECKPOINTS_DIR:-./checkpoints}"
 export CRISS_CROSS_CHECKPOINT="${CRISS_CROSS_CHECKPOINT:-./checkpoints/baseline/meg-xl-med.ckpt}"
