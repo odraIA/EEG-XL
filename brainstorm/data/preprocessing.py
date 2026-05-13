@@ -5,11 +5,27 @@ import mne
 import numpy as np
 import os
 from pathlib import Path
-from typing import Dict, Any, Optional, Callable, Tuple
+from typing import Dict, Any, Optional, Callable, Tuple, List
 import hashlib
 import json
 import time
 import warnings
+
+
+def missing_ctf_dataset_files(raw_path: str) -> List[Path]:
+    """
+    Return required CTF dataset files missing from a .ds directory.
+    """
+    ds_path = Path(raw_path)
+    if ds_path.suffix != ".ds":
+        return []
+
+    base_name = ds_path.name[:-len(".ds")]
+    required_files = [
+        ds_path / f"{base_name}.res4",
+        ds_path / f"{base_name}.meg4",
+    ]
+    return [path for path in required_files if not path.exists()]
 
 
 def load_libribrain_sensors(
@@ -340,6 +356,16 @@ def preprocess_recording(
     raw : mne.io.Raw
         Preprocessed raw MEG data
     """
+    missing_files = missing_ctf_dataset_files(raw_path)
+    if missing_files:
+        missing = "\n  - ".join(str(path) for path in missing_files)
+        raise FileNotFoundError(
+            "Incomplete CTF dataset; MNE cannot read this .ds recording because "
+            f"required file(s) are missing:\n  - {missing}\n"
+            "Re-fetch or repair the raw dataset so each .ds directory contains "
+            "the matching .res4 and .meg4 files."
+        )
+
     # Load raw data
     raw = mne.io.read_raw_ctf(raw_path, preload=True, verbose=False)
 

@@ -137,6 +137,54 @@ validate_dataset_root() {
   fi
 }
 
+validate_armeni_ctf_recordings() {
+  local configured_root="$1"
+  local host_root
+  local ds_dir
+  local ds_name
+  local base_name
+  local found=0
+  local invalid=0
+
+  host_root="$(resolve_dataset_host_root "$configured_root")"
+  while IFS= read -r -d '' ds_dir; do
+    ds_name="${ds_dir##*/}"
+    case "$ds_name" in
+      *_task-emptyroom_*)
+        continue
+        ;;
+    esac
+
+    found=1
+    base_name="${ds_name%.ds}"
+    if [[ ! -f "$ds_dir/$base_name.res4" || ! -f "$ds_dir/$base_name.meg4" ]]; then
+      if [[ "$invalid" -eq 0 ]]; then
+        echo "Armeni CTF dataset is incomplete; required files are missing from .ds directories:" >&2
+      fi
+      invalid=$((invalid + 1))
+      if [[ "$invalid" -le 5 ]]; then
+        echo "  $ds_dir" >&2
+        [[ -f "$ds_dir/$base_name.res4" ]] || echo "    missing: $base_name.res4" >&2
+        [[ -f "$ds_dir/$base_name.meg4" ]] || echo "    missing: $base_name.meg4" >&2
+      fi
+    fi
+  done < <(find "$host_root" -path '*/meg/*_task-*_meg.ds' -type d -print0)
+
+  if [[ "$found" -eq 0 ]]; then
+    echo "No Armeni CTF recordings found under: $host_root" >&2
+    echo "Expected directories like sub-001/ses-001/meg/sub-001_ses-001_task-compr_meg.ds." >&2
+    exit 1
+  fi
+
+  if [[ "$invalid" -gt 0 ]]; then
+    if [[ "$invalid" -gt 5 ]]; then
+      echo "  ... and $((invalid - 5)) more incomplete .ds directories" >&2
+    fi
+    echo "Re-fetch or repair the raw Armeni dataset before launching eval_armeni." >&2
+    exit 1
+  fi
+}
+
 if [[ "$validate_eval_inputs" -eq 1 ]]; then
   checkpoint_host_path="$(resolve_checkpoint_host_path "$CRISS_CROSS_CHECKPOINT")"
   if [[ ! -e "$checkpoint_host_path" ]]; then
@@ -155,6 +203,7 @@ if [[ "$validate_eval_inputs" -eq 1 ]]; then
     case "$service" in
       eval_armeni)
         validate_dataset_root "armeni" "$ARMENI_ROOT"
+        validate_armeni_ctf_recordings "$ARMENI_ROOT"
         ;;
       eval_gwilliams)
         validate_dataset_root "gwilliams" "$GWILLIAMS_ROOT"
