@@ -52,6 +52,7 @@ from brainstorm.neuro_tokenizers.biocodec.model import BioCodecModel
 from brainstorm.data.armeni_word_aligned_dataset import ArmeniWordAlignedDataset
 from brainstorm.data.gwilliams_word_aligned_dataset import GwilliamsWordAlignedDataset
 from brainstorm.data.libribrain_word_aligned_dataset import LibriBrainWordAlignedDataset
+from brainstorm.data.zuco_word_aligned_dataset import ZuCoWordAlignedDataset
 from brainstorm.eval_metrics_history import append_epoch_metrics_history
 from brainstorm.losses.contrastive import SigLipLoss
 
@@ -67,7 +68,7 @@ def get_dataset_class(dataset_type: str):
     Get the appropriate dataset class based on dataset_type.
 
     Args:
-        dataset_type: One of "armeni", "gwilliams", or "libribrain"
+        dataset_type: One of "armeni", "gwilliams", "libribrain", or "zuco"
 
     Returns:
         Dataset class to instantiate
@@ -76,6 +77,7 @@ def get_dataset_class(dataset_type: str):
         "armeni": ArmeniWordAlignedDataset,
         "gwilliams": GwilliamsWordAlignedDataset,
         "libribrain": LibriBrainWordAlignedDataset,
+        "zuco": ZuCoWordAlignedDataset,
     }
 
     if dataset_type not in dataset_classes:
@@ -94,11 +96,13 @@ def get_default_max_channel_dim(dataset_type: str) -> int:
     - Armeni: 306 MEG channels (CTF system)
     - Gwilliams: 208 MEG channels (KIT/Ricoh system)
     - LibriBrain: 306 MEG channels (Elekta Neuromag system)
+    - ZuCo: 105 EEG channels (HydroCel Geodesic Sensor Net)
     """
     defaults = {
         "armeni": 306,
         "gwilliams": 208,
         "libribrain": 306,
+        "zuco": 105,
     }
     return defaults.get(dataset_type, 306)
 
