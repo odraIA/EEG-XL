@@ -57,7 +57,7 @@ from brainstorm.data.armeni_word_aligned_dataset import ArmeniWordAlignedDataset
 from brainstorm.data.gwilliams_word_aligned_dataset import GwilliamsWordAlignedDataset
 from brainstorm.data.libribrain_word_aligned_dataset import LibriBrainWordAlignedDataset
 from brainstorm.data.zuco_word_aligned_dataset import ZuCoWordAlignedDataset
-from brainstorm.eval_metrics_history import append_epoch_metrics_history
+from brainstorm.eval_metrics_history import append_epoch_metrics_history, resolve_checkpoint_dir
 from brainstorm.losses.contrastive import SigLipLoss
 
 logger = logging.getLogger(__name__)
@@ -1085,6 +1085,8 @@ def train_and_evaluate(
     best_test_metrics_at_best_val = {}  # Track test metrics at best validation
     best_val_epoch = 0  # Track which epoch had best validation
     previous_val_primary_acc = None
+    checkpoint_dir = resolve_checkpoint_dir(cfg.logging)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     for epoch in range(cfg.training.num_epochs):
         logger.info(f"\nEpoch {epoch + 1}/{cfg.training.num_epochs}")
@@ -1201,7 +1203,7 @@ def train_and_evaluate(
             best_val_epoch = epoch + 1  # Track which epoch had best validation (1-indexed)
 
             # Save best model (only linear probe since CrissCross is frozen)
-            checkpoint_path = Path(cfg.logging.save_dir) / 'checkpoint_best.pt'
+            checkpoint_path = checkpoint_dir / 'checkpoint_best.pt'
             torch.save({
                 'epoch': epoch,
                 'linear_probe_state_dict': linear_probe.state_dict(),
@@ -1247,7 +1249,7 @@ def train_and_evaluate(
 
     # Load best model and test
     logger.info("\nLoading best model for final evaluation...")
-    checkpoint_path = Path(cfg.logging.save_dir) / 'checkpoint_best.pt'
+    checkpoint_path = checkpoint_dir / 'checkpoint_best.pt'
     checkpoint = torch.load(checkpoint_path, map_location=device)
     linear_probe.load_state_dict(checkpoint['linear_probe_state_dict'])
 
@@ -1309,6 +1311,10 @@ def main(cfg: DictConfig):
     # Setup output directory
     save_dir = Path(cfg.logging.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint_dir = resolve_checkpoint_dir(cfg.logging)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Metrics/results directory: {save_dir}")
+    logger.info(f"Checkpoint directory: {checkpoint_dir}")
 
     # Setup WandB
     wandb_config = OmegaConf.to_container(cfg, resolve=True)

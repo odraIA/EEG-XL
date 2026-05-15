@@ -68,3 +68,15 @@ def append_epoch_metrics_history(
         writer.writerows(existing_rows)
 
     return csv_path, jsonl_path
+
+
+def resolve_checkpoint_dir(logging_cfg: Any) -> Path:
+    """Return the directory used for model checkpoints.
+
+    Older configs only define ``logging.save_dir``. Keep that as a fallback so
+    existing Hydra runs and ad-hoc configs continue to work.
+    """
+    checkpoint_dir = logging_cfg.get("checkpoint_dir", None)
+    if checkpoint_dir:
+        return Path(checkpoint_dir)
+    return Path(logging_cfg.save_dir)

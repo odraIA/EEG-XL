@@ -43,7 +43,7 @@ CKPT_DIR     = BASE_DIR / "checkpoints"
 PLAN_FILE    = BASE_DIR / ".sweep_plan.json"
 REFRESH_SECS = 8
 DOCKER_SOCKET = Path(os.environ.get("DOCKER_SOCKET", "/var/run/docker.sock"))
-GENERIC_SCAN_ROOT_NAMES = ("logs", "outputs", "multirun")
+GENERIC_SCAN_ROOT_NAMES = ("logs", "checkpoints", "outputs", "multirun")
 GENERIC_RUN_MARKERS = (
     "final_results.txt",
     "checkpoint_best.pt",
@@ -699,6 +699,7 @@ def _read_config_metadata(config_name: str | None) -> dict:
         "config_path": str(config_path),
         "experiment_name": _extract_yaml_section_value(text, "logging", "experiment_name"),
         "save_dir": _resolve_workspace_path(_extract_yaml_section_value(text, "logging", "save_dir")),
+        "checkpoint_dir": _resolve_workspace_path(_extract_yaml_section_value(text, "logging", "checkpoint_dir")),
         "dataset_type": _extract_yaml_section_value(text, "data", "dataset_type"),
         "wandb_project": _extract_yaml_section_value(text, "logging", "wandb_project"),
     }
@@ -717,19 +718,27 @@ def _merge_run(registry: dict[str, dict], name: str | None, **updates) -> None:
 
 
 def _find_run_name_by_save_dir(registry: dict[str, dict], save_dir: Path) -> str | None:
+    return _find_run_name_by_path_key(registry, "save_dir", save_dir)
+
+
+def _find_run_name_by_checkpoint_dir(registry: dict[str, dict], checkpoint_dir: Path) -> str | None:
+    return _find_run_name_by_path_key(registry, "checkpoint_dir", checkpoint_dir)
+
+
+def _find_run_name_by_path_key(registry: dict[str, dict], key: str, path: Path) -> str | None:
     try:
-        target = save_dir.resolve()
+        target = path.resolve()
     except Exception:
-        target = save_dir
+        target = path
     for name, run in registry.items():
-        candidate = run.get("save_dir")
+        candidate = run.get(key)
         if not isinstance(candidate, Path):
             continue
         try:
             if candidate.resolve() == target:
                 return name
         except Exception:
-            if candidate == save_dir:
+            if candidate == path:
                 return name
     return None
 
@@ -766,6 +775,7 @@ def discover_generic_megxl_runs(compose_containers: dict[str, dict] | None = Non
         cfg_meta = _read_config_metadata(service_meta.get("config_name"))
         exp_name = cfg_meta.get("experiment_name") or service
         save_dir = cfg_meta.get("save_dir")
+        checkpoint_dir = cfg_meta.get("checkpoint_dir") or save_dir
         _merge_run(
             registry,
             exp_name,
@@ -774,9 +784,10 @@ def discover_generic_megxl_runs(compose_containers: dict[str, dict] | None = Non
             config_name=service_meta.get("config_name"),
             config_path=cfg_meta.get("config_path"),
             save_dir=save_dir,
+            checkpoint_dir=checkpoint_dir,
             final_results=(save_dir / "final_results.txt") if isinstance(save_dir, Path) else None,
-            checkpoint_latest=(save_dir / "checkpoint_latest.pt") if isinstance(save_dir, Path) else None,
-            checkpoint_best=(save_dir / "checkpoint_best.pt") if isinstance(save_dir, Path) else None,
+            checkpoint_latest=(checkpoint_dir / "checkpoint_latest.pt") if isinstance(checkpoint_dir, Path) else None,
+            checkpoint_best=(checkpoint_dir / "checkpoint_best.pt") if isinstance(checkpoint_dir, Path) else None,
             dataset=cfg_meta.get("dataset_type"),
             wandb_project=cfg_meta.get("wandb_project"),
             container=compose_containers.get(service),
@@ -804,6 +815,7 @@ def discover_generic_megxl_runs(compose_containers: dict[str, dict] | None = Non
                 or run_dir.name
             )
             save_dir = _resolve_workspace_path(_extract_yaml_section_value(text, "logging", "save_dir"))
+            checkpoint_dir = _resolve_workspace_path(_extract_yaml_section_value(text, "logging", "checkpoint_dir")) or save_dir
             _merge_run(
                 registry,
                 exp_name,
@@ -812,9 +824,10 @@ def discover_generic_megxl_runs(compose_containers: dict[str, dict] | None = Non
                 hydra_log=_find_newest_log_in_dir(run_dir),
                 config_path=config_path,
                 save_dir=save_dir,
+                checkpoint_dir=checkpoint_dir,
                 final_results=(save_dir / "final_results.txt") if isinstance(save_dir, Path) else None,
-                checkpoint_latest=(save_dir / "checkpoint_latest.pt") if isinstance(save_dir, Path) else None,
-                checkpoint_best=(save_dir / "checkpoint_best.pt") if isinstance(save_dir, Path) else None,
+                checkpoint_latest=(checkpoint_dir / "checkpoint_latest.pt") if isinstance(checkpoint_dir, Path) else None,
+                checkpoint_best=(checkpoint_dir / "checkpoint_best.pt") if isinstance(checkpoint_dir, Path) else None,
                 dataset=_extract_yaml_section_value(text, "data", "dataset_type"),
                 wandb_project=_extract_yaml_section_value(text, "logging", "wandb_project"),
             )
@@ -822,16 +835,40 @@ def discover_generic_megxl_runs(compose_containers: dict[str, dict] | None = Non
     for root in _iter_existing_scan_roots():
         for marker in GENERIC_RUN_MARKERS[:3]:
             for path in root.rglob(marker):
-                save_dir = path.parent
-                exp_name = _find_run_name_by_save_dir(registry, save_dir) or save_dir.name
+                artifact_dir = path.parent
+                if marker == "final_results.txt":
+                    exp_name = _find_run_name_by_save_dir(registry, artifact_dir) or artifact_dir.name
+                    run = registry.get(exp_name, {})
+                    checkpoint_dir = run.get("checkpoint_dir") or artifact_dir
+                    _merge_run(
+                        registry,
+                        exp_name,
+                        display_name=exp_name,
+                        save_dir=artifact_dir,
+                        checkpoint_dir=checkpoint_dir,
+                        final_results=artifact_dir / "final_results.txt",
+                        checkpoint_latest=(checkpoint_dir / "checkpoint_latest.pt") if isinstance(checkpoint_dir, Path) else None,
+                        checkpoint_best=(checkpoint_dir / "checkpoint_best.pt") if isinstance(checkpoint_dir, Path) else None,
+                    )
+                    continue
+
+                exp_name = (
+                    _find_run_name_by_checkpoint_dir(registry, artifact_dir)
+                    or _find_run_name_by_save_dir(registry, artifact_dir)
+                    or artifact_dir.name
+                )
+                run = registry.get(exp_name, {})
+                save_dir = run.get("save_dir")
+                checkpoint_dir = run.get("checkpoint_dir") or artifact_dir
                 _merge_run(
                     registry,
                     exp_name,
                     display_name=exp_name,
                     save_dir=save_dir,
-                    final_results=save_dir / "final_results.txt",
-                    checkpoint_latest=save_dir / "checkpoint_latest.pt",
-                    checkpoint_best=save_dir / "checkpoint_best.pt",
+                    checkpoint_dir=checkpoint_dir,
+                    final_results=(save_dir / "final_results.txt") if isinstance(save_dir, Path) else None,
+                    checkpoint_latest=checkpoint_dir / "checkpoint_latest.pt",
+                    checkpoint_best=checkpoint_dir / "checkpoint_best.pt",
                 )
 
     # Drop entries without any concrete runtime, config, or artifact evidence.

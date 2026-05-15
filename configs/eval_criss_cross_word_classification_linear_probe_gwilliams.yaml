@@ -140,6 +140,7 @@ logging:
   experiment_name: "criss-cross-word-classification-linear-probe-gwilliams"
   log_every_n_steps: 10
   save_dir: "./logs/word_classification_linear_probe_gwilliams"
+  checkpoint_dir: "./checkpoints/word_classification_linear_probe_gwilliams"
 
 # System settings
 device: "cuda"

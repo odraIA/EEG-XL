@@ -53,7 +53,7 @@ from brainstorm.data.armeni_word_aligned_dataset import ArmeniWordAlignedDataset
 from brainstorm.data.gwilliams_word_aligned_dataset import GwilliamsWordAlignedDataset
 from brainstorm.data.libribrain_word_aligned_dataset import LibriBrainWordAlignedDataset
 from brainstorm.data.zuco_word_aligned_dataset import ZuCoWordAlignedDataset
-from brainstorm.eval_metrics_history import append_epoch_metrics_history
+from brainstorm.eval_metrics_history import append_epoch_metrics_history, resolve_checkpoint_dir
 from brainstorm.losses.contrastive import SigLipLoss
 
 logger = logging.getLogger(__name__)
@@ -1196,6 +1196,8 @@ def train_and_evaluate(
     best_val_epoch = 0  # Track which epoch had best validation
     start_epoch = 0
     previous_val_primary_acc = None
+    checkpoint_dir = resolve_checkpoint_dir(cfg.logging)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     # Resume from checkpoint if specified
     resume_checkpoint = cfg.training.get('resume_checkpoint', None)
@@ -1342,7 +1344,7 @@ def train_and_evaluate(
             best_val_epoch = epoch + 1  # Track which epoch had best validation (1-indexed)
 
             # Save best model (include test_metrics for comparison)
-            checkpoint_path = Path(cfg.logging.save_dir) / 'checkpoint_best.pt'
+            checkpoint_path = checkpoint_dir / 'checkpoint_best.pt'
             torch.save({
                 'epoch': epoch,
                 'criss_cross_state_dict': criss_cross_model.state_dict(),
@@ -1363,7 +1365,7 @@ def train_and_evaluate(
             patience_counter += 1
 
         # Save latest checkpoint for resuming (every epoch)
-        latest_checkpoint_path = Path(cfg.logging.save_dir) / 'checkpoint_latest.pt'
+        latest_checkpoint_path = checkpoint_dir / 'checkpoint_latest.pt'
         torch.save({
             'epoch': epoch,
             'criss_cross_state_dict': criss_cross_model.state_dict(),
@@ -1410,7 +1412,7 @@ def train_and_evaluate(
 
     # Load best model and test
     logger.info("\nLoading best model for final evaluation...")
-    checkpoint_path = Path(cfg.logging.save_dir) / 'checkpoint_best.pt'
+    checkpoint_path = checkpoint_dir / 'checkpoint_best.pt'
     checkpoint = torch.load(checkpoint_path, map_location=device)
     criss_cross_model.load_state_dict(checkpoint['criss_cross_state_dict'])
     word_mlp.load_state_dict(checkpoint['word_mlp_state_dict'])
@@ -1473,6 +1475,10 @@ def main(cfg: DictConfig):
     # Setup output directory
     save_dir = Path(cfg.logging.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint_dir = resolve_checkpoint_dir(cfg.logging)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Metrics/results directory: {save_dir}")
+    logger.info(f"Checkpoint directory: {checkpoint_dir}")
 
     # Setup WandB
     wandb_config = OmegaConf.to_container(cfg, resolve=True)

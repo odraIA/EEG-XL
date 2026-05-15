@@ -152,6 +152,7 @@ logging:
   experiment_name: "criss-cross-word-classification-zuco-nr-50Hz"
   log_every_n_steps: 10
   save_dir: "./logs/word_classification_zuco"
+  checkpoint_dir: "./checkpoints/word_classification_zuco"
 
 # System settings
 device: "cuda"

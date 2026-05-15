@@ -142,6 +142,7 @@ services:
       data.eeg_sensor_type="$${ZUCO_EEG_SENSOR_TYPE}"
       logging.experiment_name="criss-cross-word-classification-zuco-nr-50Hz-$${ZUCO_EEG_SENSOR_TYPE}"
       logging.save_dir="./logs/word_classification_zuco_$${ZUCO_EEG_SENSOR_TYPE}"
+      logging.checkpoint_dir="./checkpoints/word_classification_zuco_$${ZUCO_EEG_SENSOR_TYPE}"
       hydra.run.dir="./logs/hydra/eval_zuco_$${ZUCO_EEG_SENSOR_TYPE}/$$(date +%Y%m%d_%H%M%S)"'
     deploy:
       resources:
