@@ -210,6 +210,8 @@ __marimo__/
 
 datasets/
 checkpoints/
+wandb/
+hf_cache/
 __pycache__/
 *.pyc
 .codex
