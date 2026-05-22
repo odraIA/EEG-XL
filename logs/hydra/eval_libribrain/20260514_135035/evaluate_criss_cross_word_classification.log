@@ -1741,3 +1741,13 @@ Epoch 14/50
 [2026-05-15 15:20:24,103][__main__][INFO] -   Metrics history updated: logs/word_classification_libribrain/metrics_history.csv and logs/word_classification_libribrain/metrics_history.jsonl
 [2026-05-15 15:20:24,104][__main__][INFO] - 
 Epoch 15/50
+[2026-05-15 15:57:23,775][__main__][INFO] -   Train loss: 1.9954
+[2026-05-15 16:06:21,194][__main__][INFO] -   Val loss: 4.7397
+[2026-05-15 16:06:21,194][__main__][INFO] -   [Retrieval 50] Val top-10: 0.5360, balanced: 0.3992 (n=17177)
+[2026-05-15 16:06:21,195][__main__][INFO] -   [Retrieval 50] Test top-10: 0.5436, balanced: 0.4083
+[2026-05-15 16:06:21,195][__main__][INFO] -   [Retrieval 250] Val top-10: 0.3521, balanced: 0.1251 (n=24717)
+[2026-05-15 16:06:21,195][__main__][INFO] -   [Retrieval 250] Test top-10: 0.3588, balanced: 0.1256
+[2026-05-15 16:06:28,406][__main__][INFO] -   Metrics history updated: logs/word_classification_libribrain/metrics_history.csv and logs/word_classification_libribrain/metrics_history.jsonl
+[2026-05-15 16:06:28,406][__main__][INFO] - Early stopping at epoch 15
+[2026-05-15 16:06:28,406][__main__][INFO] - 
+Loading best model for final evaluation...
