@@ -223,3 +223,9 @@ hf_cache/
 data/
 embeddings_cache/
 local/
+
+# para no ignorar el cuaderno de pruebas
+datasets/*
+!datasets/eegdash/
+datasets/eegdash/*
+!datasets/eegdash/testing.ipynb
