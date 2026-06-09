@@ -1,0 +1,376 @@
+Dataset: libribrain
+Path: /workspace/datasets/libribrain
+Generated: 2026-06-09T15:16:11
+
+Content summary
+- Directories scanned: 30
+- Files scanned: 182
+- Total file size: 54.8 GB
+- Skipped directory names: .cache, .git, .ipynb_checkpoints, __pycache__, cache, checkpoints, logs
+
+Top-level content
+- Sherlock5: 30 files, 6.6 GB
+- Sherlock6: 28 files, 12.5 GB
+- Sherlock7: 28 files, 6.5 GB
+- Sherlock1: 24 files, 4.2 GB
+- Sherlock2: 24 files, 4.8 GB
+- Sherlock3: 24 files, 11.6 GB
+- Sherlock4: 22 files, 8.6 GB
+- metadata: 2 files, 46.1 KB
+
+File extensions
+- .tsv: 91
+- .h5: 90
+- .json: 1
+
+Detected BIDS-like tasks
+- Sherlock5: 30
+- Sherlock6: 28
+- Sherlock7: 28
+- Sherlock1: 24
+- Sherlock2: 24
+- Sherlock3: 24
+- Sherlock4: 22
+
+Detected BIDS-like subjects
+- sub-0: 180
+
+Detected BIDS-like sessions
+- ses-10: 14
+- ses-11: 14
+- ses-12: 14
+- ses-1: 14
+- ses-2: 14
+- ses-3: 14
+- ses-4: 14
+- ses-5: 14
+- ses-6: 14
+- ses-7: 14
+- ses-9: 14
+- ses-8: 12
+- ses-13: 6
+- ses-14: 6
+- ses-15: 2
+
+Training-hours estimate
+- Selection: serialized HDF5/MAT recordings with readable duration
+- Note: all selected recordings are counted as trainable hours; explicit train/val/test splits are not inferred unless encoded as separate files.
+- Total selected recordings: 90
+- Total training hours: 52.995 h (52:59:41)
+
+Hours by task
+task	recordings	hours	duration
+Sherlock1	12	4.086	04:05:11
+Sherlock2	12	4.632	04:37:55
+Sherlock3	12	11.225	11:13:29
+Sherlock4	11	8.322	08:19:21
+Sherlock5	15	6.380	06:22:49
+Sherlock6	14	12.081	12:04:51
+Sherlock7	14	6.268	06:16:05
+
+Detected recording candidates
+kind	task	subject	session	run	duration	channels	sfreq	method	path
+hdf5	Sherlock1	0	10	1	00:13:26	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-10_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	11	2	00:22:30	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-11_task-Sherlock1_run-2_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	12	2	00:23:51	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-12_task-Sherlock1_run-2_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	1	1	00:18:32	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-1_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	2	1	00:23:14	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-2_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	3	1	00:24:58	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-3_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	4	1	00:16:17	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-4_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	5	1	00:16:31	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-5_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	6	1	00:21:42	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-6_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	7	1	00:21:38	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-7_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	8	1	00:25:21	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-8_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock1	0	9	1	00:17:11	306	250	hdf5 metadata	Sherlock1/derivatives/serialised/sub-0_ses-9_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	10	1	00:21:21	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-10_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	11	1	00:15:12	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-11_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	12	1	00:57:53	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-12_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	1	1	00:21:42	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-1_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	2	1	00:13:32	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-2_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	3	1	00:12:13	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-3_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	4	1	00:25:15	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-4_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	5	1	00:17:09	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-5_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	6	1	00:21:13	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-6_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	7	1	00:27:36	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-7_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	8	1	00:22:16	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-8_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock2	0	9	1	00:22:33	306	250	hdf5 metadata	Sherlock2/derivatives/serialised/sub-0_ses-9_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	10	1	00:52:16	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-10_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	11	1	01:01:43	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-11_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	12	1	01:02:53	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-12_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	1	1	00:57:00	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-1_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	2	1	01:01:07	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-2_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	3	1	00:44:19	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-3_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	4	1	01:02:22	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-4_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	5	1	00:49:14	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-5_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	6	1	00:59:20	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-6_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	7	1	00:50:20	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-7_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	8	1	01:01:50	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-8_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock3	0	9	1	00:51:05	306	250	hdf5 metadata	Sherlock3/derivatives/serialised/sub-0_ses-9_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	10	1	00:41:06	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-10_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	11	1	00:37:43	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-11_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	12	1	00:46:35	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-12_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	1	1	01:00:48	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-1_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	2	1	00:44:12	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-2_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	3	1	00:42:16	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-3_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	4	1	00:46:57	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-4_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	5	1	00:46:35	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-5_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	6	1	00:44:21	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-6_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	7	1	00:43:58	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-7_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock4	0	9	1	00:44:50	306	250	hdf5 metadata	Sherlock4/derivatives/serialised/sub-0_ses-9_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	10	1	00:23:07	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-10_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	11	1	00:28:20	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-11_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	12	1	00:27:29	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-12_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	13	1	00:25:55	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-13_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	14	1	00:26:54	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-14_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	15	1	00:26:21	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-15_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	1	1	00:16:38	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-1_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	2	1	00:25:31	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-2_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	3	1	00:20:14	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-3_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	4	1	00:26:30	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-4_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	5	1	00:22:26	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-5_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	6	1	00:22:30	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-6_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	7	1	00:32:24	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-7_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	8	1	00:17:55	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-8_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock5	0	9	1	00:40:35	306	250	hdf5 metadata	Sherlock5/derivatives/serialised/sub-0_ses-9_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	10	1	00:43:51	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-10_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	11	1	00:56:03	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-11_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	12	1	00:50:30	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-12_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	13	1	00:55:01	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-13_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	14	1	01:01:42	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-14_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	1	1	00:56:56	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-1_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	2	1	00:59:04	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-2_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	3	1	01:01:53	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-3_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	4	1	00:50:46	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-4_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	5	1	00:40:49	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-5_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	6	1	00:37:27	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-6_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	7	1	00:52:58	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-7_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	8	1	00:44:36	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-8_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock6	0	9	1	00:53:15	306	250	hdf5 metadata	Sherlock6/derivatives/serialised/sub-0_ses-9_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	10	1	00:37:02	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-10_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	11	1	00:24:00	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-11_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	12	1	00:29:55	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-12_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	13	1	00:21:36	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-13_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	14	1	00:29:07	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-14_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	1	1	00:21:48	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-1_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	2	1	00:17:54	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-2_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	3	1	00:22:10	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-3_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	4	1	00:24:40	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-4_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	5	1	00:25:56	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-5_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	6	1	00:29:05	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-6_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	7	1	00:36:17	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-7_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	8	1	00:20:08	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-8_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+hdf5	Sherlock7	0	9	1	00:36:27	306	250	hdf5 metadata	Sherlock7/derivatives/serialised/sub-0_ses-9_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+
+Folder tree (max depth 4)
+.
+  - metadata/
+  - Sherlock1/
+  - Sherlock2/
+  - Sherlock3/
+  - Sherlock4/
+  - Sherlock5/
+  - Sherlock6/
+  - Sherlock7/
+    - derivatives/
+      - events/
+      - serialised/
+        - sub-0_ses-10_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-11_task-Sherlock1_run-2_events.tsv
+        - sub-0_ses-12_task-Sherlock1_run-2_events.tsv
+        - sub-0_ses-1_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-2_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-3_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-4_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-5_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-6_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-7_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-8_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-9_task-Sherlock1_run-1_events.tsv
+        - sub-0_ses-10_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-11_task-Sherlock1_run-2_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-12_task-Sherlock1_run-2_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-1_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-2_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-3_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-4_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-5_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-6_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-7_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-8_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-9_task-Sherlock1_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+    - derivatives/
+      - events/
+      - serialised/
+        - sub-0_ses-10_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-11_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-12_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-1_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-2_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-3_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-4_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-5_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-6_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-7_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-8_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-9_task-Sherlock2_run-1_events.tsv
+        - sub-0_ses-10_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-11_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-12_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-1_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-2_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-3_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-4_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-5_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-6_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-7_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-8_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-9_task-Sherlock2_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+    - derivatives/
+      - events/
+      - serialised/
+        - sub-0_ses-10_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-11_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-12_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-1_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-2_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-3_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-4_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-5_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-6_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-7_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-8_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-9_task-Sherlock3_run-1_events.tsv
+        - sub-0_ses-10_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-11_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-12_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-1_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-2_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-3_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-4_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-5_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-6_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-7_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-8_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-9_task-Sherlock3_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+    - derivatives/
+      - events/
+      - serialised/
+        - sub-0_ses-10_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-11_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-12_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-1_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-2_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-3_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-4_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-5_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-6_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-7_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-9_task-Sherlock4_run-1_events.tsv
+        - sub-0_ses-10_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-11_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-12_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-1_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-2_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-3_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-4_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-5_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-6_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-7_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-9_task-Sherlock4_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+    - derivatives/
+      - events/
+      - serialised/
+        - sub-0_ses-10_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-11_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-12_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-13_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-14_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-15_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-1_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-2_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-3_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-4_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-5_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-6_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-7_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-8_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-9_task-Sherlock5_run-1_events.tsv
+        - sub-0_ses-10_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-11_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-12_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-13_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-14_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-15_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-1_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-2_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-3_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-4_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-5_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-6_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-7_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-8_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-9_task-Sherlock5_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+    - derivatives/
+      - events/
+      - serialised/
+        - sub-0_ses-10_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-11_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-12_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-13_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-14_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-1_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-2_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-3_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-4_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-5_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-6_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-7_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-8_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-9_task-Sherlock6_run-1_events.tsv
+        - sub-0_ses-10_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-11_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-12_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-13_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-14_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-1_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-2_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-3_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-4_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-5_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-6_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-7_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-8_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-9_task-Sherlock6_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+    - derivatives/
+      - events/
+      - serialised/
+        - sub-0_ses-10_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-11_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-12_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-13_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-14_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-1_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-2_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-3_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-4_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-5_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-6_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-7_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-8_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-9_task-Sherlock7_run-1_events.tsv
+        - sub-0_ses-10_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-11_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-12_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-13_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-14_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-1_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-2_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-3_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-4_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-5_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-6_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-7_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-8_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+        - sub-0_ses-9_task-Sherlock7_run-1_proc-bads+headpos+sss+notch+bp+ds_meg.h5
+    - channels.tsv
+    - sensor_xyz.json

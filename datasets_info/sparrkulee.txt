@@ -1,0 +1,2308 @@
+Dataset: sparrkulee
+Path: /workspace/datasets/sparrkulee
+Generated: 2026-06-09T15:16:13
+
+Dataset metadata
+- Name: SparrKULee
+- BIDSVersion: 1.8.0
+- DatasetType: raw
+- License: Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0) for the EEG data. Stimuli can only be used for non-commercial purposes.
+- Authors: ['Bernd Accou', 'Lies Bollens', 'Marlies Gillis', 'Wendy Verheijen', 'Hugo Van hamme', 'Tom Francart']
+- participants.tsv rows: 85
+
+Content summary
+- Directories scanned: 650
+- Files scanned: 11651
+- Total file size: 238.1 GB
+- Skipped directory names: .cache, .git, .ipynb_checkpoints, __pycache__, cache, checkpoints, logs
+
+Top-level content
+- derivatives: 7306 files, 92.5 GB
+- stimuli: 341 files, 14.7 GB
+- sub-002: 56 files, 1.3 GB
+- sub-014: 56 files, 1.4 GB
+- sub-021: 56 files, 1.3 GB
+- sub-022: 56 files, 1.3 GB
+- sub-023: 56 files, 1.3 GB
+- sub-007: 55 files, 1.3 GB
+- sub-012: 53 files, 1.3 GB
+- sub-013: 53 files, 1.3 GB
+- sub-030: 53 files, 1.1 GB
+- sub-006: 52 files, 1.3 GB
+- sub-008: 52 files, 1.3 GB
+- sub-009: 52 files, 1.2 GB
+- sub-010: 52 files, 1.3 GB
+- sub-011: 52 files, 1.3 GB
+- sub-015: 52 files, 1.3 GB
+- sub-016: 52 files, 1.4 GB
+- sub-018: 52 files, 1.3 GB
+- sub-019: 52 files, 1.2 GB
+- sub-024: 52 files, 1.3 GB
+- sub-026: 52 files, 1.4 GB
+- sub-031: 52 files, 975.5 MB
+- sub-001: 51 files, 1.3 GB
+- sub-005: 51 files, 1.2 GB
+- sub-029: 51 files, 1.0 GB
+- sub-003: 49 files, 1.3 GB
+- sub-025: 49 files, 1.2 GB
+- sub-027: 48 files, 1.0 GB
+- sub-028: 48 files, 1.0 GB
+- ... 78 more
+
+File extensions
+- .npy: 7220
+- .tsv: 1867
+- .apr: 1206
+- .gz: 1040
+- .bdf: 183
+- .data_dict: 84
+- .npz: 15
+- .txt: 13
+- .json: 10
+- .docx: 4
+- [no extension]: 4
+- .apx: 3
+- .md: 1
+- .xml: 1
+
+Detected BIDS-like tasks
+- listeningActive: 4494
+- restingState: 197
+- audiogram: 80
+
+Detected BIDS-like subjects
+- sub-030: 173
+- sub-031: 172
+- sub-029: 171
+- sub-027: 168
+- sub-028: 168
+- sub-002: 166
+- sub-014: 166
+- sub-021: 166
+- sub-022: 166
+- sub-023: 166
+- sub-007: 155
+- sub-012: 153
+- sub-013: 153
+- sub-008: 152
+- sub-009: 152
+- sub-010: 152
+- sub-011: 152
+- sub-015: 152
+- sub-016: 152
+- sub-018: 152
+- ... 85 more
+
+Detected BIDS-like sessions
+- ses-shortstories01: 1556
+- ses-varyingStories12: 452
+- ses-varyingStories11: 436
+- ses-varyingStories08: 353
+- ses-varyingStories01: 312
+- ses-varyingStories06: 298
+- ses-varyingStories03: 234
+- ses-varyingStories07: 233
+- ses-varyingStories09: 227
+- ses-varyingStories10: 227
+- ses-varyingStories02: 222
+- ses-varyingStories04: 156
+- ses-varyingStories05: 81
+
+Training-hours estimate
+- Selection: raw recordings with readable duration
+- Note: all selected recordings are counted as trainable hours; explicit train/val/test splits are not inferred unless encoded as separate files.
+- Total selected recordings: 183
+- Total training hours: 50.916 h (50:54:57)
+
+Hours by task
+task	recordings	hours	duration
+listeningActive	183	50.916	50:54:57
+
+Detected recording candidates
+kind	task	subject	session	run	duration	channels	sfreq	method	path
+raw	listeningActive	086	varyingStories11	01	00:15:16	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	086	varyingStories11	02	00:23:53	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	086	varyingStories11	03	00:19:14	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	086	varyingStories11	04	00:33:20	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	086	varyingStories11	05	00:16:22	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	086	varyingStories11	06	00:15:55	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	086	varyingStories11	07	00:14:43	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	086	varyingStories11	08	00:15:24	73	1024	mne header	sub-086/ses-varyingStories11/eeg/sub-086_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	087	varyingStories11	01	00:16:05	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	087	varyingStories11	02	00:14:37	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	087	varyingStories11	03	00:18:11	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	087	varyingStories11	04	00:30:07	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	087	varyingStories11	05	00:16:22	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	087	varyingStories11	06	00:14:41	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	087	varyingStories11	07	00:18:32	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	087	varyingStories11	08	00:14:48	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	087	varyingStories11	09	00:16:21	73	1024	mne header	sub-087/ses-varyingStories11/eeg/sub-087_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	088	varyingStories11	01	00:14:55	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	088	varyingStories11	02	00:32:00	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	088	varyingStories11	03	00:18:47	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	088	varyingStories11	04	00:16:01	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	088	varyingStories11	05	00:14:30	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	088	varyingStories11	06	00:16:12	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	088	varyingStories11	07	00:16:26	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	088	varyingStories11	08	00:18:53	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	088	varyingStories11	09	00:15:00	73	1024	mne header	sub-088/ses-varyingStories11/eeg/sub-088_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	089	varyingStories11	01	00:15:32	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	089	varyingStories11	02	00:15:33	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	089	varyingStories11	03	00:14:31	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	089	varyingStories11	04	00:14:44	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	089	varyingStories11	05	00:31:04	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	089	varyingStories11	06	00:18:55	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	089	varyingStories11	07	00:18:23	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	089	varyingStories11	08	00:16:28	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	089	varyingStories11	09	00:16:04	73	1024	mne header	sub-089/ses-varyingStories11/eeg/sub-089_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	090	varyingStories11	01	00:18:38	65	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	090	varyingStories11	02	00:14:35	65	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	090	varyingStories11	03	00:19:29	65	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	090	varyingStories11	04	00:15:38	65	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	090	varyingStories11	05	00:00:01	65	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	090	varyingStories11	06	00:15:59	65	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	090	varyingStories11	07	00:31:44	73	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	090	varyingStories11	08	00:14:24	73	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	090	varyingStories11	09	00:16:19	73	1024	mne header	sub-090/ses-varyingStories11/eeg/sub-090_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	091	varyingStories11	01	00:32:01	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	091	varyingStories11	02	00:18:00	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	091	varyingStories11	03	00:14:34	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	091	varyingStories11	04	00:15:45	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	091	varyingStories11	05	00:14:27	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	091	varyingStories11	06	00:16:01	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	091	varyingStories11	07	00:14:59	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	091	varyingStories11	08	00:18:01	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	091	varyingStories11	09	00:16:44	73	1024	mne header	sub-091/ses-varyingStories11/eeg/sub-091_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	092	varyingStories11	01	00:15:42	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	092	varyingStories11	02	00:14:36	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	092	varyingStories11	03	00:19:00	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	092	varyingStories11	04	00:14:35	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	092	varyingStories11	05	00:14:28	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	092	varyingStories11	06	00:18:00	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	092	varyingStories11	07	00:16:15	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	092	varyingStories11	08	00:15:53	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	092	varyingStories11	09	00:28:57	73	1024	mne header	sub-092/ses-varyingStories11/eeg/sub-092_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	093	varyingStories11	01	00:17:44	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	093	varyingStories11	02	00:16:09	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	093	varyingStories11	03	00:14:25	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	093	varyingStories11	04	00:15:33	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	093	varyingStories11	05	00:14:25	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	093	varyingStories11	06	00:14:29	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	093	varyingStories11	07	00:30:06	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	093	varyingStories11	08	00:16:08	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	093	varyingStories11	09	00:18:29	73	1024	mne header	sub-093/ses-varyingStories11/eeg/sub-093_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	094	varyingStories11	01	00:20:40	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	094	varyingStories11	02	00:15:47	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	094	varyingStories11	03	00:14:38	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	094	varyingStories11	04	00:15:58	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	094	varyingStories11	05	00:30:39	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	094	varyingStories11	06	00:16:09	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	094	varyingStories11	07	00:14:26	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	094	varyingStories11	08	00:14:53	73	1024	mne header	sub-094/ses-varyingStories11/eeg/sub-094_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	095	varyingStories11	01	00:14:37	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	095	varyingStories11	02	00:15:53	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	095	varyingStories11	03	00:14:20	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	095	varyingStories11	04	00:19:32	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	095	varyingStories11	05	00:16:18	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	095	varyingStories11	06	00:18:05	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	095	varyingStories11	07	00:00:08	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	095	varyingStories11	08	00:15:31	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	095	varyingStories11	09	00:14:15	73	1024	mne header	sub-095/ses-varyingStories11/eeg/sub-095_ses-varyingStories11_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	096	varyingStories12	01	00:13:10	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	096	varyingStories12	02	00:13:59	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	096	varyingStories12	03	00:15:55	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	096	varyingStories12	04	00:13:19	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	096	varyingStories12	05	00:12:03	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	096	varyingStories12	06	00:17:55	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	096	varyingStories12	07	00:18:00	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	096	varyingStories12	08	00:17:48	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	096	varyingStories12	09	00:17:26	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	096	varyingStories12	10	00:17:53	73	1024	mne header	sub-096/ses-varyingStories12/eeg/sub-096_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	097	varyingStories12	01	00:25:55	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	097	varyingStories12	02	00:11:03	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	097	varyingStories12	03	00:16:42	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	097	varyingStories12	04	00:13:41	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	097	varyingStories12	05	00:12:48	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	097	varyingStories12	06	00:12:55	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	097	varyingStories12	09	00:19:05	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	097	varyingStories12	10	00:19:55	73	1024	mne header	sub-097/ses-varyingStories12/eeg/sub-097_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	098	varyingStories12	01	00:13:18	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	098	varyingStories12	02	00:12:03	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	098	varyingStories12	03	00:16:44	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	098	varyingStories12	04	00:17:30	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	098	varyingStories12	05	00:12:15	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	098	varyingStories12	06	00:13:48	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	098	varyingStories12	07	00:17:29	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	098	varyingStories12	08	00:17:56	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	098	varyingStories12	09	00:17:01	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	098	varyingStories12	10	00:17:40	73	1024	mne header	sub-098/ses-varyingStories12/eeg/sub-098_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	099	varyingStories12	01	00:14:18	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	099	varyingStories12	02	00:12:03	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	099	varyingStories12	03	00:14:06	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	099	varyingStories12	04	00:12:39	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	099	varyingStories12	05	00:19:55	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	099	varyingStories12	06	00:18:14	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	099	varyingStories12	07	00:18:20	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	099	varyingStories12	08	00:18:04	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	099	varyingStories12	09	00:16:13	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	099	varyingStories12	10	00:17:38	73	1024	mne header	sub-099/ses-varyingStories12/eeg/sub-099_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	100	varyingStories12	01	00:19:13	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	100	varyingStories12	02	00:18:08	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	100	varyingStories12	04	00:19:04	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	100	varyingStories12	05	00:13:37	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	100	varyingStories12	06	00:12:49	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	100	varyingStories12	07	00:18:15	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	100	varyingStories12	08	00:18:00	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	100	varyingStories12	09	00:14:29	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	100	varyingStories12	10	00:16:14	73	1024	mne header	sub-100/ses-varyingStories12/eeg/sub-100_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	101	varyingStories12	01	00:12:21	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	101	varyingStories12	02	00:17:51	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	101	varyingStories12	03	00:16:08	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	101	varyingStories12	04	00:18:34	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	101	varyingStories12	05	00:13:27	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	101	varyingStories12	06	00:12:14	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	101	varyingStories12	07	00:17:16	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	101	varyingStories12	08	00:18:06	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	101	varyingStories12	09	00:17:30	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	101	varyingStories12	10	00:13:44	73	1024	mne header	sub-101/ses-varyingStories12/eeg/sub-101_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	102	varyingStories12	01	00:18:10	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	102	varyingStories12	02	00:13:11	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	102	varyingStories12	03	00:12:10	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	102	varyingStories12	04	00:17:59	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	102	varyingStories12	05	00:15:59	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	102	varyingStories12	06	00:13:06	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	102	varyingStories12	07	00:13:36	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	102	varyingStories12	08	00:17:31	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	102	varyingStories12	09	00:17:15	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	102	varyingStories12	10	00:17:37	73	1024	mne header	sub-102/ses-varyingStories12/eeg/sub-102_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	103	varyingStories12	01	00:14:05	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	103	varyingStories12	02	00:12:15	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	103	varyingStories12	03	00:18:29	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	103	varyingStories12	04	00:18:09	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	103	varyingStories12	05	00:14:33	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	103	varyingStories12	06	00:18:04	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	103	varyingStories12	07	00:19:34	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	103	varyingStories12	08	00:12:39	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	103	varyingStories12	09	00:16:12	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	103	varyingStories12	10	00:17:34	73	1024	mne header	sub-103/ses-varyingStories12/eeg/sub-103_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	104	varyingStories12	01	00:18:06	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	104	varyingStories12	02	00:17:56	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	104	varyingStories12	03	00:12:28	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	104	varyingStories12	04	00:20:27	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	104	varyingStories12	05	00:14:39	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	104	varyingStories12	06	00:18:08	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	104	varyingStories12	07	00:19:35	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	104	varyingStories12	08	00:16:05	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+raw	listeningActive	104	varyingStories12	09	00:13:29	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-09_eeg.bdf
+raw	listeningActive	104	varyingStories12	10	00:12:22	73	1024	mne header	sub-104/ses-varyingStories12/eeg/sub-104_ses-varyingStories12_task-listeningActive_run-10_eeg.bdf
+raw	listeningActive	105	varyingStories12	01	00:19:05	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-01_eeg.bdf
+raw	listeningActive	105	varyingStories12	02	00:14:10	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-02_eeg.bdf
+raw	listeningActive	105	varyingStories12	03	00:12:18	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-03_eeg.bdf
+raw	listeningActive	105	varyingStories12	04	00:18:20	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-04_eeg.bdf
+raw	listeningActive	105	varyingStories12	05	00:17:39	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-05_eeg.bdf
+raw	listeningActive	105	varyingStories12	06	00:12:30	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-06_eeg.bdf
+raw	listeningActive	105	varyingStories12	07	00:16:26	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-07_eeg.bdf
+raw	listeningActive	105	varyingStories12	08	00:17:29	73	1024	mne header	sub-105/ses-varyingStories12/eeg/sub-105_ses-varyingStories12_task-listeningActive_run-08_eeg.bdf
+
+Folder tree (max depth 4)
+.
+  - derivatives/
+  - stimuli/
+  - sub-001/
+  - sub-002/
+  - sub-003/
+  - sub-004/
+  - sub-005/
+  - sub-006/
+  - sub-007/
+  - sub-008/
+  - sub-009/
+  - sub-010/
+  - sub-011/
+  - sub-012/
+  - sub-013/
+  - sub-014/
+  - sub-015/
+  - sub-016/
+  - sub-017/
+  - sub-018/
+  - sub-019/
+  - sub-020/
+  - sub-021/
+  - sub-022/
+  - sub-023/
+  - sub-024/
+  - sub-025/
+  - sub-026/
+  - sub-027/
+  - sub-028/
+  - sub-029/
+  - sub-030/
+  - sub-031/
+  - sub-032/
+  - sub-033/
+  - sub-034/
+  - sub-035/
+  - sub-036/
+  - sub-037/
+  - sub-038/
+  - sub-039/
+  - sub-040/
+  - sub-041/
+  - sub-042/
+  - sub-043/
+  - sub-044/
+  - sub-045/
+  - sub-046/
+  - sub-047/
+  - sub-048/
+  - sub-049/
+  - sub-050/
+  - sub-051/
+  - sub-052/
+  - sub-053/
+  - sub-054/
+  - sub-055/
+  - sub-056/
+  - sub-057/
+  - sub-058/
+  - sub-059/
+  - sub-060/
+  - sub-061/
+  - sub-062/
+  - sub-063/
+  - sub-064/
+  - sub-065/
+  - sub-066/
+  - sub-067/
+  - sub-068/
+  - sub-069/
+  - sub-070/
+  - sub-071/
+  - sub-072/
+  - sub-073/
+  - sub-074/
+  - sub-075/
+  - sub-076/
+  - sub-077/
+  - sub-078/
+  - sub-079/
+  - sub-080/
+  - sub-081/
+  - sub-082/
+  - sub-083/
+  - sub-084/
+  - sub-085/
+  - sub-086/
+  - sub-087/
+  - sub-088/
+  - sub-089/
+  - sub-090/
+  - sub-091/
+  - sub-092/
+  - sub-093/
+  - sub-094/
+  - sub-095/
+  - sub-096/
+  - sub-097/
+  - sub-098/
+  - sub-099/
+  - sub-100/
+  - sub-101/
+  - sub-102/
+  - sub-103/
+  - sub-104/
+  - sub-105/
+  - .bids-validator-config.json
+  - dataset_description.json
+  - participants.json
+  - participants.tsv
+  - README.md
+  - task-audiogram_beh.json
+  - task-listeningActive_eeg.json
+  - task-listeningActive_events.json
+  - task-listeningActive_stimulation.json
+  - task-restingState_events.json
+    - preprocessed_eeg/
+    - preprocessed_stimuli/
+    - split_data/
+      - sub-001/
+      - sub-002/
+      - sub-003/
+      - sub-004/
+      - sub-005/
+      - sub-006/
+      - sub-007/
+      - sub-008/
+      - sub-009/
+      - sub-010/
+      - sub-011/
+      - sub-012/
+      - sub-013/
+      - sub-014/
+      - sub-015/
+      - sub-016/
+      - sub-017/
+      - sub-018/
+      - sub-019/
+      - sub-020/
+      - sub-021/
+      - sub-022/
+      - sub-023/
+      - sub-024/
+      - sub-025/
+      - sub-026/
+      - sub-027/
+      - sub-028/
+      - sub-029/
+      - sub-030/
+      - sub-031/
+      - sub-032/
+      - sub-033/
+      - sub-034/
+      - sub-035/
+      - sub-036/
+      - sub-037/
+      - sub-038/
+      - sub-039/
+      - sub-040/
+      - sub-041/
+      - sub-042/
+      - sub-043/
+      - sub-044/
+      - sub-045/
+      - sub-046/
+      - sub-047/
+      - sub-048/
+      - sub-049/
+      - sub-050/
+      - sub-051/
+      - sub-052/
+      - sub-053/
+      - sub-054/
+      - sub-055/
+      - sub-056/
+      - sub-057/
+      - sub-058/
+      - sub-059/
+      - sub-060/
+      - sub-061/
+      - sub-062/
+      - sub-063/
+      - sub-064/
+      - sub-065/
+      - sub-066/
+      - sub-067/
+      - sub-068/
+      - sub-069/
+      - sub-070/
+      - sub-071/
+      - sub-072/
+      - sub-073/
+      - sub-074/
+      - sub-075/
+      - sub-076/
+      - sub-077/
+      - sub-078/
+      - sub-079/
+      - sub-080/
+      - sub-081/
+      - sub-082/
+      - sub-083/
+      - sub-084/
+      - sub-085/
+      - sub-086/
+      - sub-087/
+      - sub-088/
+      - sub-089/
+      - sub-090/
+      - sub-091/
+      - sub-092/
+      - sub-093/
+      - sub-094/
+      - sub-095/
+      - sub-096/
+      - sub-097/
+      - sub-098/
+      - sub-099/
+      - sub-100/
+      - sub-101/
+      - sub-102/
+      - sub-103/
+      - sub-104/
+      - sub-105/
+      - .save_metadata.json
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-shortstories01/
+        - ses-varyingStories01/
+        - ses-varyingStories01/
+        - ses-varyingStories01/
+        - ses-varyingStories01/
+        - ses-varyingStories01/
+        - ses-varyingStories02/
+        - ses-varyingStories02/
+        - ses-varyingStories02/
+        - ses-varyingStories02/
+        - ses-varyingStories02/
+        - ses-varyingStories03/
+        - ses-varyingStories03/
+        - ses-varyingStories03/
+        - ses-varyingStories03/
+        - ses-varyingStories03/
+        - ses-varyingStories03/
+        - ses-varyingStories04/
+        - ses-varyingStories04/
+        - ses-varyingStories04/
+        - ses-varyingStories04/
+        - ses-varyingStories05/
+        - ses-varyingStories05/
+        - ses-varyingStories06/
+        - ses-varyingStories06/
+        - ses-varyingStories06/
+        - ses-varyingStories06/
+        - ses-varyingStories06/
+        - ses-varyingStories06/
+        - ses-varyingStories06/
+        - ses-varyingStories06/
+        - ses-varyingStories07/
+        - ses-varyingStories07/
+        - ses-varyingStories07/
+        - ses-varyingStories07/
+        - ses-varyingStories07/
+        - ses-varyingStories07/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories08/
+        - ses-varyingStories09/
+        - ses-varyingStories09/
+        - ses-varyingStories09/
+        - ses-varyingStories09/
+        - ses-varyingStories09/
+        - ses-varyingStories09/
+        - ses-varyingStories09/
+        - ses-varyingStories10/
+        - ses-varyingStories10/
+        - ses-varyingStories10/
+        - ses-varyingStories10/
+        - ses-varyingStories10/
+        - ses-varyingStories10/
+        - ses-varyingStories10/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories11/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+        - ses-varyingStories12/
+      - .save_metadata.json
+      - audiobook_1.data_dict
+      - audiobook_10_1.data_dict
+      - audiobook_10_1_-_envelope.npy
+      - audiobook_10_1_-_mel.npy
+      - audiobook_10_1_-_mel_mvn.npy
+      - audiobook_10_1_-_wav2vec_19.npy
+      - audiobook_10_2.data_dict
+      - audiobook_10_2_-_envelope.npy
+      - audiobook_10_2_-_mel.npy
+      - audiobook_10_2_-_mel_mvn.npy
+      - audiobook_10_2_-_wav2vec_19.npy
+      - audiobook_11_1.data_dict
+      - audiobook_11_1_-_envelope.npy
+      - audiobook_11_1_-_mel.npy
+      - audiobook_11_1_-_mel_mvn.npy
+      - audiobook_11_1_-_wav2vec_19.npy
+      - audiobook_11_2.data_dict
+      - audiobook_11_2_-_envelope.npy
+      - audiobook_11_2_-_mel.npy
+      - audiobook_11_2_-_mel_mvn.npy
+      - audiobook_11_2_-_wav2vec_19.npy
+      - audiobook_12_1.data_dict
+      - audiobook_12_1_-_envelope.npy
+      - audiobook_12_1_-_mel.npy
+      - audiobook_12_1_-_mel_mvn.npy
+      - audiobook_12_1_-_wav2vec_19.npy
+      - audiobook_12_2.data_dict
+      - audiobook_12_2_-_envelope.npy
+      - audiobook_12_2_-_mel.npy
+      - audiobook_12_2_-_mel_mvn.npy
+      - audiobook_12_2_-_wav2vec_19.npy
+      - audiobook_13_1.data_dict
+      - audiobook_13_1_-_envelope.npy
+      - audiobook_13_1_-_mel.npy
+      - audiobook_13_1_-_mel_mvn.npy
+      - audiobook_13_1_-_wav2vec_19.npy
+      - audiobook_13_2.data_dict
+      - audiobook_13_2_-_envelope.npy
+      - audiobook_13_2_-_mel.npy
+      - audiobook_13_2_-_mel_mvn.npy
+      - audiobook_13_2_-_wav2vec_19.npy
+      - audiobook_14_1.data_dict
+      - audiobook_14_1_-_envelope.npy
+      - audiobook_14_1_-_mel.npy
+      - audiobook_14_1_-_mel_mvn.npy
+      - audiobook_14_1_-_wav2vec_19.npy
+      - audiobook_14_2.data_dict
+      - audiobook_14_2_-_envelope.npy
+      - audiobook_14_2_-_mel.npy
+      - audiobook_14_2_-_mel_mvn.npy
+      - audiobook_14_2_-_wav2vec_19.npy
+      - audiobook_15_10_-_mel_mvn.npy
+      - audiobook_15_10_-_wav2vec_19.npy
+      - audiobook_15_11_-_mel_mvn.npy
+      - audiobook_15_11_-_wav2vec_19.npy
+      - audiobook_15_12_-_mel_mvn.npy
+      - audiobook_15_12_-_wav2vec_19.npy
+      - audiobook_15_13_-_mel_mvn.npy
+      - audiobook_15_13_-_wav2vec_19.npy
+      - audiobook_15_14_-_mel_mvn.npy
+      - audiobook_15_14_-_wav2vec_19.npy
+      - audiobook_15_15_-_mel_mvn.npy
+      - audiobook_15_15_-_wav2vec_19.npy
+      - audiobook_15_16_-_mel_mvn.npy
+      - audiobook_15_16_-_wav2vec_19.npy
+      - audiobook_15_17_-_mel_mvn.npy
+      - audiobook_15_17_-_wav2vec_19.npy
+      - audiobook_15_18_-_mel_mvn.npy
+      - audiobook_15_18_-_wav2vec_19.npy
+      - audiobook_15_19_-_mel_mvn.npy
+      - audiobook_15_19_-_wav2vec_19.npy
+      - audiobook_15_1_-_mel_mvn.npy
+      - audiobook_15_1_-_wav2vec_19.npy
+      - audiobook_15_20_-_mel_mvn.npy
+      - audiobook_15_20_-_wav2vec_19.npy
+      - audiobook_15_21_-_mel_mvn.npy
+      - audiobook_15_21_-_wav2vec_19.npy
+      - audiobook_15_22_-_mel_mvn.npy
+      - audiobook_15_22_-_wav2vec_19.npy
+      - audiobook_15_23_-_mel_mvn.npy
+      - audiobook_15_23_-_wav2vec_19.npy
+      - audiobook_15_24_-_mel_mvn.npy
+      - audiobook_15_24_-_wav2vec_19.npy
+      - audiobook_15_25_-_mel_mvn.npy
+      - audiobook_15_25_-_wav2vec_19.npy
+      - audiobook_15_26_-_mel_mvn.npy
+      - audiobook_15_26_-_wav2vec_19.npy
+      - audiobook_15_27_-_mel_mvn.npy
+      - audiobook_15_27_-_wav2vec_19.npy
+      - audiobook_15_28_-_mel_mvn.npy
+      - audiobook_15_28_-_wav2vec_19.npy
+      - audiobook_15_29_-_mel_mvn.npy
+      - audiobook_15_29_-_wav2vec_19.npy
+      - audiobook_15_2_-_mel_mvn.npy
+      - audiobook_15_2_-_wav2vec_19.npy
+      - audiobook_15_30_-_mel_mvn.npy
+      - audiobook_15_30_-_wav2vec_19.npy
+      - audiobook_15_31_-_mel_mvn.npy
+      - audiobook_15_31_-_wav2vec_19.npy
+      - audiobook_15_32_-_mel_mvn.npy
+      - audiobook_15_32_-_wav2vec_19.npy
+      - audiobook_15_33_-_mel_mvn.npy
+      - audiobook_15_33_-_wav2vec_19.npy
+      - audiobook_15_34_-_mel_mvn.npy
+      - audiobook_15_34_-_wav2vec_19.npy
+      - audiobook_15_35_-_mel_mvn.npy
+      - audiobook_15_35_-_wav2vec_19.npy
+      - audiobook_15_36_-_mel_mvn.npy
+      - audiobook_15_36_-_wav2vec_19.npy
+      - audiobook_15_37_-_mel_mvn.npy
+      - audiobook_15_37_-_wav2vec_19.npy
+      - audiobook_15_38_-_mel_mvn.npy
+      - audiobook_15_38_-_wav2vec_19.npy
+      - audiobook_15_39_-_mel_mvn.npy
+      - audiobook_15_39_-_wav2vec_19.npy
+      - audiobook_15_3_-_mel_mvn.npy
+      - audiobook_15_3_-_wav2vec_19.npy
+      - audiobook_15_40_-_mel_mvn.npy
+      - audiobook_15_40_-_wav2vec_19.npy
+      - audiobook_15_4_-_mel_mvn.npy
+      - audiobook_15_4_-_wav2vec_19.npy
+      - audiobook_15_5_-_mel_mvn.npy
+      - audiobook_15_5_-_wav2vec_19.npy
+      - audiobook_15_6_-_mel_mvn.npy
+      - audiobook_15_6_-_wav2vec_19.npy
+      - audiobook_15_7_-_mel_mvn.npy
+      - audiobook_15_7_-_wav2vec_19.npy
+      - audiobook_15_8_-_mel_mvn.npy
+      - audiobook_15_8_-_wav2vec_19.npy
+      - audiobook_15_9_-_mel_mvn.npy
+      - audiobook_15_9_-_wav2vec_19.npy
+      - audiobook_16_1.data_dict
+      - audiobook_16_1_-_envelope.npy
+      - audiobook_16_1_-_mel.npy
+      - audiobook_16_1_-_omsimel.npy
+      - audiobook_16_1_-_wav2vec_19.npy
+      - audiobook_16_2.data_dict
+      - audiobook_16_2_-_envelope.npy
+      - audiobook_16_2_-_mel.npy
+      - audiobook_16_2_-_omsimel.npy
+      - audiobook_16_2_-_wav2vec_19.npy
+      - audiobook_17_1.data_dict
+      - audiobook_17_1_-_envelope.npy
+      - audiobook_17_1_-_mel.npy
+      - audiobook_17_1_-_omsimel.npy
+      - audiobook_17_1_-_wav2vec_19.npy
+      - audiobook_17_2.data_dict
+      - audiobook_17_2_-_envelope.npy
+      - audiobook_17_2_-_mel.npy
+      - audiobook_17_2_-_omsimel.npy
+      - audiobook_17_2_-_wav2vec_19.npy
+      - audiobook_1_-_envelope.npy
+      - audiobook_1_-_mel.npy
+      - audiobook_1_-_mel_mvn.npy
+      - audiobook_1_-_omsimel.npy
+      - audiobook_1_-_wav2vec_19.npy
+      - audiobook_1_1.data_dict
+      - audiobook_1_1_-_envelope.npy
+      - audiobook_1_1_-_mel.npy
+      - audiobook_1_1_-_mel_mvn.npy
+      - audiobook_1_1_-_wav2vec_19.npy
+      - audiobook_1_1_shifted.data_dict
+      - audiobook_1_1_shifted_-_envelope.npy
+      - audiobook_1_1_shifted_-_mel.npy
+      - audiobook_1_1_shifted_-_mel_mvn.npy
+      - audiobook_1_1_shifted_-_wav2vec_19.npy
+      - audiobook_1_2.data_dict
+      - audiobook_1_2_-_envelope.npy
+      - audiobook_1_2_-_mel.npy
+      - audiobook_1_2_-_mel_mvn.npy
+      - audiobook_1_2_-_wav2vec_19.npy
+      - audiobook_1_2_shifted.data_dict
+      - audiobook_1_2_shifted_-_envelope.npy
+      - audiobook_1_2_shifted_-_mel.npy
+      - audiobook_1_2_shifted_-_mel_mvn.npy
+      - audiobook_1_artefact.data_dict
+      - audiobook_1_artefact_-_envelope.npy
+      - audiobook_1_artefact_-_mel.npy
+      - audiobook_1_artefact_-_wav2vec_19.npy
+      - audiobook_2_1.data_dict
+      - audiobook_2_1_-_envelope.npy
+      - audiobook_2_1_-_mel.npy
+      - audiobook_2_1_-_mel_mvn.npy
+      - audiobook_2_1_-_wav2vec_19.npy
+      - audiobook_2_2.data_dict
+      - audiobook_2_2_-_envelope.npy
+      - audiobook_2_2_-_mel.npy
+      - audiobook_2_2_-_mel_mvn.npy
+      - audiobook_2_2_-_wav2vec_19.npy
+      - audiobook_3.data_dict
+      - audiobook_3_-_envelope.npy
+      - audiobook_3_-_mel.npy
+      - audiobook_3_-_mel_mvn.npy
+      - audiobook_3_-_wav2vec_19.npy
+      - audiobook_4.data_dict
+      - audiobook_4_-_envelope.npy
+      - audiobook_4_-_mel.npy
+      - audiobook_4_-_mel_mvn.npy
+      - audiobook_4_-_wav2vec_19.npy
+      - audiobook_5_1.data_dict
+      - audiobook_5_1_-_envelope.npy
+      - audiobook_5_1_-_mel.npy
+      - audiobook_5_1_-_mel_mvn.npy
+      - audiobook_5_1_-_wav2vec_19.npy
+      - audiobook_5_2.data_dict
+      - audiobook_5_2_-_envelope.npy
+      - audiobook_5_2_-_mel.npy
+      - audiobook_5_2_-_mel_mvn.npy
+      - audiobook_5_2_-_wav2vec_19.npy
+      - audiobook_5_3.data_dict
+      - audiobook_5_3_-_envelope.npy
+      - audiobook_5_3_-_mel.npy
+      - audiobook_5_3_-_mel_mvn.npy
+      - audiobook_5_3_-_wav2vec_19.npy
+      - audiobook_6_1.data_dict
+      - audiobook_6_1_-_envelope.npy
+      - audiobook_6_1_-_mel.npy
+      - audiobook_6_1_-_mel_mvn.npy
+      - audiobook_6_1_-_wav2vec_19.npy
+      - audiobook_6_1_swn_-_wav2vec_19.npy
+      - audiobook_6_2.data_dict
+      - audiobook_6_2_-_envelope.npy
+      - audiobook_6_2_-_mel.npy
+      - audiobook_6_2_-_mel_mvn.npy
+      - audiobook_6_2_-_wav2vec_19.npy
+      - audiobook_7_1.data_dict
+      - audiobook_7_1_-_envelope.npy
+      - audiobook_7_1_-_mel.npy
+      - audiobook_7_1_-_mel_mvn.npy
+      - audiobook_7_1_-_wav2vec_19.npy
+      - audiobook_7_2.data_dict
+      - audiobook_7_2_-_envelope.npy
+      - audiobook_7_2_-_mel.npy
+      - audiobook_7_2_-_mel_mvn.npy
+      - audiobook_7_2_-_wav2vec_19.npy
+      - audiobook_7_3.data_dict
+      - audiobook_7_3_-_envelope.npy
+      - audiobook_7_3_-_mel.npy
+      - audiobook_7_3_-_mel_mvn.npy
+      - audiobook_7_3_-_wav2vec_19.npy
+      - audiobook_7_4.data_dict
+      - audiobook_7_4_-_envelope.npy
+      - audiobook_7_4_-_mel.npy
+      - audiobook_7_4_-_mel_mvn.npy
+      - audiobook_7_4_-_wav2vec_19.npy
+      - audiobook_7_5.data_dict
+      - audiobook_7_5_-_envelope.npy
+      - audiobook_7_5_-_mel.npy
+      - audiobook_7_5_-_mel_mvn.npy
+      - audiobook_7_5_-_wav2vec_19.npy
+      - audiobook_7_6.data_dict
+      - audiobook_7_6_-_envelope.npy
+      - audiobook_7_6_-_mel.npy
+      - audiobook_7_6_-_mel_mvn.npy
+      - audiobook_7_6_-_wav2vec_19.npy
+      - audiobook_8_1.data_dict
+      - audiobook_8_1_-_envelope.npy
+      - audiobook_8_1_-_mel.npy
+      - audiobook_8_1_-_mel_mvn.npy
+      - audiobook_8_1_-_wav2vec_19.npy
+      - audiobook_8_2.data_dict
+      - audiobook_8_2_-_envelope.npy
+      - audiobook_8_2_-_mel.npy
+      - audiobook_8_2_-_mel_mvn.npy
+      - audiobook_8_2_-_wav2vec_19.npy
+      - audiobook_9_1.data_dict
+      - audiobook_9_1_-_envelope.npy
+      - audiobook_9_1_-_mel.npy
+      - audiobook_9_1_-_mel_mvn.npy
+      - audiobook_9_1_-_wav2vec_19.npy
+      - audiobook_9_2.data_dict
+      - audiobook_9_2_-_envelope.npy
+      - audiobook_9_2_-_mel.npy
+      - audiobook_9_2_-_mel_mvn.npy
+      - audiobook_9_2_-_wav2vec_19.npy
+      - misc_10_-_wav2vec_19.npy
+      - misc_11_-_wav2vec_19.npy
+      - misc_12_-_wav2vec_19.npy
+      - misc_13_-_wav2vec_19.npy
+      - misc_14_-_wav2vec_19.npy
+      - misc_1_-_wav2vec_19.npy
+      - misc_2_-_wav2vec_19.npy
+      - misc_3_-_wav2vec_19.npy
+      - misc_4_-_wav2vec_19.npy
+      - misc_5_-_wav2vec_19.npy
+      - misc_6_-_wav2vec_19.npy
+      - misc_7_-_wav2vec_19.npy
+      - misc_8_-_wav2vec_19.npy
+      - misc_9_-_wav2vec_19.npy
+      - podcast_1.data_dict
+      - podcast_10.data_dict
+      - podcast_10_-_envelope.npy
+      - podcast_10_-_mel.npy
+      - podcast_10_-_mel_mvn.npy
+      - podcast_10_-_wav2vec_19.npy
+      - podcast_10_video_-_mel_mvn.npy
+      - podcast_10_video_-_wav2vec_19.npy
+      - podcast_11.data_dict
+      - podcast_11_-_envelope.npy
+      - podcast_11_-_mel.npy
+      - podcast_11_-_mel_mvn.npy
+      - podcast_11_-_wav2vec_19.npy
+      - podcast_12.data_dict
+      - podcast_12_-_envelope.npy
+      - podcast_12_-_mel.npy
+      - podcast_12_-_mel_mvn.npy
+      - podcast_12_-_wav2vec_19.npy
+      - podcast_13.data_dict
+      - podcast_13_-_envelope.npy
+      - podcast_13_-_mel.npy
+      - podcast_13_-_mel_mvn.npy
+      - podcast_13_-_wav2vec_19.npy
+      - podcast_14.data_dict
+      - podcast_14_-_envelope.npy
+      - podcast_14_-_mel.npy
+      - podcast_14_-_mel_mvn.npy
+      - podcast_14_-_wav2vec_19.npy
+      - podcast_15.data_dict
+      - podcast_15_-_envelope.npy
+      - podcast_15_-_mel.npy
+      - podcast_15_-_mel_mvn.npy
+      - podcast_15_-_wav2vec_19.npy
+      - podcast_16.data_dict
+      - podcast_16_-_envelope.npy
+      - podcast_16_-_mel.npy
+      - podcast_16_-_mel_mvn.npy
+      - podcast_16_-_wav2vec_19.npy
+      - podcast_17.data_dict
+      - podcast_17_-_envelope.npy
+      - podcast_17_-_mel.npy
+      - podcast_17_-_mel_mvn.npy
+      - podcast_17_-_wav2vec_19.npy
+      - podcast_18.data_dict
+      - podcast_18_-_envelope.npy
+      - podcast_18_-_mel.npy
+      - podcast_18_-_mel_mvn.npy
+      - podcast_18_-_wav2vec_19.npy
+      - podcast_19.data_dict
+      - podcast_19_-_envelope.npy
+      - podcast_19_-_mel.npy
+      - podcast_19_-_mel_mvn.npy
+      - podcast_19_-_wav2vec_19.npy
+      - podcast_1_-_envelope.npy
+      - podcast_1_-_mel.npy
+      - podcast_1_-_mel_mvn.npy
+      - podcast_1_-_wav2vec_19.npy
+      - podcast_2.data_dict
+      - podcast_20.data_dict
+      - podcast_20_-_envelope.npy
+      - podcast_20_-_mel.npy
+      - podcast_20_-_mel_mvn.npy
+      - podcast_20_-_wav2vec_19.npy
+      - podcast_21.data_dict
+      - podcast_21_-_envelope.npy
+      - podcast_21_-_mel.npy
+      - podcast_21_-_mel_mvn.npy
+      - podcast_21_-_wav2vec_19.npy
+      - podcast_22.data_dict
+      - podcast_22_-_envelope.npy
+      - podcast_22_-_mel.npy
+      - podcast_22_-_mel_mvn.npy
+      - podcast_22_-_wav2vec_19.npy
+      - podcast_23.data_dict
+      - podcast_23_-_envelope.npy
+      - podcast_23_-_mel.npy
+      - podcast_23_-_mel_mvn.npy
+      - podcast_23_-_wav2vec_19.npy
+      - podcast_24.data_dict
+      - podcast_24_-_envelope.npy
+      - podcast_24_-_mel.npy
+      - podcast_24_-_mel_mvn.npy
+      - podcast_24_-_wav2vec_19.npy
+      - podcast_25.data_dict
+      - podcast_25_-_envelope.npy
+      - podcast_25_-_mel.npy
+      - podcast_25_-_mel_mvn.npy
+      - podcast_25_-_wav2vec_19.npy
+      - podcast_26.data_dict
+      - podcast_26_-_envelope.npy
+      - podcast_26_-_mel.npy
+      - podcast_26_-_mel_mvn.npy
+      - podcast_26_-_wav2vec_19.npy
+      - podcast_27.data_dict
+      - podcast_27_-_envelope.npy
+      - podcast_27_-_mel.npy
+      - podcast_27_-_mel_mvn.npy
+      - podcast_27_-_wav2vec_19.npy
+      - podcast_28.data_dict
+      - podcast_28_-_envelope.npy
+      - podcast_28_-_mel.npy
+      - podcast_28_-_mel_mvn.npy
+      - podcast_28_-_wav2vec_19.npy
+      - podcast_29.data_dict
+      - podcast_29_-_envelope.npy
+      - podcast_29_-_mel.npy
+      - podcast_29_-_mel_mvn.npy
+      - podcast_29_-_wav2vec_19.npy
+      - podcast_2_-_envelope.npy
+      - podcast_2_-_mel.npy
+      - podcast_2_-_mel_mvn.npy
+      - podcast_2_-_wav2vec_19.npy
+      - podcast_3.data_dict
+      - podcast_30.data_dict
+      - podcast_30_-_envelope.npy
+      - podcast_30_-_mel.npy
+      - podcast_30_-_mel_mvn.npy
+      - podcast_30_-_wav2vec_19.npy
+      - podcast_31.data_dict
+      - podcast_31_-_envelope.npy
+      - podcast_31_-_mel.npy
+      - podcast_31_-_mel_mvn.npy
+      - podcast_31_-_wav2vec_19.npy
+      - podcast_32.data_dict
+      - podcast_32_-_envelope.npy
+      - podcast_32_-_mel.npy
+      - podcast_32_-_mel_mvn.npy
+      - podcast_32_-_wav2vec_19.npy
+      - podcast_33.data_dict
+      - podcast_33_-_envelope.npy
+      - podcast_33_-_mel.npy
+      - podcast_33_-_mel_mvn.npy
+      - podcast_33_-_wav2vec_19.npy
+      - podcast_34.data_dict
+      - podcast_34_-_envelope.npy
+      - podcast_34_-_mel.npy
+      - podcast_34_-_mel_mvn.npy
+      - podcast_34_-_wav2vec_19.npy
+      - podcast_35.data_dict
+      - podcast_35_-_envelope.npy
+      - podcast_35_-_mel.npy
+      - podcast_35_-_mel_mvn.npy
+      - podcast_35_-_wav2vec_19.npy
+      - podcast_36.data_dict
+      - podcast_36_-_envelope.npy
+      - podcast_36_-_mel.npy
+      - podcast_36_-_mel_mvn.npy
+      - podcast_36_-_wav2vec_19.npy
+      - podcast_37.data_dict
+      - podcast_37_-_envelope.npy
+      - podcast_37_-_mel.npy
+      - podcast_37_-_mel_mvn.npy
+      - podcast_37_-_wav2vec_19.npy
+      - podcast_38.data_dict
+      - podcast_38_-_envelope.npy
+      - podcast_38_-_mel.npy
+      - podcast_38_-_omsimel.npy
+      - podcast_38_-_wav2vec_19.npy
+      - podcast_39.data_dict
+      - podcast_39_-_envelope.npy
+      - podcast_39_-_mel.npy
+      - podcast_39_-_omsimel.npy
+      - podcast_39_-_wav2vec_19.npy
+      - podcast_3_-_envelope.npy
+      - podcast_3_-_mel.npy
+      - podcast_3_-_mel_mvn.npy
+      - podcast_3_-_wav2vec_1.npy
+      - podcast_3_-_wav2vec_19.npy
+      - podcast_4.data_dict
+      - podcast_40.data_dict
+      - podcast_40_-_envelope.npy
+      - podcast_40_-_mel.npy
+      - podcast_40_-_omsimel.npy
+      - podcast_40_-_wav2vec_19.npy
+      - podcast_41.data_dict
+      - podcast_41_-_envelope.npy
+      - podcast_41_-_mel.npy
+      - podcast_41_-_omsimel.npy
+      - podcast_41_-_wav2vec_19.npy
+      - podcast_42.data_dict
+      - podcast_42_-_envelope.npy
+      - podcast_42_-_mel.npy
+      - podcast_42_-_omsimel.npy
+      - podcast_42_-_wav2vec_19.npy
+      - podcast_43.data_dict
+      - podcast_43_-_envelope.npy
+      - podcast_43_-_mel.npy
+      - podcast_43_-_omsimel.npy
+      - podcast_43_-_wav2vec_19.npy
+      - podcast_44.data_dict
+      - podcast_44_-_envelope.npy
+      - podcast_44_-_mel.npy
+      - podcast_44_-_omsimel.npy
+      - podcast_44_-_wav2vec_19.npy
+      - podcast_45.data_dict
+      - podcast_45_-_envelope.npy
+      - podcast_45_-_mel.npy
+      - podcast_45_-_omsimel.npy
+      - podcast_45_-_wav2vec_19.npy
+      - podcast_4_-_envelope.npy
+      - podcast_4_-_mel.npy
+      - podcast_4_-_mel_mvn.npy
+      - podcast_4_-_wav2vec_19.npy
+      - podcast_5.data_dict
+      - podcast_5_-_envelope.npy
+      - podcast_5_-_mel.npy
+      - podcast_5_-_mel_mvn.npy
+      - podcast_5_-_wav2vec_19.npy
+      - podcast_6.data_dict
+      - podcast_6_-_envelope.npy
+      - podcast_6_-_mel.npy
+      - podcast_6_-_mel_mvn.npy
+      - podcast_6_-_wav2vec_19.npy
+      - podcast_7.data_dict
+      - podcast_7_-_envelope.npy
+      - podcast_7_-_mel.npy
+      - podcast_7_-_mel_mvn.npy
+      - podcast_7_-_wav2vec_19.npy
+      - podcast_8.data_dict
+      - podcast_8_-_envelope.npy
+      - podcast_8_-_mel.npy
+      - podcast_8_-_mel_mvn.npy
+      - podcast_8_-_wav2vec_19.npy
+      - podcast_9.data_dict
+      - podcast_9_-_envelope.npy
+      - podcast_9_-_mel.npy
+      - podcast_9_-_mel_mvn.npy
+      - podcast_9_-_wav2vec_19.npy
+      - test_-_sub-001_-_audiobook_1_-_eeg.npy
+      - test_-_sub-001_-_audiobook_1_-_envelope.npy
+      - test_-_sub-001_-_audiobook_1_-_mel.npy
+      - test_-_sub-001_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-001_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-001_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-001_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-001_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-001_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-001_-_audiobook_3_-_eeg.npy
+      - test_-_sub-001_-_audiobook_3_-_envelope.npy
+      - test_-_sub-001_-_audiobook_3_-_mel.npy
+      - test_-_sub-001_-_audiobook_4_-_eeg.npy
+      - test_-_sub-001_-_audiobook_4_-_envelope.npy
+      - test_-_sub-001_-_audiobook_4_-_mel.npy
+      - test_-_sub-001_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-001_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-001_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-001_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-001_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-001_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-001_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-001_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-001_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-001_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-001_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-001_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-001_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-001_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-001_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-002_-_audiobook_1_-_eeg.npy
+      - test_-_sub-002_-_audiobook_1_-_envelope.npy
+      - test_-_sub-002_-_audiobook_1_-_mel.npy
+      - test_-_sub-002_-_audiobook_1_artefact_-_eeg.npy
+      - test_-_sub-002_-_audiobook_1_artefact_-_envelope.npy
+      - test_-_sub-002_-_audiobook_1_artefact_-_mel.npy
+      - test_-_sub-002_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-002_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-002_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-002_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-002_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-002_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-002_-_audiobook_3_-_eeg.npy
+      - test_-_sub-002_-_audiobook_3_-_envelope.npy
+      - test_-_sub-002_-_audiobook_3_-_mel.npy
+      - test_-_sub-002_-_audiobook_4_-_eeg.npy
+      - test_-_sub-002_-_audiobook_4_-_envelope.npy
+      - test_-_sub-002_-_audiobook_4_-_mel.npy
+      - test_-_sub-002_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-002_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-002_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-002_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-002_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-002_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-002_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-002_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-002_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-002_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-002_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-002_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-002_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-002_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-002_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-003_-_audiobook_1_-_eeg.npy
+      - test_-_sub-003_-_audiobook_1_-_envelope.npy
+      - test_-_sub-003_-_audiobook_1_-_mel.npy
+      - test_-_sub-003_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-003_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-003_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-003_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-003_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-003_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-003_-_audiobook_3_-_eeg.npy
+      - test_-_sub-003_-_audiobook_3_-_envelope.npy
+      - test_-_sub-003_-_audiobook_3_-_mel.npy
+      - test_-_sub-003_-_audiobook_4_-_eeg.npy
+      - test_-_sub-003_-_audiobook_4_-_envelope.npy
+      - test_-_sub-003_-_audiobook_4_-_mel.npy
+      - test_-_sub-003_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-003_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-003_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-003_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-003_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-003_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-003_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-003_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-003_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-003_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-003_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-003_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-003_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-003_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-003_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-004_-_audiobook_1_-_eeg.npy
+      - test_-_sub-004_-_audiobook_1_-_envelope.npy
+      - test_-_sub-004_-_audiobook_1_-_mel.npy
+      - test_-_sub-004_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-004_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-004_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-004_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-004_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-004_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-004_-_audiobook_3_-_eeg.npy
+      - test_-_sub-004_-_audiobook_3_-_envelope.npy
+      - test_-_sub-004_-_audiobook_3_-_mel.npy
+      - test_-_sub-005_-_audiobook_1_-_eeg.npy
+      - test_-_sub-005_-_audiobook_1_-_envelope.npy
+      - test_-_sub-005_-_audiobook_1_-_mel.npy
+      - test_-_sub-005_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-005_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-005_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-005_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-005_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-005_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-005_-_audiobook_3_-_eeg.npy
+      - test_-_sub-005_-_audiobook_3_-_envelope.npy
+      - test_-_sub-005_-_audiobook_3_-_mel.npy
+      - test_-_sub-005_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-005_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-005_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-005_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-005_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-005_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-005_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-005_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-005_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-005_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-005_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-005_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-005_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-005_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-005_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-006_-_audiobook_1_-_eeg.npy
+      - test_-_sub-006_-_audiobook_1_-_envelope.npy
+      - test_-_sub-006_-_audiobook_1_-_mel.npy
+      - test_-_sub-006_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-006_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-006_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-006_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-006_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-006_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-006_-_audiobook_3_-_eeg.npy
+      - test_-_sub-006_-_audiobook_3_-_envelope.npy
+      - test_-_sub-006_-_audiobook_3_-_mel.npy
+      - test_-_sub-006_-_audiobook_4_-_eeg.npy
+      - test_-_sub-006_-_audiobook_4_-_envelope.npy
+      - test_-_sub-006_-_audiobook_4_-_mel.npy
+      - test_-_sub-006_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-006_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-006_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-006_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-006_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-006_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-006_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-006_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-006_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-006_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-006_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-006_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-007_-_audiobook_1_-_eeg.npy
+      - test_-_sub-007_-_audiobook_1_-_envelope.npy
+      - test_-_sub-007_-_audiobook_1_-_mel.npy
+      - test_-_sub-007_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-007_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-007_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-007_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-007_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-007_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-007_-_audiobook_3_-_eeg.npy
+      - test_-_sub-007_-_audiobook_3_-_envelope.npy
+      - test_-_sub-007_-_audiobook_3_-_mel.npy
+      - test_-_sub-007_-_audiobook_4_-_eeg.npy
+      - test_-_sub-007_-_audiobook_4_-_envelope.npy
+      - test_-_sub-007_-_audiobook_4_-_mel.npy
+      - test_-_sub-007_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-007_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-007_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-007_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-007_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-007_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-007_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-007_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-007_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-007_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-007_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-007_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-007_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-007_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-007_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-008_-_audiobook_1_-_eeg.npy
+      - test_-_sub-008_-_audiobook_1_-_envelope.npy
+      - test_-_sub-008_-_audiobook_1_-_mel.npy
+      - test_-_sub-008_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-008_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-008_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-008_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-008_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-008_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-008_-_audiobook_3_-_eeg.npy
+      - test_-_sub-008_-_audiobook_3_-_envelope.npy
+      - test_-_sub-008_-_audiobook_3_-_mel.npy
+      - test_-_sub-008_-_audiobook_4_-_eeg.npy
+      - test_-_sub-008_-_audiobook_4_-_envelope.npy
+      - test_-_sub-008_-_audiobook_4_-_mel.npy
+      - test_-_sub-008_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-008_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-008_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-008_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-008_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-008_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-008_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-008_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-008_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-008_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-008_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-008_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-008_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-008_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-008_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-009_-_audiobook_1_-_eeg.npy
+      - test_-_sub-009_-_audiobook_1_-_envelope.npy
+      - test_-_sub-009_-_audiobook_1_-_mel.npy
+      - test_-_sub-009_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-009_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-009_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-009_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-009_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-009_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-009_-_audiobook_3_-_eeg.npy
+      - test_-_sub-009_-_audiobook_3_-_envelope.npy
+      - test_-_sub-009_-_audiobook_3_-_mel.npy
+      - test_-_sub-009_-_audiobook_4_-_eeg.npy
+      - test_-_sub-009_-_audiobook_4_-_envelope.npy
+      - test_-_sub-009_-_audiobook_4_-_mel.npy
+      - test_-_sub-009_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-009_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-009_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-009_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-009_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-009_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-009_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-009_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-009_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-009_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-009_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-009_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-009_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-009_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-009_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-010_-_audiobook_1_-_eeg.npy
+      - test_-_sub-010_-_audiobook_1_-_envelope.npy
+      - test_-_sub-010_-_audiobook_1_-_mel.npy
+      - test_-_sub-010_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-010_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-010_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-010_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-010_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-010_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-010_-_audiobook_3_-_eeg.npy
+      - test_-_sub-010_-_audiobook_3_-_envelope.npy
+      - test_-_sub-010_-_audiobook_3_-_mel.npy
+      - test_-_sub-010_-_audiobook_4_-_eeg.npy
+      - test_-_sub-010_-_audiobook_4_-_envelope.npy
+      - test_-_sub-010_-_audiobook_4_-_mel.npy
+      - test_-_sub-010_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-010_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-010_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-010_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-010_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-010_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-010_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-010_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-010_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-010_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-010_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-010_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-010_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-010_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-010_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-011_-_audiobook_1_-_eeg.npy
+      - test_-_sub-011_-_audiobook_1_-_envelope.npy
+      - test_-_sub-011_-_audiobook_1_-_mel.npy
+      - test_-_sub-011_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-011_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-011_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-011_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-011_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-011_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-011_-_audiobook_3_-_eeg.npy
+      - test_-_sub-011_-_audiobook_3_-_envelope.npy
+      - test_-_sub-011_-_audiobook_3_-_mel.npy
+      - test_-_sub-011_-_audiobook_4_-_eeg.npy
+      - test_-_sub-011_-_audiobook_4_-_envelope.npy
+      - test_-_sub-011_-_audiobook_4_-_mel.npy
+      - test_-_sub-011_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-011_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-011_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-011_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-011_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-011_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-011_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-011_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-011_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-011_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-011_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-011_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-011_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-011_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-011_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-012_-_audiobook_1_-_eeg.npy
+      - test_-_sub-012_-_audiobook_1_-_envelope.npy
+      - test_-_sub-012_-_audiobook_1_-_mel.npy
+      - test_-_sub-012_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-012_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-012_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-012_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-012_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-012_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-012_-_audiobook_3_-_eeg.npy
+      - test_-_sub-012_-_audiobook_3_-_envelope.npy
+      - test_-_sub-012_-_audiobook_3_-_mel.npy
+      - test_-_sub-012_-_audiobook_4_-_eeg.npy
+      - test_-_sub-012_-_audiobook_4_-_envelope.npy
+      - test_-_sub-012_-_audiobook_4_-_mel.npy
+      - test_-_sub-012_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-012_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-012_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-012_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-012_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-012_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-012_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-012_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-012_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-012_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-012_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-012_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-012_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-012_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-012_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-013_-_audiobook_1_-_eeg.npy
+      - test_-_sub-013_-_audiobook_1_-_envelope.npy
+      - test_-_sub-013_-_audiobook_1_-_mel.npy
+      - test_-_sub-013_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-013_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-013_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-013_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-013_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-013_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-013_-_audiobook_3_-_eeg.npy
+      - test_-_sub-013_-_audiobook_3_-_envelope.npy
+      - test_-_sub-013_-_audiobook_3_-_mel.npy
+      - test_-_sub-013_-_audiobook_4_-_eeg.npy
+      - test_-_sub-013_-_audiobook_4_-_envelope.npy
+      - test_-_sub-013_-_audiobook_4_-_mel.npy
+      - test_-_sub-013_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-013_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-013_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-013_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-013_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-013_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-013_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-013_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-013_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-013_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-013_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-013_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-013_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-013_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-013_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-014_-_audiobook_1_1_-_eeg.npy
+      - test_-_sub-014_-_audiobook_1_1_-_envelope.npy
+      - test_-_sub-014_-_audiobook_1_1_-_mel.npy
+      - test_-_sub-014_-_audiobook_1_2_shifted_-_eeg.npy
+      - test_-_sub-014_-_audiobook_1_2_shifted_-_envelope.npy
+      - test_-_sub-014_-_audiobook_1_2_shifted_-_mel.npy
+      - test_-_sub-014_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-014_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-014_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-014_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-014_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-014_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-014_-_audiobook_3_-_eeg.npy
+      - test_-_sub-014_-_audiobook_3_-_envelope.npy
+      - test_-_sub-014_-_audiobook_3_-_mel.npy
+      - test_-_sub-014_-_audiobook_4_-_eeg.npy
+      - test_-_sub-014_-_audiobook_4_-_envelope.npy
+      - test_-_sub-014_-_audiobook_4_-_mel.npy
+      - test_-_sub-014_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-014_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-014_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-014_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-014_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-014_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-014_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-014_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-014_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-014_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-014_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-014_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-014_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-014_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-014_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-015_-_audiobook_1_-_eeg.npy
+      - test_-_sub-015_-_audiobook_1_-_envelope.npy
+      - test_-_sub-015_-_audiobook_1_-_mel.npy
+      - test_-_sub-015_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-015_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-015_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-015_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-015_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-015_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-015_-_audiobook_3_-_eeg.npy
+      - test_-_sub-015_-_audiobook_3_-_envelope.npy
+      - test_-_sub-015_-_audiobook_3_-_mel.npy
+      - test_-_sub-015_-_audiobook_4_-_eeg.npy
+      - test_-_sub-015_-_audiobook_4_-_envelope.npy
+      - test_-_sub-015_-_audiobook_4_-_mel.npy
+      - test_-_sub-015_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-015_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-015_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-015_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-015_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-015_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-015_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-015_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-015_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-015_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-015_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-015_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-015_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-015_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-015_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-016_-_audiobook_1_-_eeg.npy
+      - test_-_sub-016_-_audiobook_1_-_envelope.npy
+      - test_-_sub-016_-_audiobook_1_-_mel.npy
+      - test_-_sub-016_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-016_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-016_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-016_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-016_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-016_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-016_-_audiobook_3_-_eeg.npy
+      - test_-_sub-016_-_audiobook_3_-_envelope.npy
+      - test_-_sub-016_-_audiobook_3_-_mel.npy
+      - test_-_sub-016_-_audiobook_4_-_eeg.npy
+      - test_-_sub-016_-_audiobook_4_-_envelope.npy
+      - test_-_sub-016_-_audiobook_4_-_mel.npy
+      - test_-_sub-016_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-016_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-016_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-016_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-016_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-016_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-016_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-016_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-016_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-016_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-016_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-016_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-016_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-016_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-016_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-017_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-017_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-017_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-017_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-017_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-017_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-017_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-017_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-017_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-017_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-017_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-017_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-018_-_audiobook_1_-_eeg.npy
+      - test_-_sub-018_-_audiobook_1_-_envelope.npy
+      - test_-_sub-018_-_audiobook_1_-_mel.npy
+      - test_-_sub-018_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-018_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-018_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-018_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-018_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-018_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-018_-_audiobook_3_-_eeg.npy
+      - test_-_sub-018_-_audiobook_3_-_envelope.npy
+      - test_-_sub-018_-_audiobook_3_-_mel.npy
+      - test_-_sub-018_-_audiobook_4_-_eeg.npy
+      - test_-_sub-018_-_audiobook_4_-_envelope.npy
+      - test_-_sub-018_-_audiobook_4_-_mel.npy
+      - test_-_sub-018_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-018_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-018_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-018_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-018_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-018_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-018_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-018_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-018_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-018_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-018_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-018_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-018_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-018_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-018_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-019_-_audiobook_1_-_eeg.npy
+      - test_-_sub-019_-_audiobook_1_-_envelope.npy
+      - test_-_sub-019_-_audiobook_1_-_mel.npy
+      - test_-_sub-019_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-019_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-019_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-019_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-019_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-019_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-019_-_audiobook_3_-_eeg.npy
+      - test_-_sub-019_-_audiobook_3_-_envelope.npy
+      - test_-_sub-019_-_audiobook_3_-_mel.npy
+      - test_-_sub-019_-_audiobook_4_-_eeg.npy
+      - test_-_sub-019_-_audiobook_4_-_envelope.npy
+      - test_-_sub-019_-_audiobook_4_-_mel.npy
+      - test_-_sub-019_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-019_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-019_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-019_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-019_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-019_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-019_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-019_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-019_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-019_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-019_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-019_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-019_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-019_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-019_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-020_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-020_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-020_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-020_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-020_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-020_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-020_-_audiobook_3_-_eeg.npy
+      - test_-_sub-020_-_audiobook_3_-_envelope.npy
+      - test_-_sub-020_-_audiobook_3_-_mel.npy
+      - test_-_sub-020_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-020_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-020_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-020_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-020_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-020_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-020_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-020_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-020_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-020_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-020_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-020_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-020_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-020_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-020_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-021_-_audiobook_1_1_-_eeg.npy
+      - test_-_sub-021_-_audiobook_1_1_-_envelope.npy
+      - test_-_sub-021_-_audiobook_1_1_-_mel.npy
+      - test_-_sub-021_-_audiobook_1_2_shifted_-_eeg.npy
+      - test_-_sub-021_-_audiobook_1_2_shifted_-_envelope.npy
+      - test_-_sub-021_-_audiobook_1_2_shifted_-_mel.npy
+      - test_-_sub-021_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-021_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-021_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-021_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-021_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-021_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-021_-_audiobook_3_-_eeg.npy
+      - test_-_sub-021_-_audiobook_3_-_envelope.npy
+      - test_-_sub-021_-_audiobook_3_-_mel.npy
+      - test_-_sub-021_-_audiobook_4_-_eeg.npy
+      - test_-_sub-021_-_audiobook_4_-_envelope.npy
+      - test_-_sub-021_-_audiobook_4_-_mel.npy
+      - test_-_sub-021_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-021_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-021_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-021_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-021_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-021_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-021_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-021_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-021_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-021_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-021_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-021_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-021_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-021_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-021_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-022_-_audiobook_1_1_-_eeg.npy
+      - test_-_sub-022_-_audiobook_1_1_-_envelope.npy
+      - test_-_sub-022_-_audiobook_1_1_-_mel.npy
+      - test_-_sub-022_-_audiobook_1_2_shifted_-_eeg.npy
+      - test_-_sub-022_-_audiobook_1_2_shifted_-_envelope.npy
+      - test_-_sub-022_-_audiobook_1_2_shifted_-_mel.npy
+      - test_-_sub-022_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-022_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-022_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-022_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-022_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-022_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-022_-_audiobook_3_-_eeg.npy
+      - test_-_sub-022_-_audiobook_3_-_envelope.npy
+      - test_-_sub-022_-_audiobook_3_-_mel.npy
+      - test_-_sub-022_-_audiobook_4_-_eeg.npy
+      - test_-_sub-022_-_audiobook_4_-_envelope.npy
+      - test_-_sub-022_-_audiobook_4_-_mel.npy
+      - test_-_sub-022_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-022_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-022_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-022_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-022_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-022_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-022_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-022_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-022_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-022_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-022_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-022_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-022_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-022_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-022_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-023_-_audiobook_1_1_shifted_-_eeg.npy
+      - test_-_sub-023_-_audiobook_1_1_shifted_-_envelope.npy
+      - test_-_sub-023_-_audiobook_1_1_shifted_-_mel.npy
+      - test_-_sub-023_-_audiobook_1_2_-_eeg.npy
+      - test_-_sub-023_-_audiobook_1_2_-_envelope.npy
+      - test_-_sub-023_-_audiobook_1_2_-_mel.npy
+      - test_-_sub-023_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-023_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-023_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-023_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-023_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-023_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-023_-_audiobook_3_-_eeg.npy
+      - test_-_sub-023_-_audiobook_3_-_envelope.npy
+      - test_-_sub-023_-_audiobook_3_-_mel.npy
+      - test_-_sub-023_-_audiobook_4_-_eeg.npy
+      - test_-_sub-023_-_audiobook_4_-_envelope.npy
+      - test_-_sub-023_-_audiobook_4_-_mel.npy
+      - test_-_sub-023_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-023_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-023_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-023_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-023_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-023_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-023_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-023_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-023_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-023_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-023_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-023_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-023_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-023_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-023_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-024_-_audiobook_1_-_eeg.npy
+      - test_-_sub-024_-_audiobook_1_-_envelope.npy
+      - test_-_sub-024_-_audiobook_1_-_mel.npy
+      - test_-_sub-024_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-024_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-024_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-024_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-024_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-024_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-024_-_audiobook_3_-_eeg.npy
+      - test_-_sub-024_-_audiobook_3_-_envelope.npy
+      - test_-_sub-024_-_audiobook_3_-_mel.npy
+      - test_-_sub-024_-_audiobook_4_-_eeg.npy
+      - test_-_sub-024_-_audiobook_4_-_envelope.npy
+      - test_-_sub-024_-_audiobook_4_-_mel.npy
+      - test_-_sub-024_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-024_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-024_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-024_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-024_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-024_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-024_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-024_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-024_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-024_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-024_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-024_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-024_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-024_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-024_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-025_-_audiobook_1_-_eeg.npy
+      - test_-_sub-025_-_audiobook_1_-_envelope.npy
+      - test_-_sub-025_-_audiobook_1_-_mel.npy
+      - test_-_sub-025_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-025_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-025_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-025_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-025_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-025_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-025_-_audiobook_3_-_eeg.npy
+      - test_-_sub-025_-_audiobook_3_-_envelope.npy
+      - test_-_sub-025_-_audiobook_3_-_mel.npy
+      - test_-_sub-025_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-025_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-025_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-025_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-025_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-025_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-025_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-025_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-025_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-025_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-025_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-025_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-025_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-025_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-025_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-026_-_audiobook_1_-_eeg.npy
+      - test_-_sub-026_-_audiobook_1_-_envelope.npy
+      - test_-_sub-026_-_audiobook_1_-_mel.npy
+      - test_-_sub-026_-_audiobook_2_1_-_eeg.npy
+      - test_-_sub-026_-_audiobook_2_1_-_envelope.npy
+      - test_-_sub-026_-_audiobook_2_1_-_mel.npy
+      - test_-_sub-026_-_audiobook_2_2_-_eeg.npy
+      - test_-_sub-026_-_audiobook_2_2_-_envelope.npy
+      - test_-_sub-026_-_audiobook_2_2_-_mel.npy
+      - test_-_sub-026_-_audiobook_3_-_eeg.npy
+      - test_-_sub-026_-_audiobook_3_-_envelope.npy
+      - test_-_sub-026_-_audiobook_3_-_mel.npy
+      - test_-_sub-026_-_audiobook_4_-_eeg.npy
+      - test_-_sub-026_-_audiobook_4_-_envelope.npy
+      - test_-_sub-026_-_audiobook_4_-_mel.npy
+      - test_-_sub-026_-_audiobook_5_1_-_eeg.npy
+      - test_-_sub-026_-_audiobook_5_1_-_envelope.npy
+      - test_-_sub-026_-_audiobook_5_1_-_mel.npy
+      - test_-_sub-026_-_audiobook_5_2_-_eeg.npy
+      - test_-_sub-026_-_audiobook_5_2_-_envelope.npy
+      - test_-_sub-026_-_audiobook_5_2_-_mel.npy
+      - test_-_sub-026_-_audiobook_5_3_-_eeg.npy
+      - test_-_sub-026_-_audiobook_5_3_-_envelope.npy
+      - test_-_sub-026_-_audiobook_5_3_-_mel.npy
+      - test_-_sub-026_-_audiobook_6_1_-_eeg.npy
+      - test_-_sub-026_-_audiobook_6_1_-_envelope.npy
+      - test_-_sub-026_-_audiobook_6_1_-_mel.npy
+      - test_-_sub-026_-_audiobook_6_2_-_eeg.npy
+      - test_-_sub-026_-_audiobook_6_2_-_envelope.npy
+      - test_-_sub-026_-_audiobook_6_2_-_mel.npy
+      - test_-_sub-027_-_audiobook_1_-_eeg.npy
+      - test_-_sub-027_-_audiobook_1_-_envelope.npy
+      - test_-_sub-027_-_audiobook_1_-_mel.npy
+      - test_-_sub-027_-_audiobook_7_1_-_eeg.npy
+      - test_-_sub-027_-_audiobook_7_1_-_envelope.npy
+      - test_-_sub-027_-_audiobook_7_1_-_mel.npy
+      - test_-_sub-027_-_audiobook_7_2_-_eeg.npy
+      - test_-_sub-027_-_audiobook_7_2_-_envelope.npy
+      - test_-_sub-027_-_audiobook_7_2_-_mel.npy
+      - test_-_sub-027_-_audiobook_7_3_-_eeg.npy
+      - test_-_sub-027_-_audiobook_7_3_-_envelope.npy
+      - test_-_sub-027_-_audiobook_7_3_-_mel.npy
+      - test_-_sub-027_-_audiobook_7_4_-_eeg.npy
+      - test_-_sub-027_-_audiobook_7_4_-_envelope.npy
+      - test_-_sub-027_-_audiobook_7_4_-_mel.npy
+      - test_-_sub-027_-_audiobook_7_5_-_eeg.npy
+      - test_-_sub-027_-_audiobook_7_5_-_envelope.npy
+      - test_-_sub-027_-_audiobook_7_5_-_mel.npy
+      - test_-_sub-027_-_audiobook_7_6_-_eeg.npy
+      - test_-_sub-027_-_audiobook_7_6_-_envelope.npy
+      - test_-_sub-027_-_audiobook_7_6_-_mel.npy
+      - test_-_sub-027_-_podcast_10_-_eeg.npy
+      - test_-_sub-027_-_podcast_10_-_envelope.npy
+      - test_-_sub-027_-_podcast_10_-_mel.npy
+      - test_-_sub-027_-_podcast_1_-_eeg.npy
+      - test_-_sub-027_-_podcast_1_-_envelope.npy
+      - test_-_sub-027_-_podcast_1_-_mel.npy
+      - test_-_sub-027_-_podcast_2_-_eeg.npy
+      - test_-_sub-027_-_podcast_2_-_envelope.npy
+      - test_-_sub-027_-_podcast_2_-_mel.npy
+      - test_-_sub-027_-_podcast_3_-_eeg.npy
+      - test_-_sub-027_-_podcast_3_-_envelope.npy
+      - test_-_sub-027_-_podcast_3_-_mel.npy
+      - test_-_sub-027_-_podcast_4_-_eeg.npy
+      - test_-_sub-027_-_podcast_4_-_envelope.npy
+      - test_-_sub-027_-_podcast_4_-_mel.npy
+      - test_-_sub-028_-_audiobook_1_-_eeg.npy
+      - test_-_sub-028_-_audiobook_1_-_envelope.npy
+      - test_-_sub-028_-_audiobook_1_-_mel.npy
+      - test_-_sub-028_-_audiobook_7_1_-_eeg.npy
+      - test_-_sub-028_-_audiobook_7_1_-_envelope.npy
+      - test_-_sub-028_-_audiobook_7_1_-_mel.npy
+      - test_-_sub-028_-_audiobook_7_2_-_eeg.npy
+      - test_-_sub-028_-_audiobook_7_2_-_envelope.npy
+      - test_-_sub-028_-_audiobook_7_2_-_mel.npy
+      - test_-_sub-028_-_audiobook_7_3_-_eeg.npy
+      - test_-_sub-028_-_audiobook_7_3_-_envelope.npy
+      - test_-_sub-028_-_audiobook_7_3_-_mel.npy
+      - test_-_sub-028_-_audiobook_7_4_-_eeg.npy
+      - test_-_sub-028_-_audiobook_7_4_-_envelope.npy
+      - test_-_sub-028_-_audiobook_7_4_-_mel.npy
+      - test_-_sub-028_-_audiobook_7_5_-_eeg.npy
+      - test_-_sub-028_-_audiobook_7_5_-_envelope.npy
+      - test_-_sub-028_-_audiobook_7_5_-_mel.npy
+      - test_-_sub-028_-_audiobook_7_6_-_eeg.npy
+      - test_-_sub-028_-_audiobook_7_6_-_envelope.npy
+      - test_-_sub-028_-_audiobook_7_6_-_mel.npy
+      - test_-_sub-028_-_podcast_10_-_eeg.npy
+      - test_-_sub-028_-_podcast_10_-_envelope.npy
+      - test_-_sub-028_-_podcast_10_-_mel.npy
+      - test_-_sub-028_-_podcast_1_-_eeg.npy
+      - test_-_sub-028_-_podcast_1_-_envelope.npy
+      - test_-_sub-028_-_podcast_1_-_mel.npy
+      - test_-_sub-028_-_podcast_2_-_eeg.npy
+      - test_-_sub-028_-_podcast_2_-_envelope.npy
+      - test_-_sub-028_-_podcast_2_-_mel.npy
+      - test_-_sub-028_-_podcast_3_-_eeg.npy
+      - test_-_sub-028_-_podcast_3_-_envelope.npy
+      - test_-_sub-028_-_podcast_3_-_mel.npy
+      - test_-_sub-028_-_podcast_4_-_eeg.npy
+      - test_-_sub-028_-_podcast_4_-_envelope.npy
+      - test_-_sub-028_-_podcast_4_-_mel.npy
+      - test_-_sub-029_-_audiobook_1_-_eeg.npy
+      - test_-_sub-029_-_audiobook_1_-_envelope.npy
+      - test_-_sub-029_-_audiobook_1_-_mel.npy
+      - test_-_sub-029_-_audiobook_7_1_-_eeg.npy
+      - test_-_sub-029_-_audiobook_7_1_-_envelope.npy
+      - test_-_sub-029_-_audiobook_7_1_-_mel.npy
+      - test_-_sub-029_-_audiobook_7_2_-_eeg.npy
+      - test_-_sub-029_-_audiobook_7_2_-_envelope.npy
+      - test_-_sub-029_-_audiobook_7_2_-_mel.npy
+      - test_-_sub-029_-_audiobook_7_3_-_eeg.npy
+      - test_-_sub-029_-_audiobook_7_3_-_envelope.npy
+      - test_-_sub-029_-_audiobook_7_3_-_mel.npy
+      - test_-_sub-029_-_audiobook_7_4_-_eeg.npy
+      - test_-_sub-029_-_audiobook_7_4_-_envelope.npy
+      - test_-_sub-029_-_audiobook_7_4_-_mel.npy
+      - test_-_sub-029_-_audiobook_7_5_-_eeg.npy
+      - test_-_sub-029_-_audiobook_7_5_-_envelope.npy
+      - test_-_sub-029_-_audiobook_7_5_-_mel.npy
+      - test_-_sub-029_-_audiobook_7_6_-_eeg.npy
+      - test_-_sub-029_-_audiobook_7_6_-_envelope.npy
+      - test_-_sub-029_-_audiobook_7_6_-_mel.npy
+      - test_-_sub-029_-_podcast_10_-_eeg.npy
+      - test_-_sub-029_-_podcast_10_-_envelope.npy
+      - test_-_sub-029_-_podcast_10_-_mel.npy
+      - test_-_sub-029_-_podcast_1_-_eeg.npy
+      - test_-_sub-029_-_podcast_1_-_envelope.npy
+      - test_-_sub-029_-_podcast_1_-_mel.npy
+      - test_-_sub-029_-_podcast_2_-_eeg.npy
+      - test_-_sub-029_-_podcast_2_-_envelope.npy
+      - test_-_sub-029_-_podcast_2_-_mel.npy
+      - test_-_sub-029_-_podcast_3_-_eeg.npy
+      - test_-_sub-029_-_podcast_3_-_envelope.npy
+      - test_-_sub-029_-_podcast_3_-_mel.npy
+      - test_-_sub-029_-_podcast_4_-_eeg.npy
+      - test_-_sub-029_-_podcast_4_-_envelope.npy
+      - test_-_sub-029_-_podcast_4_-_mel.npy
+      - test_-_sub-030_-_audiobook_1_-_eeg.npy
+      - test_-_sub-030_-_audiobook_1_-_envelope.npy
+      - test_-_sub-030_-_audiobook_1_-_mel.npy
+      - test_-_sub-030_-_audiobook_7_1_-_eeg.npy
+      - test_-_sub-030_-_audiobook_7_1_-_envelope.npy
+      - test_-_sub-030_-_audiobook_7_1_-_mel.npy
+      - test_-_sub-030_-_audiobook_7_2_-_eeg.npy
+      - test_-_sub-030_-_audiobook_7_2_-_envelope.npy
+      - test_-_sub-030_-_audiobook_7_2_-_mel.npy
+      - test_-_sub-030_-_audiobook_7_3_-_eeg.npy
+      - test_-_sub-030_-_audiobook_7_3_-_envelope.npy
+      - test_-_sub-030_-_audiobook_7_3_-_mel.npy
+      - test_-_sub-030_-_audiobook_7_4_-_eeg.npy
+      - test_-_sub-030_-_audiobook_7_4_-_envelope.npy
+      - test_-_sub-030_-_audiobook_7_4_-_mel.npy
+      - test_-_sub-030_-_audiobook_7_5_-_eeg.npy
+      - test_-_sub-030_-_audiobook_7_5_-_envelope.npy
+      - test_-_sub-030_-_audiobook_7_5_-_mel.npy
+      - test_-_sub-030_-_audiobook_7_6_-_eeg.npy
+      - test_-_sub-030_-_audiobook_7_6_-_envelope.npy
+      - test_-_sub-030_-_audiobook_7_6_-_mel.npy
+      - test_-_sub-030_-_podcast_10_-_eeg.npy
+      - test_-_sub-030_-_podcast_10_-_envelope.npy
+      - test_-_sub-030_-_podcast_10_-_mel.npy
+      - test_-_sub-030_-_podcast_1_-_eeg.npy
+      - test_-_sub-030_-_podcast_1_-_envelope.npy
+      - test_-_sub-030_-_podcast_1_-_mel.npy
+      - test_-_sub-030_-_podcast_2_-_eeg.npy
+      - test_-_sub-030_-_podcast_2_-_envelope.npy
+      - test_-_sub-030_-_podcast_2_-_mel.npy
+      - test_-_sub-030_-_podcast_3_-_eeg.npy
+      - test_-_sub-030_-_podcast_3_-_envelope.npy
+      - test_-_sub-030_-_podcast_3_-_mel.npy
+      - test_-_sub-030_-_podcast_4_-_eeg.npy
+      - test_-_sub-030_-_podcast_4_-_envelope.npy
+      - test_-_sub-030_-_podcast_4_-_mel.npy
+      - test_-_sub-031_-_audiobook_1_-_eeg.npy
+      - test_-_sub-031_-_audiobook_1_-_envelope.npy
+      - test_-_sub-031_-_audiobook_1_-_mel.npy
+      - test_-_sub-031_-_audiobook_7_1_-_eeg.npy
+      - test_-_sub-031_-_audiobook_7_1_-_envelope.npy
+      - test_-_sub-031_-_audiobook_7_1_-_mel.npy
+      - test_-_sub-031_-_audiobook_7_2_-_eeg.npy
+      - test_-_sub-031_-_audiobook_7_2_-_envelope.npy
+      - test_-_sub-031_-_audiobook_7_2_-_mel.npy
+      - test_-_sub-031_-_audiobook_7_3_-_eeg.npy
+      - test_-_sub-031_-_audiobook_7_3_-_envelope.npy
+      - test_-_sub-031_-_audiobook_7_3_-_mel.npy
+      - test_-_sub-031_-_audiobook_7_4_-_eeg.npy
+      - test_-_sub-031_-_audiobook_7_4_-_envelope.npy
+      - test_-_sub-031_-_audiobook_7_4_-_mel.npy
+      - test_-_sub-031_-_audiobook_7_5_-_eeg.npy
+      - test_-_sub-031_-_audiobook_7_5_-_envelope.npy
+      - test_-_sub-031_-_audiobook_7_5_-_mel.npy
+      - test_-_sub-031_-_audiobook_7_6_-_eeg.npy
+      - test_-_sub-031_-_audiobook_7_6_-_envelope.npy
+      - test_-_sub-031_-_audiobook_7_6_-_mel.npy
+      - test_-_sub-031_-_podcast_10_-_eeg.npy
+      - test_-_sub-031_-_podcast_10_-_envelope.npy
+      - test_-_sub-031_-_podcast_10_-_mel.npy
+      - test_-_sub-031_-_podcast_1_-_eeg.npy
+      - test_-_sub-031_-_podcast_1_-_envelope.npy
+      - test_-_sub-031_-_podcast_1_-_mel.npy
+      - test_-_sub-031_-_podcast_2_-_eeg.npy
+      - test_-_sub-031_-_podcast_2_-_envelope.npy
+      - test_-_sub-031_-_podcast_2_-_mel.npy
+      - test_-_sub-031_-_podcast_3_-_eeg.npy
+      - test_-_sub-031_-_podcast_3_-_envelope.npy
+      - test_-_sub-031_-_podcast_3_-_mel.npy
+      - test_-_sub-031_-_podcast_4_-_eeg.npy
+      - test_-_sub-031_-_podcast_4_-_envelope.npy
+      - test_-_sub-031_-_podcast_4_-_mel.npy
+      - test_-_sub-032_-_audiobook_1_-_eeg.npy
+      - test_-_sub-032_-_audiobook_1_-_envelope.npy
+      - test_-_sub-032_-_audiobook_1_-_mel.npy
+      - test_-_sub-032_-_audiobook_8_1_-_eeg.npy
+      - test_-_sub-032_-_audiobook_8_1_-_envelope.npy
+      - test_-_sub-032_-_audiobook_8_1_-_mel.npy
+      - test_-_sub-032_-_audiobook_8_2_-_eeg.npy
+      - test_-_sub-032_-_audiobook_8_2_-_envelope.npy
+      - test_-_sub-032_-_audiobook_8_2_-_mel.npy
+      - test_-_sub-032_-_podcast_10_-_eeg.npy
+      - test_-_sub-032_-_podcast_10_-_envelope.npy
+      - test_-_sub-032_-_podcast_10_-_mel.npy
+      - test_-_sub-032_-_podcast_5_-_eeg.npy
+      - test_-_sub-032_-_podcast_5_-_envelope.npy
+      - test_-_sub-032_-_podcast_5_-_mel.npy
+      - test_-_sub-032_-_podcast_6_-_eeg.npy
+      - test_-_sub-032_-_podcast_6_-_envelope.npy
+      - test_-_sub-032_-_podcast_6_-_mel.npy
+      - test_-_sub-032_-_podcast_7_-_eeg.npy
+      - test_-_sub-032_-_podcast_7_-_envelope.npy
+      - test_-_sub-032_-_podcast_7_-_mel.npy
+      - test_-_sub-032_-_podcast_8_-_eeg.npy
+      - test_-_sub-032_-_podcast_8_-_envelope.npy
+      - test_-_sub-032_-_podcast_8_-_mel.npy
+      - test_-_sub-033_-_audiobook_1_-_eeg.npy
+      - test_-_sub-033_-_audiobook_1_-_envelope.npy
+      - test_-_sub-033_-_audiobook_1_-_mel.npy
+      - test_-_sub-033_-_audiobook_8_1_-_eeg.npy
+      - test_-_sub-033_-_audiobook_8_1_-_envelope.npy
+      - test_-_sub-033_-_audiobook_8_1_-_mel.npy
+      - test_-_sub-033_-_audiobook_8_2_-_eeg.npy
+      - test_-_sub-033_-_audiobook_8_2_-_envelope.npy
+      - test_-_sub-033_-_audiobook_8_2_-_mel.npy
+      - test_-_sub-033_-_podcast_10_-_eeg.npy
+      - test_-_sub-033_-_podcast_10_-_envelope.npy
+      - test_-_sub-033_-_podcast_10_-_mel.npy
+      - test_-_sub-033_-_podcast_5_-_eeg.npy
+      - test_-_sub-033_-_podcast_5_-_envelope.npy
+      - test_-_sub-033_-_podcast_5_-_mel.npy
+      - test_-_sub-033_-_podcast_6_-_eeg.npy
+      - test_-_sub-033_-_podcast_6_-_envelope.npy
+      - test_-_sub-033_-_podcast_6_-_mel.npy
+      - test_-_sub-033_-_podcast_7_-_eeg.npy
+      - test_-_sub-033_-_podcast_7_-_envelope.npy
+      - test_-_sub-033_-_podcast_7_-_mel.npy
+      - test_-_sub-033_-_podcast_8_-_eeg.npy
+      - test_-_sub-033_-_podcast_8_-_envelope.npy
+      - test_-_sub-033_-_podcast_8_-_mel.npy
+      - test_-_sub-034_-_audiobook_1_-_eeg.npy
+      - test_-_sub-034_-_audiobook_1_-_envelope.npy
+      - test_-_sub-034_-_audiobook_1_-_mel.npy
+      - test_-_sub-034_-_audiobook_8_1_-_eeg.npy
+      - test_-_sub-034_-_audiobook_8_1_-_envelope.npy
+      - test_-_sub-034_-_audiobook_8_1_-_mel.npy
+      - test_-_sub-034_-_audiobook_8_2_-_eeg.npy
+      - test_-_sub-034_-_audiobook_8_2_-_envelope.npy
+      - test_-_sub-034_-_audiobook_8_2_-_mel.npy
+      - test_-_sub-034_-_podcast_10_-_eeg.npy
+      - test_-_sub-034_-_podcast_10_-_envelope.npy
+      - test_-_sub-034_-_podcast_10_-_mel.npy
+      - test_-_sub-034_-_podcast_5_-_eeg.npy
+      - test_-_sub-034_-_podcast_5_-_envelope.npy
+      - test_-_sub-034_-_podcast_5_-_mel.npy
+      - test_-_sub-034_-_podcast_6_-_eeg.npy
+      - test_-_sub-034_-_podcast_6_-_envelope.npy
+      - test_-_sub-034_-_podcast_6_-_mel.npy
+      - test_-_sub-034_-_podcast_7_-_eeg.npy
+      - test_-_sub-034_-_podcast_7_-_envelope.npy
+      - test_-_sub-034_-_podcast_7_-_mel.npy
+      - test_-_sub-034_-_podcast_8_-_eeg.npy
+      - test_-_sub-034_-_podcast_8_-_envelope.npy
+      - test_-_sub-034_-_podcast_8_-_mel.npy
+      - test_-_sub-035_-_audiobook_1_-_eeg.npy
+      - test_-_sub-035_-_audiobook_1_-_envelope.npy
+      - test_-_sub-035_-_audiobook_1_-_mel.npy
+      - test_-_sub-035_-_audiobook_8_1_-_eeg.npy
+      - test_-_sub-035_-_audiobook_8_1_-_envelope.npy
+      - test_-_sub-035_-_audiobook_8_1_-_mel.npy
+      - test_-_sub-035_-_audiobook_8_2_-_eeg.npy
+      - test_-_sub-035_-_audiobook_8_2_-_envelope.npy
+      - test_-_sub-035_-_audiobook_8_2_-_mel.npy
+      - test_-_sub-035_-_podcast_10_-_eeg.npy
+      - test_-_sub-035_-_podcast_10_-_envelope.npy
+      - test_-_sub-035_-_podcast_10_-_mel.npy
+      - test_-_sub-035_-_podcast_5_-_eeg.npy
+      - test_-_sub-035_-_podcast_5_-_envelope.npy
+      - test_-_sub-035_-_podcast_5_-_mel.npy
+      - test_-_sub-035_-_podcast_6_-_eeg.npy
+      - test_-_sub-035_-_podcast_6_-_envelope.npy
+      - test_-_sub-035_-_podcast_6_-_mel.npy
+      - test_-_sub-035_-_podcast_7_-_eeg.npy
+      - test_-_sub-035_-_podcast_7_-_envelope.npy
+      - test_-_sub-035_-_podcast_7_-_mel.npy
+      - test_-_sub-035_-_podcast_8_-_eeg.npy
+      - test_-_sub-035_-_podcast_8_-_envelope.npy
+      - test_-_sub-035_-_podcast_8_-_mel.npy
+      - test_-_sub-036_-_audiobook_1_-_eeg.npy
+      - test_-_sub-036_-_audiobook_1_-_envelope.npy
+      - test_-_sub-036_-_audiobook_1_-_mel.npy
+      - test_-_sub-036_-_audiobook_8_1_-_eeg.npy
+      - test_-_sub-036_-_audiobook_8_1_-_envelope.npy
+      - test_-_sub-036_-_audiobook_8_1_-_mel.npy
+      - test_-_sub-036_-_audiobook_8_2_-_eeg.npy
+      - test_-_sub-036_-_audiobook_8_2_-_envelope.npy
+      - test_-_sub-036_-_audiobook_8_2_-_mel.npy
+      - test_-_sub-036_-_podcast_10_-_eeg.npy
+      - test_-_sub-036_-_podcast_10_-_envelope.npy
+      - test_-_sub-036_-_podcast_10_-_mel.npy
+      - test_-_sub-036_-_podcast_5_-_eeg.npy
+      - test_-_sub-036_-_podcast_5_-_envelope.npy
+      - test_-_sub-036_-_podcast_5_-_mel.npy
+      - test_-_sub-036_-_podcast_6_-_eeg.npy
+      - test_-_sub-036_-_podcast_6_-_envelope.npy
+      - test_-_sub-036_-_podcast_6_-_mel.npy
+      - test_-_sub-036_-_podcast_7_-_eeg.npy
+      - test_-_sub-036_-_podcast_7_-_envelope.npy
+      - test_-_sub-036_-_podcast_7_-_mel.npy
+      - test_-_sub-036_-_podcast_8_-_eeg.npy
+      - test_-_sub-036_-_podcast_8_-_envelope.npy
+      - test_-_sub-036_-_podcast_8_-_mel.npy
+      - test_-_sub-037_-_audiobook_1_-_eeg.npy
+      - test_-_sub-037_-_audiobook_1_-_envelope.npy
+      - test_-_sub-037_-_audiobook_1_-_mel.npy
+      - test_-_sub-037_-_audiobook_9_1_-_eeg.npy
+      - test_-_sub-037_-_audiobook_9_1_-_envelope.npy
+      - test_-_sub-037_-_audiobook_9_1_-_mel.npy
+      - test_-_sub-037_-_audiobook_9_2_-_eeg.npy
+      - test_-_sub-037_-_audiobook_9_2_-_envelope.npy
+      - test_-_sub-037_-_audiobook_9_2_-_mel.npy
+      - test_-_sub-037_-_podcast_10_-_eeg.npy
+      - test_-_sub-037_-_podcast_10_-_envelope.npy
+      - test_-_sub-037_-_podcast_10_-_mel.npy
+      - test_-_sub-037_-_podcast_11_-_eeg.npy
+      - test_-_sub-037_-_podcast_11_-_envelope.npy
+      - test_-_sub-037_-_podcast_11_-_mel.npy
+      - test_-_sub-037_-_podcast_12_-_eeg.npy
+      - test_-_sub-037_-_podcast_12_-_envelope.npy
+      - test_-_sub-037_-_podcast_12_-_mel.npy
+      - test_-_sub-037_-_podcast_9_-_eeg.npy
+      - test_-_sub-037_-_podcast_9_-_envelope.npy
+      - test_-_sub-037_-_podcast_9_-_mel.npy
+      - test_-_sub-038_-_audiobook_1_-_eeg.npy
+      - test_-_sub-038_-_audiobook_1_-_envelope.npy
+      - test_-_sub-038_-_audiobook_1_-_mel.npy
+      - test_-_sub-038_-_audiobook_9_1_-_eeg.npy
+      - test_-_sub-038_-_audiobook_9_1_-_envelope.npy
+      - test_-_sub-038_-_audiobook_9_1_-_mel.npy
+      - test_-_sub-038_-_audiobook_9_2_-_eeg.npy
+      - test_-_sub-038_-_audiobook_9_2_-_envelope.npy
+      - test_-_sub-038_-_audiobook_9_2_-_mel.npy
+      - test_-_sub-038_-_podcast_10_-_eeg.npy
+      - test_-_sub-038_-_podcast_10_-_envelope.npy
+      - test_-_sub-038_-_podcast_10_-_mel.npy
+      - test_-_sub-038_-_podcast_11_-_eeg.npy
+      - test_-_sub-038_-_podcast_11_-_envelope.npy
+      - test_-_sub-038_-_podcast_11_-_mel.npy
+      - test_-_sub-038_-_podcast_12_-_eeg.npy
+      - test_-_sub-038_-_podcast_12_-_envelope.npy
+      - test_-_sub-038_-_podcast_12_-_mel.npy
+      - test_-_sub-038_-_podcast_9_-_eeg.npy
+      - test_-_sub-038_-_podcast_9_-_envelope.npy
+      - test_-_sub-038_-_podcast_9_-_mel.npy
+      - test_-_sub-039_-_audiobook_1_-_eeg.npy
+      - test_-_sub-039_-_audiobook_1_-_envelope.npy
+      - test_-_sub-039_-_audiobook_1_-_mel.npy
+      - test_-_sub-039_-_audiobook_9_1_-_eeg.npy
+      - test_-_sub-039_-_audiobook_9_1_-_envelope.npy
+      - test_-_sub-039_-_audiobook_9_1_-_mel.npy
+      - test_-_sub-039_-_audiobook_9_2_-_eeg.npy
+      - test_-_sub-039_-_audiobook_9_2_-_envelope.npy
+      - test_-_sub-039_-_audiobook_9_2_-_mel.npy
+      - test_-_sub-039_-_podcast_10_-_eeg.npy
+      - test_-_sub-039_-_podcast_10_-_envelope.npy
+      - test_-_sub-039_-_podcast_10_-_mel.npy
+      - test_-_sub-039_-_podcast_11_-_eeg.npy
+      - test_-_sub-039_-_podcast_11_-_envelope.npy
+      - test_-_sub-039_-_podcast_11_-_mel.npy
+      - test_-_sub-039_-_podcast_12_-_eeg.npy
+      - test_-_sub-039_-_podcast_12_-_envelope.npy
+      - test_-_sub-039_-_podcast_12_-_mel.npy
+      - test_-_sub-039_-_podcast_9_-_eeg.npy
+      - test_-_sub-039_-_podcast_9_-_envelope.npy
+      - test_-_sub-039_-_podcast_9_-_mel.npy
+      - test_-_sub-040_-_audiobook_1_-_eeg.npy
+      - test_-_sub-040_-_audiobook_1_-_envelope.npy
+      - test_-_sub-040_-_audiobook_1_-_mel.npy
+      - test_-_sub-040_-_audiobook_9_1_-_eeg.npy
+      - test_-_sub-040_-_audiobook_9_1_-_envelope.npy
+      - test_-_sub-040_-_audiobook_9_1_-_mel.npy
+      - test_-_sub-040_-_audiobook_9_2_-_eeg.npy
+      - test_-_sub-040_-_audiobook_9_2_-_envelope.npy
+      - test_-_sub-040_-_audiobook_9_2_-_mel.npy
+      - test_-_sub-040_-_podcast_10_-_eeg.npy
+      - test_-_sub-040_-_podcast_10_-_envelope.npy
+      - test_-_sub-040_-_podcast_10_-_mel.npy
+      - test_-_sub-040_-_podcast_11_-_eeg.npy
+      - test_-_sub-040_-_podcast_11_-_envelope.npy
+      - test_-_sub-040_-_podcast_11_-_mel.npy
+      - test_-_sub-040_-_podcast_12_-_eeg.npy
+      - test_-_sub-040_-_podcast_12_-_envelope.npy
+      - test_-_sub-040_-_podcast_12_-_mel.npy
+      - test_-_sub-040_-_podcast_9_-_eeg.npy
+      - test_-_sub-040_-_podcast_9_-_envelope.npy
+      - test_-_sub-040_-_podcast_9_-_mel.npy
+      - test_-_sub-041_-_audiobook_1_-_eeg.npy
+      - test_-_sub-041_-_audiobook_1_-_envelope.npy
+      - test_-_sub-041_-_audiobook_1_-_mel.npy
+      - test_-_sub-041_-_audiobook_9_1_-_eeg.npy
+      - test_-_sub-041_-_audiobook_9_1_-_envelope.npy
+      - test_-_sub-041_-_audiobook_9_1_-_mel.npy
+      - test_-_sub-041_-_audiobook_9_2_-_eeg.npy
+      - test_-_sub-041_-_audiobook_9_2_-_envelope.npy
+      - test_-_sub-041_-_audiobook_9_2_-_mel.npy
+      - test_-_sub-041_-_podcast_10_-_eeg.npy
+      - test_-_sub-041_-_podcast_10_-_envelope.npy
+      - test_-_sub-041_-_podcast_10_-_mel.npy
+      - test_-_sub-041_-_podcast_11_-_eeg.npy
+      - test_-_sub-041_-_podcast_11_-_envelope.npy
+      - test_-_sub-041_-_podcast_11_-_mel.npy
+      - test_-_sub-041_-_podcast_12_-_eeg.npy
+      - test_-_sub-041_-_podcast_12_-_envelope.npy
+      - test_-_sub-041_-_podcast_12_-_mel.npy
+      - test_-_sub-041_-_podcast_9_-_eeg.npy
+      - test_-_sub-041_-_podcast_9_-_envelope.npy
+      - test_-_sub-041_-_podcast_9_-_mel.npy
+      - test_-_sub-042_-_audiobook_1_-_eeg.npy
+... [tree truncated at 2000 entries]

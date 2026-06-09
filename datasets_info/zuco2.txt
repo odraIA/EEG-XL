@@ -1,0 +1,197 @@
+Dataset: zuco2
+Path: /workspace/datasets/zuco2
+Generated: 2026-06-09T15:16:13
+
+Content summary
+- Directories scanned: 27
+- Files scanned: 298
+- Total file size: 52.0 GB
+- Skipped directory names: .cache, .git, .ipynb_checkpoints, __pycache__, cache, checkpoints, logs
+
+Top-level content
+- data: 293 files, 52.0 GB
+- [root files]: 5 files, 108.3 KB
+
+File extensions
+- .mat: 277
+- .csv: 14
+- .txt: 4
+- .py: 2
+- .sh: 1
+
+Detected BIDS-like tasks
+- NR: 126
+- task_materials: 14
+
+Training-hours estimate
+- Selection: serialized HDF5/MAT recordings with readable duration
+- Note: all selected recordings are counted as trainable hours; explicit train/val/test splits are not inferred unless encoded as separate files.
+- Total selected recordings: 124
+- Total training hours: 11.103 h (11:06:10)
+
+Hours by task
+task	recordings	hours	duration
+NR	124	11.103	11:06:10
+
+Detected recording candidates
+kind	task	subject	session	run	duration	channels	sfreq	method	path
+mat	NR				00:03:36	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAC/bip_YAC_NR5_EEG.mat
+mat	NR				00:03:15	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAC/bip_YAC_NR6_EEG.mat
+mat	NR				00:07:31	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAC/gip_YAC_NR1_EEG.mat
+mat	NR				00:05:15	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAC/gip_YAC_NR2_EEG.mat
+mat	NR				00:04:27	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAC/gip_YAC_NR3_EEG.mat
+mat	NR				00:03:33	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAC/gip_YAC_NR4_EEG.mat
+mat	NR				00:03:58	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAC/gip_YAC_NR7_EEG.mat
+mat	NR				00:11:35	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAG/gip_YAG_NR1_EEG.mat
+mat	NR				00:07:29	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAG/gip_YAG_NR2_EEG.mat
+mat	NR				00:06:29	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAG/gip_YAG_NR3_EEG.mat
+mat	NR				00:06:27	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAG/gip_YAG_NR7_EEG.mat
+mat	NR				00:05:51	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAG/oip_YAG_NR4_EEG.mat
+mat	NR				00:05:36	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAG/oip_YAG_NR5_EEG.mat
+mat	NR				00:05:36	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAG/oip_YAG_NR6_EEG.mat
+mat	NR				00:04:24	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAK/bip_YAK_NR2_EEG.mat
+mat	NR				00:04:03	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAK/gip_YAK_NR3_EEG.mat
+mat	NR				00:04:07	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAK/gip_YAK_NR4_EEG.mat
+mat	NR				00:04:15	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAK/gip_YAK_NR5_EEG.mat
+mat	NR				00:03:51	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAK/gip_YAK_NR6_EEG.mat
+mat	NR				00:04:40	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAK/gip_YAK_NR7_EEG.mat
+mat	NR				00:00:15	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YAK/oip_YAK_NR1_EEG.mat
+mat	NR				00:06:37	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDG/gip_YDG_NR1_EEG.mat
+mat	NR				00:04:13	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDG/gip_YDG_NR2_EEG.mat
+mat	NR				00:04:34	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDG/gip_YDG_NR3_EEG.mat
+mat	NR				00:04:22	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDG/gip_YDG_NR4_EEG.mat
+mat	NR				00:04:26	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDG/gip_YDG_NR5_EEG.mat
+mat	NR				00:03:39	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDG/gip_YDG_NR6_EEG.mat
+mat	NR				00:04:01	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDG/gip_YDG_NR7_EEG.mat
+mat	NR				00:07:08	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR1_EEG.mat
+mat	NR				00:04:18	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR2_EEG.mat
+mat	NR				00:03:51	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR3_EEG.mat
+mat	NR				00:03:41	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR4_EEG.mat
+mat	NR				00:03:00	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR5_EEG.mat
+mat	NR				unknown				data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR6_EEG.mat
+mat	NR				00:02:53	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR7_EEG.mat
+mat	NR				00:05:27	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFR/gip_YFR_NR5_EEG.mat
+mat	NR				00:08:23	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFR/oip_YFR_NR1_EEG.mat
+mat	NR				00:06:38	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFR/oip_YFR_NR2_EEG.mat
+mat	NR				00:06:41	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFR/oip_YFR_NR3_EEG.mat
+mat	NR				00:06:07	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFR/oip_YFR_NR4_EEG.mat
+mat	NR				00:04:46	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFR/oip_YFR_NR6_EEG.mat
+mat	NR				00:05:15	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFR/oip_YFR_NR7_EEG.mat
+mat	NR				00:06:28	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFS/gip_YFS_NR1_EEG.mat
+mat	NR				00:04:02	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFS/gip_YFS_NR2_EEG.mat
+mat	NR				00:03:39	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFS/gip_YFS_NR3_EEG.mat
+mat	NR				00:03:11	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFS/gip_YFS_NR4_EEG.mat
+mat	NR				00:03:24	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFS/gip_YFS_NR5_EEG.mat
+mat	NR				00:02:42	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFS/gip_YFS_NR6_EEG.mat
+mat	NR				00:03:29	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YFS/gip_YFS_NR7_EEG.mat
+mat	NR				00:04:45	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YHS/gip_YHS_NR1_EEG.mat
+mat	NR				00:03:08	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YHS/gip_YHS_NR2_EEG.mat
+mat	NR				00:03:06	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YHS/gip_YHS_NR3_EEG.mat
+mat	NR				00:03:02	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YHS/gip_YHS_NR4_EEG.mat
+mat	NR				00:02:49	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YHS/gip_YHS_NR5_EEG.mat
+mat	NR				00:02:32	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YHS/gip_YHS_NR6_EEG.mat
+mat	NR				00:02:46	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YHS/gip_YHS_NR7_EEG.mat
+mat	NR				00:07:39	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YIS/gip_YIS_NR1_EEG.mat
+mat	NR				00:05:19	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YIS/gip_YIS_NR2_EEG.mat
+mat	NR				00:05:04	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YIS/gip_YIS_NR3_EEG.mat
+mat	NR				00:04:49	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YIS/gip_YIS_NR4_EEG.mat
+mat	NR				00:05:00	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YIS/gip_YIS_NR5_EEG.mat
+mat	NR				00:04:44	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YIS/gip_YIS_NR6_EEG.mat
+mat	NR				00:05:14	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YIS/oip_YIS_NR7_EEG.mat
+mat	NR				00:09:11	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YLS/gip_YLS_NR1_EEG.mat
+mat	NR				00:05:04	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YLS/gip_YLS_NR2_EEG.mat
+mat	NR				00:04:49	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YLS/gip_YLS_NR3_EEG.mat
+mat	NR				00:04:38	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YLS/gip_YLS_NR4_EEG.mat
+mat	NR				00:04:46	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YLS/gip_YLS_NR5_EEG.mat
+mat	NR				00:03:39	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YLS/gip_YLS_NR6_EEG.mat
+mat	NR				00:04:13	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YLS/gip_YLS_NR7_EEG.mat
+mat	NR				00:06:32	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMD/gip_YMD_NR5_EEG.mat
+mat	NR				00:06:25	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMD/gip_YMD_NR6_EEG.mat
+mat	NR				00:09:07	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMD/oip_YMD_NR1_EEG.mat
+mat	NR				00:06:43	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMD/oip_YMD_NR2_EEG.mat
+mat	NR				00:05:47	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMD/oip_YMD_NR3_EEG.mat
+mat	NR				00:06:39	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMD/oip_YMD_NR4_EEG.mat
+mat	NR				00:06:44	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMD/oip_YMD_NR7_EEG.mat
+mat	NR				00:10:46	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMS/gip_YMS_NR1_EEG.mat
+mat	NR				00:07:13	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMS/gip_YMS_NR2_EEG.mat
+mat	NR				00:06:16	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMS/gip_YMS_NR3_EEG.mat
+mat	NR				00:06:26	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMS/gip_YMS_NR4_EEG.mat
+mat	NR				00:06:06	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMS/gip_YMS_NR5_EEG.mat
+mat	NR				00:05:25	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMS/gip_YMS_NR6_EEG.mat
+mat	NR				00:06:22	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YMS/gip_YMS_NR7_EEG.mat
+mat	NR				00:04:39	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRH/bip_YRH_NR2_EEG.mat
+mat	NR				00:07:28	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRH/gip_YRH_NR1_EEG.mat
+mat	NR				00:04:09	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRH/gip_YRH_NR3_EEG.mat
+mat	NR				00:04:23	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRH/gip_YRH_NR4_EEG.mat
+mat	NR				00:04:14	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRH/gip_YRH_NR5_EEG.mat
+mat	NR				00:03:51	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRH/gip_YRH_NR6_EEG.mat
+mat	NR				00:04:13	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRH/gip_YRH_NR7_EEG.mat
+mat	NR				00:09:30	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRK/gip_YRK_NR1_EEG.mat
+mat	NR				00:06:39	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRK/gip_YRK_NR2_EEG.mat
+mat	NR				00:06:02	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRK/gip_YRK_NR3_EEG.mat
+mat	NR				00:06:40	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRK/gip_YRK_NR4_EEG.mat
+mat	NR				00:06:18	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRK/gip_YRK_NR5_EEG.mat
+mat	NR				00:05:35	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRK/gip_YRK_NR6_EEG.mat
+mat	NR				00:07:14	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRK/gip_YRK_NR7_EEG.mat
+mat	NR				00:08:20	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRP/gip_YRP_NR1_EEG.mat
+mat	NR				00:07:23	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRP/gip_YRP_NR2_EEG.mat
+mat	NR				00:05:45	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRP/gip_YRP_NR3_EEG.mat
+mat	NR				00:06:19	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRP/gip_YRP_NR4_EEG.mat
+mat	NR				00:05:50	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRP/gip_YRP_NR5_EEG.mat
+mat	NR				00:05:16	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRP/gip_YRP_NR6_EEG.mat
+mat	NR				00:05:38	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YRP/gip_YRP_NR7_EEG.mat
+mat	NR				00:06:24	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSD/gip_YSD_NR1_EEG.mat
+mat	NR				00:04:34	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSD/gip_YSD_NR3_EEG.mat
+mat	NR				00:04:21	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSD/gip_YSD_NR5_EEG.mat
+mat	NR				00:03:58	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSD/gip_YSD_NR7_EEG.mat
+mat	NR				00:04:38	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSD/oip_YSD_NR2_EEG.mat
+mat	NR				00:04:36	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSD/oip_YSD_NR4_EEG.mat
+mat	NR				00:03:32	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSD/oip_YSD_NR6_EEG.mat
+mat	NR				00:09:13	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSL/oip_YSL_NR1_EEG.mat
+mat	NR				00:05:34	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSL/oip_YSL_NR2_EEG.mat
+mat	NR				00:06:00	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSL/oip_YSL_NR3_EEG.mat
+mat	NR				00:05:46	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSL/oip_YSL_NR4_EEG.mat
+mat	NR				00:06:11	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSL/oip_YSL_NR5_EEG.mat
+mat	NR				00:05:29	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSL/oip_YSL_NR6_EEG.mat
+mat	NR				00:05:50	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YSL/oip_YSL_NR7_EEG.mat
+mat	NR				unknown				data/zuco2/task1 - NR/Preprocessed/YTL/gip_YTL_NR1_EEG.mat
+mat	NR				00:06:59	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YTL/gip_YTL_NR3_EEG.mat
+mat	NR				00:06:56	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YTL/gip_YTL_NR5_EEG.mat
+mat	NR				00:06:12	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YTL/gip_YTL_NR7_EEG.mat
+mat	NR				00:06:19	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YTL/oip_YTL_NR2_EEG.mat
+mat	NR				00:06:50	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YTL/oip_YTL_NR4_EEG.mat
+mat	NR				00:05:26	105	500	mat v7.3/hdf5 metadata	data/zuco2/task1 - NR/Preprocessed/YTL/oip_YTL_NR6_EEG.mat
+
+Duration read notes
+- data/zuco2/task1 - NR/Preprocessed/YDR/gip_YDR_NR6_EEG.mat: MAT file is not HDF5/v7.3, duration not inferred without loading it
+- data/zuco2/task1 - NR/Preprocessed/YTL/gip_YTL_NR1_EEG.mat: MAT file is not HDF5/v7.3, duration not inferred without loading it
+
+Folder tree (max depth 4)
+.
+  - data/
+  - download_zuco2_nr.sh
+  - osf_files.txt
+  - zuco2_nr_core_files.txt
+  - zuco2_nr_files_to_download.txt
+  - zuco2_nr_preprocessed_files.txt
+    - zuco2/
+      - scripts/
+      - task1 - NR/
+      - task_materials/
+        - python_reader/
+        - Matlab files/
+        - Preprocessed/
+        - nr_1.csv
+        - nr_1_control_questions.csv
+        - nr_2.csv
+        - nr_2_control_questions.csv
+        - nr_3.csv
+        - nr_3_control_questions.csv
+        - nr_4.csv
+        - nr_4_control_questions.csv
+        - nr_5.csv
+        - nr_5_control_questions.csv
+        - nr_6.csv
+        - nr_6_control_questions.csv
+        - nr_7.csv
+        - nr_7_control_questions.csv

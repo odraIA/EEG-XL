@@ -1,0 +1,85 @@
+Dataset: auditory-eeg-dataset
+Path: /workspace/datasets/auditory-eeg-dataset
+Generated: 2026-06-09T15:16:05
+
+Content summary
+- Directories scanned: 18
+- Files scanned: 36
+- Total file size: 125.3 KB
+- Skipped directory names: .cache, .git, .ipynb_checkpoints, __pycache__, cache, checkpoints, logs
+
+Top-level content
+- auditory-eeg-dataset: 36 files, 125.3 KB
+
+File extensions
+- .py: 17
+- .xml: 5
+- [no extension]: 4
+- .md: 4
+- .json: 1
+- .txt: 1
+- .iml: 1
+- .yaml: 1
+- .cfg: 1
+- .12: 1
+
+Training-hours estimate
+- Selection: no recordings with readable duration
+- Note: all selected recordings are counted as trainable hours; explicit train/val/test splits are not inferred unless encoded as separate files.
+- Total training hours: unavailable
+
+Folder tree (max depth 4)
+.
+  - auditory-eeg-dataset/
+    - .idea/
+    - download_code/
+    - preprocessing_code/
+    - technical_validation/
+    - tests/
+    - venv/
+    - .gitignore
+    - config.json
+    - README.md
+    - requirements.txt
+      - inspectionProfiles/
+      - .gitignore
+      - auditory-eeg-dataset.iml
+      - encodings.xml
+      - misc.xml
+      - modules.xml
+      - vcs.xml
+        - profiles_settings.xml
+      - __init__.py
+      - download_script_from_rdr.py
+      - README.md
+      - README.md
+      - sparrKULee.py
+      - sparrKULee.yaml
+      - experiments/
+      - models/
+      - util/
+      - README.md
+        - match_mismatch_dilated_convolutional_model.py
+        - regression_linear_backward_model.py
+        - regression_linear_forward_model.py
+        - regression_vlaai.py
+        - dilated_convolutional_model.py
+        - linear.py
+        - vlaai.py
+        - dataset_generator.py
+        - dataset_generator_tf.py
+        - plot_results.py
+        - split_and_normalize.py
+      - __init__.py
+      - test_preprocessing.py
+      - test_technical_validation.py
+      - bin/
+      - include/
+      - lib/
+      - lib64/
+      - pyvenv.cfg
+        - python
+        - python3
+        - python3.12
+        - python3.12/
+        - python3.12/

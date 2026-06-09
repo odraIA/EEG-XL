@@ -1,0 +1,2564 @@
+Dataset: OpenNeuroEEG_ds004408
+Path: /workspace/datasets/OpenNeuroEEG_ds004408
+Generated: 2026-06-09T15:15:50
+
+Dataset metadata
+- Name: EEG responses to continuous naturalistic speech
+
+- BIDSVersion: 1.7.0
+- DatasetType: raw
+- License: CC0
+- Authors: ['Giovanni M Di Liberto', 'Michael P Broderick', 'Ole Bialas', 'Edmund C Lalor']
+- participants.tsv rows: 19
+
+Content summary
+- Directories scanned: 41
+- Files scanned: 1948
+- Total file size: 2.3 MB
+- Skipped directory names: .cache, .git, .ipynb_checkpoints, __pycache__, cache, checkpoints, logs
+
+Top-level content
+- sub-001: 100 files, 125.2 KB
+- sub-002: 100 files, 124.9 KB
+- sub-003: 100 files, 125.2 KB
+- sub-004: 100 files, 125.1 KB
+- sub-005: 100 files, 125.1 KB
+- sub-006: 100 files, 125.1 KB
+- sub-007: 100 files, 125.2 KB
+- sub-008: 100 files, 125.0 KB
+- sub-009: 100 files, 125.1 KB
+- sub-010: 100 files, 125.0 KB
+- sub-011: 100 files, 125.2 KB
+- sub-012: 100 files, 125.2 KB
+- sub-013: 100 files, 124.9 KB
+- sub-014: 100 files, 125.2 KB
+- sub-015: 100 files, 125.2 KB
+- sub-016: 100 files, 125.2 KB
+- sub-017: 100 files, 125.2 KB
+- sub-018: 100 files, 125.2 KB
+- sub-019: 100 files, 125.2 KB
+- stimuli: 41 files, 0 B
+- [root files]: 6 files, 3.8 KB
+- .datalad: 1 files, 63 B
+
+File extensions
+- .json: 382
+- .tsv: 381
+- .eeg: 380
+- .vhdr: 380
+- .vmrk: 380
+- .textgrid: 20
+- .wav: 20
+- [no extension]: 4
+- .txt: 1
+
+Detected BIDS-like tasks
+- listening: 1900
+
+Detected BIDS-like subjects
+- sub-001: 100
+- sub-002: 100
+- sub-003: 100
+- sub-004: 100
+- sub-005: 100
+- sub-006: 100
+- sub-007: 100
+- sub-008: 100
+- sub-009: 100
+- sub-010: 100
+- sub-011: 100
+- sub-012: 100
+- sub-013: 100
+- sub-014: 100
+- sub-015: 100
+- sub-016: 100
+- sub-017: 100
+- sub-018: 100
+- sub-019: 100
+
+Training-hours estimate
+- Selection: raw recordings with readable duration
+- Note: all selected recordings are counted as trainable hours; explicit train/val/test splits are not inferred unless encoded as separate files.
+- Total selected recordings: 380
+- Total training hours: 20.595 h (20:35:40)
+
+Hours by task
+task	recordings	hours	duration
+listening	380	20.595	20:35:40
+
+Detected recording candidates
+kind	task	subject	session	run	duration	channels	sfreq	method	path
+raw	listening	001		01	00:03:16			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-01_eeg.vhdr
+raw	listening	001		02	00:03:24			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-02_eeg.vhdr
+raw	listening	001		03	00:03:09			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-03_eeg.vhdr
+raw	listening	001		04	00:03:14			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-04_eeg.vhdr
+raw	listening	001		05	00:03:11			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-05_eeg.vhdr
+raw	listening	001		06	00:03:30			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-06_eeg.vhdr
+raw	listening	001		07	00:02:57			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-07_eeg.vhdr
+raw	listening	001		08	00:03:08			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-08_eeg.vhdr
+raw	listening	001		09	00:03:14			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-09_eeg.vhdr
+raw	listening	001		10	00:03:23			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-10_eeg.vhdr
+raw	listening	001		11	00:03:08			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-11_eeg.vhdr
+raw	listening	001		12	00:03:13			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-12_eeg.vhdr
+raw	listening	001		13	00:03:14			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-13_eeg.vhdr
+raw	listening	001		14	00:03:11			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-14_eeg.vhdr
+raw	listening	001		15	00:03:13			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-15_eeg.vhdr
+raw	listening	001		16	00:03:21			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-16_eeg.vhdr
+raw	listening	001		17	00:03:19			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-17_eeg.vhdr
+raw	listening	001		18	00:03:13			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-18_eeg.vhdr
+raw	listening	001		19	00:03:10			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-19_eeg.vhdr
+raw	listening	001		20	00:03:30			events/json sidecar	sub-001/eeg/sub-001_task-listening_run-20_eeg.vhdr
+raw	listening	002		01	00:03:01			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-01_eeg.vhdr
+raw	listening	002		02	00:03:05			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-02_eeg.vhdr
+raw	listening	002		03	00:03:03			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-03_eeg.vhdr
+raw	listening	002		04	00:03:05			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-04_eeg.vhdr
+raw	listening	002		05	00:03:05			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-05_eeg.vhdr
+raw	listening	002		06	00:03:26			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-06_eeg.vhdr
+raw	listening	002		07	00:02:50			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-07_eeg.vhdr
+raw	listening	002		08	00:02:55			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-08_eeg.vhdr
+raw	listening	002		09	00:03:00			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-09_eeg.vhdr
+raw	listening	002		10	00:03:18			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-10_eeg.vhdr
+raw	listening	002		11	00:02:59			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-11_eeg.vhdr
+raw	listening	002		12	00:03:04			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-12_eeg.vhdr
+raw	listening	002		13	00:03:07			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-13_eeg.vhdr
+raw	listening	002		14	00:03:02			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-14_eeg.vhdr
+raw	listening	002		15	00:03:07			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-15_eeg.vhdr
+raw	listening	002		16	00:03:10			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-16_eeg.vhdr
+raw	listening	002		17	00:03:11			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-17_eeg.vhdr
+raw	listening	002		18	00:03:05			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-18_eeg.vhdr
+raw	listening	002		19	00:03:02			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-19_eeg.vhdr
+raw	listening	002		20	00:03:13			events/json sidecar	sub-002/eeg/sub-002_task-listening_run-20_eeg.vhdr
+raw	listening	003		01	00:03:07			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-01_eeg.vhdr
+raw	listening	003		02	00:03:13			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-02_eeg.vhdr
+raw	listening	003		03	00:03:08			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-03_eeg.vhdr
+raw	listening	003		04	00:03:13			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-04_eeg.vhdr
+raw	listening	003		05	00:03:11			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-05_eeg.vhdr
+raw	listening	003		06	00:03:41			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-06_eeg.vhdr
+raw	listening	003		07	00:02:53			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-07_eeg.vhdr
+raw	listening	003		08	00:03:01			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-08_eeg.vhdr
+raw	listening	003		09	00:03:06			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-09_eeg.vhdr
+raw	listening	003		10	00:03:23			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-10_eeg.vhdr
+raw	listening	003		11	00:03:10			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-11_eeg.vhdr
+raw	listening	003		12	00:03:27			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-12_eeg.vhdr
+raw	listening	003		13	00:03:10			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-13_eeg.vhdr
+raw	listening	003		14	00:03:15			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-14_eeg.vhdr
+raw	listening	003		15	00:03:15			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-15_eeg.vhdr
+raw	listening	003		16	00:03:19			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-16_eeg.vhdr
+raw	listening	003		17	00:03:15			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-17_eeg.vhdr
+raw	listening	003		18	00:03:20			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-18_eeg.vhdr
+raw	listening	003		19	00:03:16			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-19_eeg.vhdr
+raw	listening	003		20	00:03:25			events/json sidecar	sub-003/eeg/sub-003_task-listening_run-20_eeg.vhdr
+raw	listening	004		01	00:03:01			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-01_eeg.vhdr
+raw	listening	004		02	00:03:05			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-02_eeg.vhdr
+raw	listening	004		03	00:03:03			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-03_eeg.vhdr
+raw	listening	004		04	00:03:05			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-04_eeg.vhdr
+raw	listening	004		05	00:03:05			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-05_eeg.vhdr
+raw	listening	004		06	00:03:26			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-06_eeg.vhdr
+raw	listening	004		07	00:02:50			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-07_eeg.vhdr
+raw	listening	004		08	00:02:55			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-08_eeg.vhdr
+raw	listening	004		09	00:03:00			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-09_eeg.vhdr
+raw	listening	004		10	00:03:17			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-10_eeg.vhdr
+raw	listening	004		11	00:03:00			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-11_eeg.vhdr
+raw	listening	004		12	00:03:04			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-12_eeg.vhdr
+raw	listening	004		13	00:03:07			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-13_eeg.vhdr
+raw	listening	004		14	00:03:02			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-14_eeg.vhdr
+raw	listening	004		15	00:03:07			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-15_eeg.vhdr
+raw	listening	004		16	00:03:10			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-16_eeg.vhdr
+raw	listening	004		17	00:03:11			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-17_eeg.vhdr
+raw	listening	004		18	00:03:05			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-18_eeg.vhdr
+raw	listening	004		19	00:02:59			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-19_eeg.vhdr
+raw	listening	004		20	00:03:14			events/json sidecar	sub-004/eeg/sub-004_task-listening_run-20_eeg.vhdr
+raw	listening	005		01	00:03:03			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-01_eeg.vhdr
+raw	listening	005		02	00:03:05			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-02_eeg.vhdr
+raw	listening	005		03	00:03:05			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-03_eeg.vhdr
+raw	listening	005		04	00:03:06			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-04_eeg.vhdr
+raw	listening	005		05	00:03:06			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-05_eeg.vhdr
+raw	listening	005		06	00:03:27			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-06_eeg.vhdr
+raw	listening	005		07	00:02:50			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-07_eeg.vhdr
+raw	listening	005		08	00:02:55			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-08_eeg.vhdr
+raw	listening	005		09	00:03:02			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-09_eeg.vhdr
+raw	listening	005		10	00:03:18			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-10_eeg.vhdr
+raw	listening	005		11	00:03:00			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-11_eeg.vhdr
+raw	listening	005		12	00:05:03			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-12_eeg.vhdr
+raw	listening	005		13	00:03:08			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-13_eeg.vhdr
+raw	listening	005		14	00:03:03			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-14_eeg.vhdr
+raw	listening	005		15	00:03:08			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-15_eeg.vhdr
+raw	listening	005		16	00:03:11			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-16_eeg.vhdr
+raw	listening	005		17	00:03:12			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-17_eeg.vhdr
+raw	listening	005		18	00:03:06			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-18_eeg.vhdr
+raw	listening	005		19	00:03:02			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-19_eeg.vhdr
+raw	listening	005		20	00:05:54			events/json sidecar	sub-005/eeg/sub-005_task-listening_run-20_eeg.vhdr
+raw	listening	006		01	00:03:05			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-01_eeg.vhdr
+raw	listening	006		02	00:03:09			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-02_eeg.vhdr
+raw	listening	006		03	00:03:10			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-03_eeg.vhdr
+raw	listening	006		04	00:03:15			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-04_eeg.vhdr
+raw	listening	006		05	00:03:12			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-05_eeg.vhdr
+raw	listening	006		06	00:03:35			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-06_eeg.vhdr
+raw	listening	006		07	00:02:52			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-07_eeg.vhdr
+raw	listening	006		08	00:02:59			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-08_eeg.vhdr
+raw	listening	006		09	00:03:08			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-09_eeg.vhdr
+raw	listening	006		10	00:05:21			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-10_eeg.vhdr
+raw	listening	006		11	00:04:31			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-11_eeg.vhdr
+raw	listening	006		12	00:03:05			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-12_eeg.vhdr
+raw	listening	006		13	00:03:08			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-13_eeg.vhdr
+raw	listening	006		14	00:03:03			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-14_eeg.vhdr
+raw	listening	006		15	00:03:13			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-15_eeg.vhdr
+raw	listening	006		16	00:03:11			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-16_eeg.vhdr
+raw	listening	006		17	00:03:12			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-17_eeg.vhdr
+raw	listening	006		18	00:03:06			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-18_eeg.vhdr
+raw	listening	006		19	00:03:02			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-19_eeg.vhdr
+raw	listening	006		20	00:03:51			events/json sidecar	sub-006/eeg/sub-006_task-listening_run-20_eeg.vhdr
+raw	listening	007		01	00:03:07			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-01_eeg.vhdr
+raw	listening	007		02	00:03:05			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-02_eeg.vhdr
+raw	listening	007		03	00:03:05			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-03_eeg.vhdr
+raw	listening	007		04	00:03:07			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-04_eeg.vhdr
+raw	listening	007		05	00:03:11			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-05_eeg.vhdr
+raw	listening	007		06	00:03:28			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-06_eeg.vhdr
+raw	listening	007		07	00:02:54			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-07_eeg.vhdr
+raw	listening	007		08	00:02:59			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-08_eeg.vhdr
+raw	listening	007		09	00:03:11			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-09_eeg.vhdr
+raw	listening	007		10	00:03:23			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-10_eeg.vhdr
+raw	listening	007		11	00:03:05			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-11_eeg.vhdr
+raw	listening	007		12	00:03:10			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-12_eeg.vhdr
+raw	listening	007		13	00:03:21			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-13_eeg.vhdr
+raw	listening	007		14	00:03:12			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-14_eeg.vhdr
+raw	listening	007		15	00:03:20			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-15_eeg.vhdr
+raw	listening	007		16	00:03:19			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-16_eeg.vhdr
+raw	listening	007		17	00:03:17			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-17_eeg.vhdr
+raw	listening	007		18	00:03:07			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-18_eeg.vhdr
+raw	listening	007		19	00:03:03			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-19_eeg.vhdr
+raw	listening	007		20	00:04:06			events/json sidecar	sub-007/eeg/sub-007_task-listening_run-20_eeg.vhdr
+raw	listening	008		01	00:03:02			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-01_eeg.vhdr
+raw	listening	008		02	00:03:04			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-02_eeg.vhdr
+raw	listening	008		03	00:03:04			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-03_eeg.vhdr
+raw	listening	008		04	00:03:05			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-04_eeg.vhdr
+raw	listening	008		05	00:03:04			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-05_eeg.vhdr
+raw	listening	008		06	00:03:27			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-06_eeg.vhdr
+raw	listening	008		07	00:02:50			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-07_eeg.vhdr
+raw	listening	008		08	00:02:55			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-08_eeg.vhdr
+raw	listening	008		09	00:03:00			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-09_eeg.vhdr
+raw	listening	008		10	00:03:15			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-10_eeg.vhdr
+raw	listening	008		11	00:02:59			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-11_eeg.vhdr
+raw	listening	008		12	00:03:03			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-12_eeg.vhdr
+raw	listening	008		13	00:03:07			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-13_eeg.vhdr
+raw	listening	008		14	00:03:02			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-14_eeg.vhdr
+raw	listening	008		15	00:03:07			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-15_eeg.vhdr
+raw	listening	008		16	00:03:10			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-16_eeg.vhdr
+raw	listening	008		17	00:03:12			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-17_eeg.vhdr
+raw	listening	008		18	00:03:06			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-18_eeg.vhdr
+raw	listening	008		19	00:03:01			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-19_eeg.vhdr
+raw	listening	008		20	00:03:13			events/json sidecar	sub-008/eeg/sub-008_task-listening_run-20_eeg.vhdr
+raw	listening	009		01	00:03:01			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-01_eeg.vhdr
+raw	listening	009		02	00:03:04			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-02_eeg.vhdr
+raw	listening	009		03	00:03:04			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-03_eeg.vhdr
+raw	listening	009		04	00:03:05			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-04_eeg.vhdr
+raw	listening	009		05	00:03:05			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-05_eeg.vhdr
+raw	listening	009		06	00:03:27			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-06_eeg.vhdr
+raw	listening	009		07	00:02:50			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-07_eeg.vhdr
+raw	listening	009		08	00:02:55			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-08_eeg.vhdr
+raw	listening	009		09	00:03:01			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-09_eeg.vhdr
+raw	listening	009		10	00:03:17			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-10_eeg.vhdr
+raw	listening	009		11	00:02:59			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-11_eeg.vhdr
+raw	listening	009		12	00:03:03			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-12_eeg.vhdr
+raw	listening	009		13	00:03:07			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-13_eeg.vhdr
+raw	listening	009		14	00:03:02			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-14_eeg.vhdr
+raw	listening	009		15	00:03:05			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-15_eeg.vhdr
+raw	listening	009		16	00:03:10			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-16_eeg.vhdr
+raw	listening	009		17	00:03:11			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-17_eeg.vhdr
+raw	listening	009		18	00:03:04			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-18_eeg.vhdr
+raw	listening	009		19	00:03:02			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-19_eeg.vhdr
+raw	listening	009		20	00:03:13			events/json sidecar	sub-009/eeg/sub-009_task-listening_run-20_eeg.vhdr
+raw	listening	010		01	00:03:01			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-01_eeg.vhdr
+raw	listening	010		02	00:03:04			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-02_eeg.vhdr
+raw	listening	010		03	00:03:04			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-03_eeg.vhdr
+raw	listening	010		04	00:03:05			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-04_eeg.vhdr
+raw	listening	010		05	00:03:05			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-05_eeg.vhdr
+raw	listening	010		06	00:03:26			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-06_eeg.vhdr
+raw	listening	010		07	00:02:49			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-07_eeg.vhdr
+raw	listening	010		08	00:02:55			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-08_eeg.vhdr
+raw	listening	010		09	00:03:00			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-09_eeg.vhdr
+raw	listening	010		10	00:03:17			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-10_eeg.vhdr
+raw	listening	010		11	00:02:59			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-11_eeg.vhdr
+raw	listening	010		12	00:03:04			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-12_eeg.vhdr
+raw	listening	010		13	00:03:07			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-13_eeg.vhdr
+raw	listening	010		14	00:03:02			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-14_eeg.vhdr
+raw	listening	010		15	00:03:08			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-15_eeg.vhdr
+raw	listening	010		16	00:03:10			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-16_eeg.vhdr
+raw	listening	010		17	00:03:11			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-17_eeg.vhdr
+raw	listening	010		18	00:03:05			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-18_eeg.vhdr
+raw	listening	010		19	00:03:01			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-19_eeg.vhdr
+raw	listening	010		20	00:03:14			events/json sidecar	sub-010/eeg/sub-010_task-listening_run-20_eeg.vhdr
+raw	listening	011		01	00:03:11			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-01_eeg.vhdr
+raw	listening	011		02	00:03:08			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-02_eeg.vhdr
+raw	listening	011		03	00:03:14			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-03_eeg.vhdr
+raw	listening	011		04	00:03:16			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-04_eeg.vhdr
+raw	listening	011		05	00:03:19			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-05_eeg.vhdr
+raw	listening	011		06	00:03:27			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-06_eeg.vhdr
+raw	listening	011		07	00:03:08			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-07_eeg.vhdr
+raw	listening	011		08	00:02:55			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-08_eeg.vhdr
+raw	listening	011		09	00:03:05			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-09_eeg.vhdr
+raw	listening	011		10	00:03:50			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-10_eeg.vhdr
+raw	listening	011		11	00:03:01			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-11_eeg.vhdr
+raw	listening	011		12	00:03:23			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-12_eeg.vhdr
+raw	listening	011		13	00:03:08			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-13_eeg.vhdr
+raw	listening	011		14	00:03:04			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-14_eeg.vhdr
+raw	listening	011		15	00:03:13			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-15_eeg.vhdr
+raw	listening	011		16	00:03:10			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-16_eeg.vhdr
+raw	listening	011		17	00:03:15			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-17_eeg.vhdr
+raw	listening	011		18	00:03:13			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-18_eeg.vhdr
+raw	listening	011		19	00:03:03			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-19_eeg.vhdr
+raw	listening	011		20	00:04:24			events/json sidecar	sub-011/eeg/sub-011_task-listening_run-20_eeg.vhdr
+raw	listening	012		01	00:03:06			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-01_eeg.vhdr
+raw	listening	012		02	00:03:10			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-02_eeg.vhdr
+raw	listening	012		03	00:03:08			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-03_eeg.vhdr
+raw	listening	012		04	00:03:10			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-04_eeg.vhdr
+raw	listening	012		05	00:03:08			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-05_eeg.vhdr
+raw	listening	012		06	00:03:29			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-06_eeg.vhdr
+raw	listening	012		07	00:02:55			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-07_eeg.vhdr
+raw	listening	012		08	00:02:59			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-08_eeg.vhdr
+raw	listening	012		09	00:03:06			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-09_eeg.vhdr
+raw	listening	012		10	00:03:20			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-10_eeg.vhdr
+raw	listening	012		11	00:03:03			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-11_eeg.vhdr
+raw	listening	012		12	00:03:07			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-12_eeg.vhdr
+raw	listening	012		13	00:03:09			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-13_eeg.vhdr
+raw	listening	012		14	00:03:05			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-14_eeg.vhdr
+raw	listening	012		15	00:03:09			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-15_eeg.vhdr
+raw	listening	012		16	00:03:13			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-16_eeg.vhdr
+raw	listening	012		17	00:03:14			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-17_eeg.vhdr
+raw	listening	012		18	00:03:08			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-18_eeg.vhdr
+raw	listening	012		19	00:03:03			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-19_eeg.vhdr
+raw	listening	012		20	00:03:53			events/json sidecar	sub-012/eeg/sub-012_task-listening_run-20_eeg.vhdr
+raw	listening	013		01	00:03:02			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-01_eeg.vhdr
+raw	listening	013		02	00:03:04			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-02_eeg.vhdr
+raw	listening	013		03	00:03:04			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-03_eeg.vhdr
+raw	listening	013		04	00:03:05			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-04_eeg.vhdr
+raw	listening	013		05	00:03:04			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-05_eeg.vhdr
+raw	listening	013		06	00:03:26			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-06_eeg.vhdr
+raw	listening	013		07	00:02:49			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-07_eeg.vhdr
+raw	listening	013		08	00:02:55			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-08_eeg.vhdr
+raw	listening	013		09	00:03:00			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-09_eeg.vhdr
+raw	listening	013		10	00:03:17			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-10_eeg.vhdr
+raw	listening	013		11	00:02:59			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-11_eeg.vhdr
+raw	listening	013		12	00:03:03			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-12_eeg.vhdr
+raw	listening	013		13	00:03:07			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-13_eeg.vhdr
+raw	listening	013		14	00:03:03			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-14_eeg.vhdr
+raw	listening	013		15	00:03:08			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-15_eeg.vhdr
+raw	listening	013		16	00:03:10			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-16_eeg.vhdr
+raw	listening	013		17	00:03:12			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-17_eeg.vhdr
+raw	listening	013		18	00:03:05			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-18_eeg.vhdr
+raw	listening	013		19	00:03:02			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-19_eeg.vhdr
+raw	listening	013		20	00:03:12			events/json sidecar	sub-013/eeg/sub-013_task-listening_run-20_eeg.vhdr
+raw	listening	014		01	00:04:38			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-01_eeg.vhdr
+raw	listening	014		02	00:03:46			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-02_eeg.vhdr
+raw	listening	014		03	00:03:05			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-03_eeg.vhdr
+raw	listening	014		04	00:03:07			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-04_eeg.vhdr
+raw	listening	014		05	00:03:06			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-05_eeg.vhdr
+raw	listening	014		06	00:03:27			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-06_eeg.vhdr
+raw	listening	014		07	00:03:54			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-07_eeg.vhdr
+raw	listening	014		08	00:02:56			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-08_eeg.vhdr
+raw	listening	014		09	00:03:24			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-09_eeg.vhdr
+raw	listening	014		10	00:04:41			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-10_eeg.vhdr
+raw	listening	014		11	00:03:00			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-11_eeg.vhdr
+raw	listening	014		12	00:04:05			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-12_eeg.vhdr
+raw	listening	014		13	00:03:08			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-13_eeg.vhdr
+raw	listening	014		14	00:03:03			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-14_eeg.vhdr
+raw	listening	014		15	00:03:18			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-15_eeg.vhdr
+raw	listening	014		16	00:03:54			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-16_eeg.vhdr
+raw	listening	014		17	00:03:13			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-17_eeg.vhdr
+raw	listening	014		18	00:03:25			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-18_eeg.vhdr
+raw	listening	014		19	00:03:02			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-19_eeg.vhdr
+raw	listening	014		20	00:03:56			events/json sidecar	sub-014/eeg/sub-014_task-listening_run-20_eeg.vhdr
+raw	listening	015		01	00:03:20			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-01_eeg.vhdr
+raw	listening	015		02	00:03:16			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-02_eeg.vhdr
+raw	listening	015		03	00:03:15			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-03_eeg.vhdr
+raw	listening	015		04	00:03:21			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-04_eeg.vhdr
+raw	listening	015		05	00:03:15			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-05_eeg.vhdr
+raw	listening	015		06	00:03:38			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-06_eeg.vhdr
+raw	listening	015		07	00:03:03			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-07_eeg.vhdr
+raw	listening	015		08	00:03:07			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-08_eeg.vhdr
+raw	listening	015		09	00:03:09			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-09_eeg.vhdr
+raw	listening	015		10	00:03:32			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-10_eeg.vhdr
+raw	listening	015		11	00:03:07			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-11_eeg.vhdr
+raw	listening	015		12	00:03:21			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-12_eeg.vhdr
+raw	listening	015		13	00:03:22			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-13_eeg.vhdr
+raw	listening	015		14	00:03:15			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-14_eeg.vhdr
+raw	listening	015		15	00:03:19			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-15_eeg.vhdr
+raw	listening	015		16	00:03:21			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-16_eeg.vhdr
+raw	listening	015		17	00:03:21			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-17_eeg.vhdr
+raw	listening	015		18	00:03:16			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-18_eeg.vhdr
+raw	listening	015		19	00:03:11			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-19_eeg.vhdr
+raw	listening	015		20	00:03:23			events/json sidecar	sub-015/eeg/sub-015_task-listening_run-20_eeg.vhdr
+raw	listening	016		01	00:03:01			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-01_eeg.vhdr
+raw	listening	016		02	00:03:04			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-02_eeg.vhdr
+raw	listening	016		03	00:03:04			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-03_eeg.vhdr
+raw	listening	016		04	00:03:05			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-04_eeg.vhdr
+raw	listening	016		05	00:03:04			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-05_eeg.vhdr
+raw	listening	016		06	00:03:26			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-06_eeg.vhdr
+raw	listening	016		07	00:02:49			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-07_eeg.vhdr
+raw	listening	016		08	00:02:55			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-08_eeg.vhdr
+raw	listening	016		09	00:03:00			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-09_eeg.vhdr
+raw	listening	016		10	00:03:17			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-10_eeg.vhdr
+raw	listening	016		11	00:03:00			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-11_eeg.vhdr
+raw	listening	016		12	00:03:04			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-12_eeg.vhdr
+raw	listening	016		13	00:03:08			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-13_eeg.vhdr
+raw	listening	016		14	00:03:03			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-14_eeg.vhdr
+raw	listening	016		15	00:03:08			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-15_eeg.vhdr
+raw	listening	016		16	00:03:10			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-16_eeg.vhdr
+raw	listening	016		17	00:03:11			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-17_eeg.vhdr
+raw	listening	016		18	00:03:06			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-18_eeg.vhdr
+raw	listening	016		19	00:03:01			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-19_eeg.vhdr
+raw	listening	016		20	00:03:13			events/json sidecar	sub-016/eeg/sub-016_task-listening_run-20_eeg.vhdr
+raw	listening	017		01	00:07:58			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-01_eeg.vhdr
+raw	listening	017		02	00:03:08			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-02_eeg.vhdr
+raw	listening	017		03	00:03:08			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-03_eeg.vhdr
+raw	listening	017		04	00:03:10			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-04_eeg.vhdr
+raw	listening	017		05	00:03:22			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-05_eeg.vhdr
+raw	listening	017		06	00:03:31			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-06_eeg.vhdr
+raw	listening	017		07	00:03:11			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-07_eeg.vhdr
+raw	listening	017		08	00:03:10			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-08_eeg.vhdr
+raw	listening	017		09	00:03:30			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-09_eeg.vhdr
+raw	listening	017		10	00:03:40			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-10_eeg.vhdr
+raw	listening	017		11	00:03:16			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-11_eeg.vhdr
+raw	listening	017		12	00:03:28			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-12_eeg.vhdr
+raw	listening	017		13	00:03:33			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-13_eeg.vhdr
+raw	listening	017		14	00:03:30			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-14_eeg.vhdr
+raw	listening	017		15	00:03:30			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-15_eeg.vhdr
+raw	listening	017		16	00:03:24			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-16_eeg.vhdr
+raw	listening	017		17	00:03:33			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-17_eeg.vhdr
+raw	listening	017		18	00:03:27			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-18_eeg.vhdr
+raw	listening	017		19	00:03:13			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-19_eeg.vhdr
+raw	listening	017		20	00:03:12			events/json sidecar	sub-017/eeg/sub-017_task-listening_run-20_eeg.vhdr
+raw	listening	018		01	00:03:25			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-01_eeg.vhdr
+raw	listening	018		02	00:03:24			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-02_eeg.vhdr
+raw	listening	018		03	00:03:49			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-03_eeg.vhdr
+raw	listening	018		04	00:03:14			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-04_eeg.vhdr
+raw	listening	018		05	00:03:32			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-05_eeg.vhdr
+raw	listening	018		06	00:04:57			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-06_eeg.vhdr
+raw	listening	018		07	00:03:12			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-07_eeg.vhdr
+raw	listening	018		08	00:03:35			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-08_eeg.vhdr
+raw	listening	018		09	00:03:25			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-09_eeg.vhdr
+raw	listening	018		10	00:03:27			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-10_eeg.vhdr
+raw	listening	018		11	00:03:33			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-11_eeg.vhdr
+raw	listening	018		12	00:03:30			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-12_eeg.vhdr
+raw	listening	018		13	00:03:16			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-13_eeg.vhdr
+raw	listening	018		14	00:03:16			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-14_eeg.vhdr
+raw	listening	018		15	00:04:24			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-15_eeg.vhdr
+raw	listening	018		16	00:03:14			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-16_eeg.vhdr
+raw	listening	018		17	00:03:40			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-17_eeg.vhdr
+raw	listening	018		18	00:03:18			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-18_eeg.vhdr
+raw	listening	018		19	00:03:24			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-19_eeg.vhdr
+raw	listening	018		20	00:03:55			events/json sidecar	sub-018/eeg/sub-018_task-listening_run-20_eeg.vhdr
+raw	listening	019		01	00:03:10			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-01_eeg.vhdr
+raw	listening	019		02	00:03:14			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-02_eeg.vhdr
+raw	listening	019		03	00:03:14			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-03_eeg.vhdr
+raw	listening	019		04	00:03:21			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-04_eeg.vhdr
+raw	listening	019		05	00:03:21			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-05_eeg.vhdr
+raw	listening	019		06	00:03:37			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-06_eeg.vhdr
+raw	listening	019		07	00:03:02			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-07_eeg.vhdr
+raw	listening	019		08	00:03:05			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-08_eeg.vhdr
+raw	listening	019		09	00:03:07			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-09_eeg.vhdr
+raw	listening	019		10	00:03:45			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-10_eeg.vhdr
+raw	listening	019		11	00:03:17			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-11_eeg.vhdr
+raw	listening	019		12	00:03:30			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-12_eeg.vhdr
+raw	listening	019		13	00:03:12			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-13_eeg.vhdr
+raw	listening	019		14	00:03:14			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-14_eeg.vhdr
+raw	listening	019		15	00:03:47			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-15_eeg.vhdr
+raw	listening	019		16	00:03:27			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-16_eeg.vhdr
+raw	listening	019		17	00:03:39			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-17_eeg.vhdr
+raw	listening	019		18	00:03:13			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-18_eeg.vhdr
+raw	listening	019		19	00:03:15			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-19_eeg.vhdr
+raw	listening	019		20	00:03:14			events/json sidecar	sub-019/eeg/sub-019_task-listening_run-20_eeg.vhdr
+
+Duration read notes
+- sub-001/eeg/sub-001_task-listening_run-01_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-01_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-02_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-02_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-03_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-03_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-04_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-04_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-05_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-05_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-06_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-06_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-07_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-07_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-08_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-08_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-09_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-09_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-10_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-10_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-11_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-11_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-12_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-12_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-13_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-13_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-14_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-14_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-15_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-15_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-16_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-16_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-17_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-17_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-18_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-18_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-19_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-19_eeg.vhdr'
+- sub-001/eeg/sub-001_task-listening_run-20_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-001/eeg/sub-001_task-listening_run-20_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-01_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-01_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-02_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-02_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-03_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-03_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-04_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-04_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-05_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-05_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-06_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-06_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-07_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-07_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-08_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-08_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-09_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-09_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-10_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-10_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-11_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-11_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-12_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-12_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-13_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-13_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-14_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-14_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-15_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-15_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-16_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-16_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-17_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-17_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-18_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-18_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-19_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-19_eeg.vhdr'
+- sub-002/eeg/sub-002_task-listening_run-20_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-002/eeg/sub-002_task-listening_run-20_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-01_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-01_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-02_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-02_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-03_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-03_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-04_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-04_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-05_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-05_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-06_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-06_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-07_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-07_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-08_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-08_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-09_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-09_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-10_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-10_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-11_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-11_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-12_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-12_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-13_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-13_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-14_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-14_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-15_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-15_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-16_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-16_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-17_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-17_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-18_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-18_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-19_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-19_eeg.vhdr'
+- sub-003/eeg/sub-003_task-listening_run-20_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-003/eeg/sub-003_task-listening_run-20_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-01_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-01_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-02_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-02_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-03_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-03_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-04_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-04_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-05_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-05_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-06_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-06_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-07_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-07_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-08_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-08_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-09_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-09_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-10_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-10_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-11_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-11_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-12_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-12_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-13_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-13_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-14_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-14_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-15_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-15_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-16_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-16_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-17_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-17_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-18_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-18_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-19_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-19_eeg.vhdr'
+- sub-004/eeg/sub-004_task-listening_run-20_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-004/eeg/sub-004_task-listening_run-20_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-01_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-01_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-02_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-02_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-03_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-03_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-04_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-04_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-05_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-05_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-06_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-06_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-07_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-07_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-08_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-08_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-09_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-09_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-10_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-10_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-11_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-11_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-12_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-12_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-13_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-13_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-14_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-14_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-15_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-15_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-16_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-16_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-17_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-17_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-18_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-18_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-19_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-19_eeg.vhdr'
+- sub-005/eeg/sub-005_task-listening_run-20_eeg.vhdr: FileNotFoundError: [Errno 2] No such file or directory: '/workspace/datasets/OpenNeuroEEG_ds004408/sub-005/eeg/sub-005_task-listening_run-20_eeg.vhdr'
+- ... 280 more errors
+
+Folder tree (max depth 4)
+.
+  - .datalad/
+  - stimuli/
+  - sub-001/
+  - sub-002/
+  - sub-003/
+  - sub-004/
+  - sub-005/
+  - sub-006/
+  - sub-007/
+  - sub-008/
+  - sub-009/
+  - sub-010/
+  - sub-011/
+  - sub-012/
+  - sub-013/
+  - sub-014/
+  - sub-015/
+  - sub-016/
+  - sub-017/
+  - sub-018/
+  - sub-019/
+  - .gitattributes
+  - CHANGES
+  - dataset_description.json
+  - participants.json
+  - participants.tsv
+  - README
+    - config
+    - audio01.TextGrid
+    - audio01.wav
+    - audio02.TextGrid
+    - audio02.wav
+    - audio03.TextGrid
+    - audio03.wav
+    - audio04.TextGrid
+    - audio04.wav
+    - audio05.TextGrid
+    - audio05.wav
+    - audio06.TextGrid
+    - audio06.wav
+    - audio07.TextGrid
+    - audio07.wav
+    - audio08.TextGrid
+    - audio08.wav
+    - audio09.TextGrid
+    - audio09.wav
+    - audio10.TextGrid
+    - audio10.wav
+    - audio11.TextGrid
+    - audio11.wav
+    - audio12.TextGrid
+    - audio12.wav
+    - audio13.TextGrid
+    - audio13.wav
+    - audio14.TextGrid
+    - audio14.wav
+    - audio15.TextGrid
+    - audio15.wav
+    - audio16.TextGrid
+    - audio16.wav
+    - audio17.TextGrid
+    - audio17.wav
+    - audio18.TextGrid
+    - audio18.wav
+    - audio19.TextGrid
+    - audio19.wav
+    - audio20.TextGrid
+    - audio20.wav
+    - results.txt
+    - eeg/
+      - sub-001_task-listening_run-01_channels.tsv
+      - sub-001_task-listening_run-01_eeg.eeg
+      - sub-001_task-listening_run-01_eeg.json
+      - sub-001_task-listening_run-01_eeg.vhdr
+      - sub-001_task-listening_run-01_eeg.vmrk
+      - sub-001_task-listening_run-02_channels.tsv
+      - sub-001_task-listening_run-02_eeg.eeg
+      - sub-001_task-listening_run-02_eeg.json
+      - sub-001_task-listening_run-02_eeg.vhdr
+      - sub-001_task-listening_run-02_eeg.vmrk
+      - sub-001_task-listening_run-03_channels.tsv
+      - sub-001_task-listening_run-03_eeg.eeg
+      - sub-001_task-listening_run-03_eeg.json
+      - sub-001_task-listening_run-03_eeg.vhdr
+      - sub-001_task-listening_run-03_eeg.vmrk
+      - sub-001_task-listening_run-04_channels.tsv
+      - sub-001_task-listening_run-04_eeg.eeg
+      - sub-001_task-listening_run-04_eeg.json
+      - sub-001_task-listening_run-04_eeg.vhdr
+      - sub-001_task-listening_run-04_eeg.vmrk
+      - sub-001_task-listening_run-05_channels.tsv
+      - sub-001_task-listening_run-05_eeg.eeg
+      - sub-001_task-listening_run-05_eeg.json
+      - sub-001_task-listening_run-05_eeg.vhdr
+      - sub-001_task-listening_run-05_eeg.vmrk
+      - sub-001_task-listening_run-06_channels.tsv
+      - sub-001_task-listening_run-06_eeg.eeg
+      - sub-001_task-listening_run-06_eeg.json
+      - sub-001_task-listening_run-06_eeg.vhdr
+      - sub-001_task-listening_run-06_eeg.vmrk
+      - sub-001_task-listening_run-07_channels.tsv
+      - sub-001_task-listening_run-07_eeg.eeg
+      - sub-001_task-listening_run-07_eeg.json
+      - sub-001_task-listening_run-07_eeg.vhdr
+      - sub-001_task-listening_run-07_eeg.vmrk
+      - sub-001_task-listening_run-08_channels.tsv
+      - sub-001_task-listening_run-08_eeg.eeg
+      - sub-001_task-listening_run-08_eeg.json
+      - sub-001_task-listening_run-08_eeg.vhdr
+      - sub-001_task-listening_run-08_eeg.vmrk
+      - sub-001_task-listening_run-09_channels.tsv
+      - sub-001_task-listening_run-09_eeg.eeg
+      - sub-001_task-listening_run-09_eeg.json
+      - sub-001_task-listening_run-09_eeg.vhdr
+      - sub-001_task-listening_run-09_eeg.vmrk
+      - sub-001_task-listening_run-10_channels.tsv
+      - sub-001_task-listening_run-10_eeg.eeg
+      - sub-001_task-listening_run-10_eeg.json
+      - sub-001_task-listening_run-10_eeg.vhdr
+      - sub-001_task-listening_run-10_eeg.vmrk
+      - sub-001_task-listening_run-11_channels.tsv
+      - sub-001_task-listening_run-11_eeg.eeg
+      - sub-001_task-listening_run-11_eeg.json
+      - sub-001_task-listening_run-11_eeg.vhdr
+      - sub-001_task-listening_run-11_eeg.vmrk
+      - sub-001_task-listening_run-12_channels.tsv
+      - sub-001_task-listening_run-12_eeg.eeg
+      - sub-001_task-listening_run-12_eeg.json
+      - sub-001_task-listening_run-12_eeg.vhdr
+      - sub-001_task-listening_run-12_eeg.vmrk
+      - sub-001_task-listening_run-13_channels.tsv
+      - sub-001_task-listening_run-13_eeg.eeg
+      - sub-001_task-listening_run-13_eeg.json
+      - sub-001_task-listening_run-13_eeg.vhdr
+      - sub-001_task-listening_run-13_eeg.vmrk
+      - sub-001_task-listening_run-14_channels.tsv
+      - sub-001_task-listening_run-14_eeg.eeg
+      - sub-001_task-listening_run-14_eeg.json
+      - sub-001_task-listening_run-14_eeg.vhdr
+      - sub-001_task-listening_run-14_eeg.vmrk
+      - sub-001_task-listening_run-15_channels.tsv
+      - sub-001_task-listening_run-15_eeg.eeg
+      - sub-001_task-listening_run-15_eeg.json
+      - sub-001_task-listening_run-15_eeg.vhdr
+      - sub-001_task-listening_run-15_eeg.vmrk
+      - sub-001_task-listening_run-16_channels.tsv
+      - sub-001_task-listening_run-16_eeg.eeg
+      - sub-001_task-listening_run-16_eeg.json
+      - sub-001_task-listening_run-16_eeg.vhdr
+      - sub-001_task-listening_run-16_eeg.vmrk
+      - sub-001_task-listening_run-17_channels.tsv
+      - sub-001_task-listening_run-17_eeg.eeg
+      - sub-001_task-listening_run-17_eeg.json
+      - sub-001_task-listening_run-17_eeg.vhdr
+      - sub-001_task-listening_run-17_eeg.vmrk
+      - sub-001_task-listening_run-18_channels.tsv
+      - sub-001_task-listening_run-18_eeg.eeg
+      - sub-001_task-listening_run-18_eeg.json
+      - sub-001_task-listening_run-18_eeg.vhdr
+      - sub-001_task-listening_run-18_eeg.vmrk
+      - sub-001_task-listening_run-19_channels.tsv
+      - sub-001_task-listening_run-19_eeg.eeg
+      - sub-001_task-listening_run-19_eeg.json
+      - sub-001_task-listening_run-19_eeg.vhdr
+      - sub-001_task-listening_run-19_eeg.vmrk
+      - sub-001_task-listening_run-20_channels.tsv
+      - sub-001_task-listening_run-20_eeg.eeg
+      - sub-001_task-listening_run-20_eeg.json
+      - sub-001_task-listening_run-20_eeg.vhdr
+      - sub-001_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-002_task-listening_run-01_channels.tsv
+      - sub-002_task-listening_run-01_eeg.eeg
+      - sub-002_task-listening_run-01_eeg.json
+      - sub-002_task-listening_run-01_eeg.vhdr
+      - sub-002_task-listening_run-01_eeg.vmrk
+      - sub-002_task-listening_run-02_channels.tsv
+      - sub-002_task-listening_run-02_eeg.eeg
+      - sub-002_task-listening_run-02_eeg.json
+      - sub-002_task-listening_run-02_eeg.vhdr
+      - sub-002_task-listening_run-02_eeg.vmrk
+      - sub-002_task-listening_run-03_channels.tsv
+      - sub-002_task-listening_run-03_eeg.eeg
+      - sub-002_task-listening_run-03_eeg.json
+      - sub-002_task-listening_run-03_eeg.vhdr
+      - sub-002_task-listening_run-03_eeg.vmrk
+      - sub-002_task-listening_run-04_channels.tsv
+      - sub-002_task-listening_run-04_eeg.eeg
+      - sub-002_task-listening_run-04_eeg.json
+      - sub-002_task-listening_run-04_eeg.vhdr
+      - sub-002_task-listening_run-04_eeg.vmrk
+      - sub-002_task-listening_run-05_channels.tsv
+      - sub-002_task-listening_run-05_eeg.eeg
+      - sub-002_task-listening_run-05_eeg.json
+      - sub-002_task-listening_run-05_eeg.vhdr
+      - sub-002_task-listening_run-05_eeg.vmrk
+      - sub-002_task-listening_run-06_channels.tsv
+      - sub-002_task-listening_run-06_eeg.eeg
+      - sub-002_task-listening_run-06_eeg.json
+      - sub-002_task-listening_run-06_eeg.vhdr
+      - sub-002_task-listening_run-06_eeg.vmrk
+      - sub-002_task-listening_run-07_channels.tsv
+      - sub-002_task-listening_run-07_eeg.eeg
+      - sub-002_task-listening_run-07_eeg.json
+      - sub-002_task-listening_run-07_eeg.vhdr
+      - sub-002_task-listening_run-07_eeg.vmrk
+      - sub-002_task-listening_run-08_channels.tsv
+      - sub-002_task-listening_run-08_eeg.eeg
+      - sub-002_task-listening_run-08_eeg.json
+      - sub-002_task-listening_run-08_eeg.vhdr
+      - sub-002_task-listening_run-08_eeg.vmrk
+      - sub-002_task-listening_run-09_channels.tsv
+      - sub-002_task-listening_run-09_eeg.eeg
+      - sub-002_task-listening_run-09_eeg.json
+      - sub-002_task-listening_run-09_eeg.vhdr
+      - sub-002_task-listening_run-09_eeg.vmrk
+      - sub-002_task-listening_run-10_channels.tsv
+      - sub-002_task-listening_run-10_eeg.eeg
+      - sub-002_task-listening_run-10_eeg.json
+      - sub-002_task-listening_run-10_eeg.vhdr
+      - sub-002_task-listening_run-10_eeg.vmrk
+      - sub-002_task-listening_run-11_channels.tsv
+      - sub-002_task-listening_run-11_eeg.eeg
+      - sub-002_task-listening_run-11_eeg.json
+      - sub-002_task-listening_run-11_eeg.vhdr
+      - sub-002_task-listening_run-11_eeg.vmrk
+      - sub-002_task-listening_run-12_channels.tsv
+      - sub-002_task-listening_run-12_eeg.eeg
+      - sub-002_task-listening_run-12_eeg.json
+      - sub-002_task-listening_run-12_eeg.vhdr
+      - sub-002_task-listening_run-12_eeg.vmrk
+      - sub-002_task-listening_run-13_channels.tsv
+      - sub-002_task-listening_run-13_eeg.eeg
+      - sub-002_task-listening_run-13_eeg.json
+      - sub-002_task-listening_run-13_eeg.vhdr
+      - sub-002_task-listening_run-13_eeg.vmrk
+      - sub-002_task-listening_run-14_channels.tsv
+      - sub-002_task-listening_run-14_eeg.eeg
+      - sub-002_task-listening_run-14_eeg.json
+      - sub-002_task-listening_run-14_eeg.vhdr
+      - sub-002_task-listening_run-14_eeg.vmrk
+      - sub-002_task-listening_run-15_channels.tsv
+      - sub-002_task-listening_run-15_eeg.eeg
+      - sub-002_task-listening_run-15_eeg.json
+      - sub-002_task-listening_run-15_eeg.vhdr
+      - sub-002_task-listening_run-15_eeg.vmrk
+      - sub-002_task-listening_run-16_channels.tsv
+      - sub-002_task-listening_run-16_eeg.eeg
+      - sub-002_task-listening_run-16_eeg.json
+      - sub-002_task-listening_run-16_eeg.vhdr
+      - sub-002_task-listening_run-16_eeg.vmrk
+      - sub-002_task-listening_run-17_channels.tsv
+      - sub-002_task-listening_run-17_eeg.eeg
+      - sub-002_task-listening_run-17_eeg.json
+      - sub-002_task-listening_run-17_eeg.vhdr
+      - sub-002_task-listening_run-17_eeg.vmrk
+      - sub-002_task-listening_run-18_channels.tsv
+      - sub-002_task-listening_run-18_eeg.eeg
+      - sub-002_task-listening_run-18_eeg.json
+      - sub-002_task-listening_run-18_eeg.vhdr
+      - sub-002_task-listening_run-18_eeg.vmrk
+      - sub-002_task-listening_run-19_channels.tsv
+      - sub-002_task-listening_run-19_eeg.eeg
+      - sub-002_task-listening_run-19_eeg.json
+      - sub-002_task-listening_run-19_eeg.vhdr
+      - sub-002_task-listening_run-19_eeg.vmrk
+      - sub-002_task-listening_run-20_channels.tsv
+      - sub-002_task-listening_run-20_eeg.eeg
+      - sub-002_task-listening_run-20_eeg.json
+      - sub-002_task-listening_run-20_eeg.vhdr
+      - sub-002_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-003_task-listening_run-01_channels.tsv
+      - sub-003_task-listening_run-01_eeg.eeg
+      - sub-003_task-listening_run-01_eeg.json
+      - sub-003_task-listening_run-01_eeg.vhdr
+      - sub-003_task-listening_run-01_eeg.vmrk
+      - sub-003_task-listening_run-02_channels.tsv
+      - sub-003_task-listening_run-02_eeg.eeg
+      - sub-003_task-listening_run-02_eeg.json
+      - sub-003_task-listening_run-02_eeg.vhdr
+      - sub-003_task-listening_run-02_eeg.vmrk
+      - sub-003_task-listening_run-03_channels.tsv
+      - sub-003_task-listening_run-03_eeg.eeg
+      - sub-003_task-listening_run-03_eeg.json
+      - sub-003_task-listening_run-03_eeg.vhdr
+      - sub-003_task-listening_run-03_eeg.vmrk
+      - sub-003_task-listening_run-04_channels.tsv
+      - sub-003_task-listening_run-04_eeg.eeg
+      - sub-003_task-listening_run-04_eeg.json
+      - sub-003_task-listening_run-04_eeg.vhdr
+      - sub-003_task-listening_run-04_eeg.vmrk
+      - sub-003_task-listening_run-05_channels.tsv
+      - sub-003_task-listening_run-05_eeg.eeg
+      - sub-003_task-listening_run-05_eeg.json
+      - sub-003_task-listening_run-05_eeg.vhdr
+      - sub-003_task-listening_run-05_eeg.vmrk
+      - sub-003_task-listening_run-06_channels.tsv
+      - sub-003_task-listening_run-06_eeg.eeg
+      - sub-003_task-listening_run-06_eeg.json
+      - sub-003_task-listening_run-06_eeg.vhdr
+      - sub-003_task-listening_run-06_eeg.vmrk
+      - sub-003_task-listening_run-07_channels.tsv
+      - sub-003_task-listening_run-07_eeg.eeg
+      - sub-003_task-listening_run-07_eeg.json
+      - sub-003_task-listening_run-07_eeg.vhdr
+      - sub-003_task-listening_run-07_eeg.vmrk
+      - sub-003_task-listening_run-08_channels.tsv
+      - sub-003_task-listening_run-08_eeg.eeg
+      - sub-003_task-listening_run-08_eeg.json
+      - sub-003_task-listening_run-08_eeg.vhdr
+      - sub-003_task-listening_run-08_eeg.vmrk
+      - sub-003_task-listening_run-09_channels.tsv
+      - sub-003_task-listening_run-09_eeg.eeg
+      - sub-003_task-listening_run-09_eeg.json
+      - sub-003_task-listening_run-09_eeg.vhdr
+      - sub-003_task-listening_run-09_eeg.vmrk
+      - sub-003_task-listening_run-10_channels.tsv
+      - sub-003_task-listening_run-10_eeg.eeg
+      - sub-003_task-listening_run-10_eeg.json
+      - sub-003_task-listening_run-10_eeg.vhdr
+      - sub-003_task-listening_run-10_eeg.vmrk
+      - sub-003_task-listening_run-11_channels.tsv
+      - sub-003_task-listening_run-11_eeg.eeg
+      - sub-003_task-listening_run-11_eeg.json
+      - sub-003_task-listening_run-11_eeg.vhdr
+      - sub-003_task-listening_run-11_eeg.vmrk
+      - sub-003_task-listening_run-12_channels.tsv
+      - sub-003_task-listening_run-12_eeg.eeg
+      - sub-003_task-listening_run-12_eeg.json
+      - sub-003_task-listening_run-12_eeg.vhdr
+      - sub-003_task-listening_run-12_eeg.vmrk
+      - sub-003_task-listening_run-13_channels.tsv
+      - sub-003_task-listening_run-13_eeg.eeg
+      - sub-003_task-listening_run-13_eeg.json
+      - sub-003_task-listening_run-13_eeg.vhdr
+      - sub-003_task-listening_run-13_eeg.vmrk
+      - sub-003_task-listening_run-14_channels.tsv
+      - sub-003_task-listening_run-14_eeg.eeg
+      - sub-003_task-listening_run-14_eeg.json
+      - sub-003_task-listening_run-14_eeg.vhdr
+      - sub-003_task-listening_run-14_eeg.vmrk
+      - sub-003_task-listening_run-15_channels.tsv
+      - sub-003_task-listening_run-15_eeg.eeg
+      - sub-003_task-listening_run-15_eeg.json
+      - sub-003_task-listening_run-15_eeg.vhdr
+      - sub-003_task-listening_run-15_eeg.vmrk
+      - sub-003_task-listening_run-16_channels.tsv
+      - sub-003_task-listening_run-16_eeg.eeg
+      - sub-003_task-listening_run-16_eeg.json
+      - sub-003_task-listening_run-16_eeg.vhdr
+      - sub-003_task-listening_run-16_eeg.vmrk
+      - sub-003_task-listening_run-17_channels.tsv
+      - sub-003_task-listening_run-17_eeg.eeg
+      - sub-003_task-listening_run-17_eeg.json
+      - sub-003_task-listening_run-17_eeg.vhdr
+      - sub-003_task-listening_run-17_eeg.vmrk
+      - sub-003_task-listening_run-18_channels.tsv
+      - sub-003_task-listening_run-18_eeg.eeg
+      - sub-003_task-listening_run-18_eeg.json
+      - sub-003_task-listening_run-18_eeg.vhdr
+      - sub-003_task-listening_run-18_eeg.vmrk
+      - sub-003_task-listening_run-19_channels.tsv
+      - sub-003_task-listening_run-19_eeg.eeg
+      - sub-003_task-listening_run-19_eeg.json
+      - sub-003_task-listening_run-19_eeg.vhdr
+      - sub-003_task-listening_run-19_eeg.vmrk
+      - sub-003_task-listening_run-20_channels.tsv
+      - sub-003_task-listening_run-20_eeg.eeg
+      - sub-003_task-listening_run-20_eeg.json
+      - sub-003_task-listening_run-20_eeg.vhdr
+      - sub-003_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-004_task-listening_run-01_channels.tsv
+      - sub-004_task-listening_run-01_eeg.eeg
+      - sub-004_task-listening_run-01_eeg.json
+      - sub-004_task-listening_run-01_eeg.vhdr
+      - sub-004_task-listening_run-01_eeg.vmrk
+      - sub-004_task-listening_run-02_channels.tsv
+      - sub-004_task-listening_run-02_eeg.eeg
+      - sub-004_task-listening_run-02_eeg.json
+      - sub-004_task-listening_run-02_eeg.vhdr
+      - sub-004_task-listening_run-02_eeg.vmrk
+      - sub-004_task-listening_run-03_channels.tsv
+      - sub-004_task-listening_run-03_eeg.eeg
+      - sub-004_task-listening_run-03_eeg.json
+      - sub-004_task-listening_run-03_eeg.vhdr
+      - sub-004_task-listening_run-03_eeg.vmrk
+      - sub-004_task-listening_run-04_channels.tsv
+      - sub-004_task-listening_run-04_eeg.eeg
+      - sub-004_task-listening_run-04_eeg.json
+      - sub-004_task-listening_run-04_eeg.vhdr
+      - sub-004_task-listening_run-04_eeg.vmrk
+      - sub-004_task-listening_run-05_channels.tsv
+      - sub-004_task-listening_run-05_eeg.eeg
+      - sub-004_task-listening_run-05_eeg.json
+      - sub-004_task-listening_run-05_eeg.vhdr
+      - sub-004_task-listening_run-05_eeg.vmrk
+      - sub-004_task-listening_run-06_channels.tsv
+      - sub-004_task-listening_run-06_eeg.eeg
+      - sub-004_task-listening_run-06_eeg.json
+      - sub-004_task-listening_run-06_eeg.vhdr
+      - sub-004_task-listening_run-06_eeg.vmrk
+      - sub-004_task-listening_run-07_channels.tsv
+      - sub-004_task-listening_run-07_eeg.eeg
+      - sub-004_task-listening_run-07_eeg.json
+      - sub-004_task-listening_run-07_eeg.vhdr
+      - sub-004_task-listening_run-07_eeg.vmrk
+      - sub-004_task-listening_run-08_channels.tsv
+      - sub-004_task-listening_run-08_eeg.eeg
+      - sub-004_task-listening_run-08_eeg.json
+      - sub-004_task-listening_run-08_eeg.vhdr
+      - sub-004_task-listening_run-08_eeg.vmrk
+      - sub-004_task-listening_run-09_channels.tsv
+      - sub-004_task-listening_run-09_eeg.eeg
+      - sub-004_task-listening_run-09_eeg.json
+      - sub-004_task-listening_run-09_eeg.vhdr
+      - sub-004_task-listening_run-09_eeg.vmrk
+      - sub-004_task-listening_run-10_channels.tsv
+      - sub-004_task-listening_run-10_eeg.eeg
+      - sub-004_task-listening_run-10_eeg.json
+      - sub-004_task-listening_run-10_eeg.vhdr
+      - sub-004_task-listening_run-10_eeg.vmrk
+      - sub-004_task-listening_run-11_channels.tsv
+      - sub-004_task-listening_run-11_eeg.eeg
+      - sub-004_task-listening_run-11_eeg.json
+      - sub-004_task-listening_run-11_eeg.vhdr
+      - sub-004_task-listening_run-11_eeg.vmrk
+      - sub-004_task-listening_run-12_channels.tsv
+      - sub-004_task-listening_run-12_eeg.eeg
+      - sub-004_task-listening_run-12_eeg.json
+      - sub-004_task-listening_run-12_eeg.vhdr
+      - sub-004_task-listening_run-12_eeg.vmrk
+      - sub-004_task-listening_run-13_channels.tsv
+      - sub-004_task-listening_run-13_eeg.eeg
+      - sub-004_task-listening_run-13_eeg.json
+      - sub-004_task-listening_run-13_eeg.vhdr
+      - sub-004_task-listening_run-13_eeg.vmrk
+      - sub-004_task-listening_run-14_channels.tsv
+      - sub-004_task-listening_run-14_eeg.eeg
+      - sub-004_task-listening_run-14_eeg.json
+      - sub-004_task-listening_run-14_eeg.vhdr
+      - sub-004_task-listening_run-14_eeg.vmrk
+      - sub-004_task-listening_run-15_channels.tsv
+      - sub-004_task-listening_run-15_eeg.eeg
+      - sub-004_task-listening_run-15_eeg.json
+      - sub-004_task-listening_run-15_eeg.vhdr
+      - sub-004_task-listening_run-15_eeg.vmrk
+      - sub-004_task-listening_run-16_channels.tsv
+      - sub-004_task-listening_run-16_eeg.eeg
+      - sub-004_task-listening_run-16_eeg.json
+      - sub-004_task-listening_run-16_eeg.vhdr
+      - sub-004_task-listening_run-16_eeg.vmrk
+      - sub-004_task-listening_run-17_channels.tsv
+      - sub-004_task-listening_run-17_eeg.eeg
+      - sub-004_task-listening_run-17_eeg.json
+      - sub-004_task-listening_run-17_eeg.vhdr
+      - sub-004_task-listening_run-17_eeg.vmrk
+      - sub-004_task-listening_run-18_channels.tsv
+      - sub-004_task-listening_run-18_eeg.eeg
+      - sub-004_task-listening_run-18_eeg.json
+      - sub-004_task-listening_run-18_eeg.vhdr
+      - sub-004_task-listening_run-18_eeg.vmrk
+      - sub-004_task-listening_run-19_channels.tsv
+      - sub-004_task-listening_run-19_eeg.eeg
+      - sub-004_task-listening_run-19_eeg.json
+      - sub-004_task-listening_run-19_eeg.vhdr
+      - sub-004_task-listening_run-19_eeg.vmrk
+      - sub-004_task-listening_run-20_channels.tsv
+      - sub-004_task-listening_run-20_eeg.eeg
+      - sub-004_task-listening_run-20_eeg.json
+      - sub-004_task-listening_run-20_eeg.vhdr
+      - sub-004_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-005_task-listening_run-01_channels.tsv
+      - sub-005_task-listening_run-01_eeg.eeg
+      - sub-005_task-listening_run-01_eeg.json
+      - sub-005_task-listening_run-01_eeg.vhdr
+      - sub-005_task-listening_run-01_eeg.vmrk
+      - sub-005_task-listening_run-02_channels.tsv
+      - sub-005_task-listening_run-02_eeg.eeg
+      - sub-005_task-listening_run-02_eeg.json
+      - sub-005_task-listening_run-02_eeg.vhdr
+      - sub-005_task-listening_run-02_eeg.vmrk
+      - sub-005_task-listening_run-03_channels.tsv
+      - sub-005_task-listening_run-03_eeg.eeg
+      - sub-005_task-listening_run-03_eeg.json
+      - sub-005_task-listening_run-03_eeg.vhdr
+      - sub-005_task-listening_run-03_eeg.vmrk
+      - sub-005_task-listening_run-04_channels.tsv
+      - sub-005_task-listening_run-04_eeg.eeg
+      - sub-005_task-listening_run-04_eeg.json
+      - sub-005_task-listening_run-04_eeg.vhdr
+      - sub-005_task-listening_run-04_eeg.vmrk
+      - sub-005_task-listening_run-05_channels.tsv
+      - sub-005_task-listening_run-05_eeg.eeg
+      - sub-005_task-listening_run-05_eeg.json
+      - sub-005_task-listening_run-05_eeg.vhdr
+      - sub-005_task-listening_run-05_eeg.vmrk
+      - sub-005_task-listening_run-06_channels.tsv
+      - sub-005_task-listening_run-06_eeg.eeg
+      - sub-005_task-listening_run-06_eeg.json
+      - sub-005_task-listening_run-06_eeg.vhdr
+      - sub-005_task-listening_run-06_eeg.vmrk
+      - sub-005_task-listening_run-07_channels.tsv
+      - sub-005_task-listening_run-07_eeg.eeg
+      - sub-005_task-listening_run-07_eeg.json
+      - sub-005_task-listening_run-07_eeg.vhdr
+      - sub-005_task-listening_run-07_eeg.vmrk
+      - sub-005_task-listening_run-08_channels.tsv
+      - sub-005_task-listening_run-08_eeg.eeg
+      - sub-005_task-listening_run-08_eeg.json
+      - sub-005_task-listening_run-08_eeg.vhdr
+      - sub-005_task-listening_run-08_eeg.vmrk
+      - sub-005_task-listening_run-09_channels.tsv
+      - sub-005_task-listening_run-09_eeg.eeg
+      - sub-005_task-listening_run-09_eeg.json
+      - sub-005_task-listening_run-09_eeg.vhdr
+      - sub-005_task-listening_run-09_eeg.vmrk
+      - sub-005_task-listening_run-10_channels.tsv
+      - sub-005_task-listening_run-10_eeg.eeg
+      - sub-005_task-listening_run-10_eeg.json
+      - sub-005_task-listening_run-10_eeg.vhdr
+      - sub-005_task-listening_run-10_eeg.vmrk
+      - sub-005_task-listening_run-11_channels.tsv
+      - sub-005_task-listening_run-11_eeg.eeg
+      - sub-005_task-listening_run-11_eeg.json
+      - sub-005_task-listening_run-11_eeg.vhdr
+      - sub-005_task-listening_run-11_eeg.vmrk
+      - sub-005_task-listening_run-12_channels.tsv
+      - sub-005_task-listening_run-12_eeg.eeg
+      - sub-005_task-listening_run-12_eeg.json
+      - sub-005_task-listening_run-12_eeg.vhdr
+      - sub-005_task-listening_run-12_eeg.vmrk
+      - sub-005_task-listening_run-13_channels.tsv
+      - sub-005_task-listening_run-13_eeg.eeg
+      - sub-005_task-listening_run-13_eeg.json
+      - sub-005_task-listening_run-13_eeg.vhdr
+      - sub-005_task-listening_run-13_eeg.vmrk
+      - sub-005_task-listening_run-14_channels.tsv
+      - sub-005_task-listening_run-14_eeg.eeg
+      - sub-005_task-listening_run-14_eeg.json
+      - sub-005_task-listening_run-14_eeg.vhdr
+      - sub-005_task-listening_run-14_eeg.vmrk
+      - sub-005_task-listening_run-15_channels.tsv
+      - sub-005_task-listening_run-15_eeg.eeg
+      - sub-005_task-listening_run-15_eeg.json
+      - sub-005_task-listening_run-15_eeg.vhdr
+      - sub-005_task-listening_run-15_eeg.vmrk
+      - sub-005_task-listening_run-16_channels.tsv
+      - sub-005_task-listening_run-16_eeg.eeg
+      - sub-005_task-listening_run-16_eeg.json
+      - sub-005_task-listening_run-16_eeg.vhdr
+      - sub-005_task-listening_run-16_eeg.vmrk
+      - sub-005_task-listening_run-17_channels.tsv
+      - sub-005_task-listening_run-17_eeg.eeg
+      - sub-005_task-listening_run-17_eeg.json
+      - sub-005_task-listening_run-17_eeg.vhdr
+      - sub-005_task-listening_run-17_eeg.vmrk
+      - sub-005_task-listening_run-18_channels.tsv
+      - sub-005_task-listening_run-18_eeg.eeg
+      - sub-005_task-listening_run-18_eeg.json
+      - sub-005_task-listening_run-18_eeg.vhdr
+      - sub-005_task-listening_run-18_eeg.vmrk
+      - sub-005_task-listening_run-19_channels.tsv
+      - sub-005_task-listening_run-19_eeg.eeg
+      - sub-005_task-listening_run-19_eeg.json
+      - sub-005_task-listening_run-19_eeg.vhdr
+      - sub-005_task-listening_run-19_eeg.vmrk
+      - sub-005_task-listening_run-20_channels.tsv
+      - sub-005_task-listening_run-20_eeg.eeg
+      - sub-005_task-listening_run-20_eeg.json
+      - sub-005_task-listening_run-20_eeg.vhdr
+      - sub-005_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-006_task-listening_run-01_channels.tsv
+      - sub-006_task-listening_run-01_eeg.eeg
+      - sub-006_task-listening_run-01_eeg.json
+      - sub-006_task-listening_run-01_eeg.vhdr
+      - sub-006_task-listening_run-01_eeg.vmrk
+      - sub-006_task-listening_run-02_channels.tsv
+      - sub-006_task-listening_run-02_eeg.eeg
+      - sub-006_task-listening_run-02_eeg.json
+      - sub-006_task-listening_run-02_eeg.vhdr
+      - sub-006_task-listening_run-02_eeg.vmrk
+      - sub-006_task-listening_run-03_channels.tsv
+      - sub-006_task-listening_run-03_eeg.eeg
+      - sub-006_task-listening_run-03_eeg.json
+      - sub-006_task-listening_run-03_eeg.vhdr
+      - sub-006_task-listening_run-03_eeg.vmrk
+      - sub-006_task-listening_run-04_channels.tsv
+      - sub-006_task-listening_run-04_eeg.eeg
+      - sub-006_task-listening_run-04_eeg.json
+      - sub-006_task-listening_run-04_eeg.vhdr
+      - sub-006_task-listening_run-04_eeg.vmrk
+      - sub-006_task-listening_run-05_channels.tsv
+      - sub-006_task-listening_run-05_eeg.eeg
+      - sub-006_task-listening_run-05_eeg.json
+      - sub-006_task-listening_run-05_eeg.vhdr
+      - sub-006_task-listening_run-05_eeg.vmrk
+      - sub-006_task-listening_run-06_channels.tsv
+      - sub-006_task-listening_run-06_eeg.eeg
+      - sub-006_task-listening_run-06_eeg.json
+      - sub-006_task-listening_run-06_eeg.vhdr
+      - sub-006_task-listening_run-06_eeg.vmrk
+      - sub-006_task-listening_run-07_channels.tsv
+      - sub-006_task-listening_run-07_eeg.eeg
+      - sub-006_task-listening_run-07_eeg.json
+      - sub-006_task-listening_run-07_eeg.vhdr
+      - sub-006_task-listening_run-07_eeg.vmrk
+      - sub-006_task-listening_run-08_channels.tsv
+      - sub-006_task-listening_run-08_eeg.eeg
+      - sub-006_task-listening_run-08_eeg.json
+      - sub-006_task-listening_run-08_eeg.vhdr
+      - sub-006_task-listening_run-08_eeg.vmrk
+      - sub-006_task-listening_run-09_channels.tsv
+      - sub-006_task-listening_run-09_eeg.eeg
+      - sub-006_task-listening_run-09_eeg.json
+      - sub-006_task-listening_run-09_eeg.vhdr
+      - sub-006_task-listening_run-09_eeg.vmrk
+      - sub-006_task-listening_run-10_channels.tsv
+      - sub-006_task-listening_run-10_eeg.eeg
+      - sub-006_task-listening_run-10_eeg.json
+      - sub-006_task-listening_run-10_eeg.vhdr
+      - sub-006_task-listening_run-10_eeg.vmrk
+      - sub-006_task-listening_run-11_channels.tsv
+      - sub-006_task-listening_run-11_eeg.eeg
+      - sub-006_task-listening_run-11_eeg.json
+      - sub-006_task-listening_run-11_eeg.vhdr
+      - sub-006_task-listening_run-11_eeg.vmrk
+      - sub-006_task-listening_run-12_channels.tsv
+      - sub-006_task-listening_run-12_eeg.eeg
+      - sub-006_task-listening_run-12_eeg.json
+      - sub-006_task-listening_run-12_eeg.vhdr
+      - sub-006_task-listening_run-12_eeg.vmrk
+      - sub-006_task-listening_run-13_channels.tsv
+      - sub-006_task-listening_run-13_eeg.eeg
+      - sub-006_task-listening_run-13_eeg.json
+      - sub-006_task-listening_run-13_eeg.vhdr
+      - sub-006_task-listening_run-13_eeg.vmrk
+      - sub-006_task-listening_run-14_channels.tsv
+      - sub-006_task-listening_run-14_eeg.eeg
+      - sub-006_task-listening_run-14_eeg.json
+      - sub-006_task-listening_run-14_eeg.vhdr
+      - sub-006_task-listening_run-14_eeg.vmrk
+      - sub-006_task-listening_run-15_channels.tsv
+      - sub-006_task-listening_run-15_eeg.eeg
+      - sub-006_task-listening_run-15_eeg.json
+      - sub-006_task-listening_run-15_eeg.vhdr
+      - sub-006_task-listening_run-15_eeg.vmrk
+      - sub-006_task-listening_run-16_channels.tsv
+      - sub-006_task-listening_run-16_eeg.eeg
+      - sub-006_task-listening_run-16_eeg.json
+      - sub-006_task-listening_run-16_eeg.vhdr
+      - sub-006_task-listening_run-16_eeg.vmrk
+      - sub-006_task-listening_run-17_channels.tsv
+      - sub-006_task-listening_run-17_eeg.eeg
+      - sub-006_task-listening_run-17_eeg.json
+      - sub-006_task-listening_run-17_eeg.vhdr
+      - sub-006_task-listening_run-17_eeg.vmrk
+      - sub-006_task-listening_run-18_channels.tsv
+      - sub-006_task-listening_run-18_eeg.eeg
+      - sub-006_task-listening_run-18_eeg.json
+      - sub-006_task-listening_run-18_eeg.vhdr
+      - sub-006_task-listening_run-18_eeg.vmrk
+      - sub-006_task-listening_run-19_channels.tsv
+      - sub-006_task-listening_run-19_eeg.eeg
+      - sub-006_task-listening_run-19_eeg.json
+      - sub-006_task-listening_run-19_eeg.vhdr
+      - sub-006_task-listening_run-19_eeg.vmrk
+      - sub-006_task-listening_run-20_channels.tsv
+      - sub-006_task-listening_run-20_eeg.eeg
+      - sub-006_task-listening_run-20_eeg.json
+      - sub-006_task-listening_run-20_eeg.vhdr
+      - sub-006_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-007_task-listening_run-01_channels.tsv
+      - sub-007_task-listening_run-01_eeg.eeg
+      - sub-007_task-listening_run-01_eeg.json
+      - sub-007_task-listening_run-01_eeg.vhdr
+      - sub-007_task-listening_run-01_eeg.vmrk
+      - sub-007_task-listening_run-02_channels.tsv
+      - sub-007_task-listening_run-02_eeg.eeg
+      - sub-007_task-listening_run-02_eeg.json
+      - sub-007_task-listening_run-02_eeg.vhdr
+      - sub-007_task-listening_run-02_eeg.vmrk
+      - sub-007_task-listening_run-03_channels.tsv
+      - sub-007_task-listening_run-03_eeg.eeg
+      - sub-007_task-listening_run-03_eeg.json
+      - sub-007_task-listening_run-03_eeg.vhdr
+      - sub-007_task-listening_run-03_eeg.vmrk
+      - sub-007_task-listening_run-04_channels.tsv
+      - sub-007_task-listening_run-04_eeg.eeg
+      - sub-007_task-listening_run-04_eeg.json
+      - sub-007_task-listening_run-04_eeg.vhdr
+      - sub-007_task-listening_run-04_eeg.vmrk
+      - sub-007_task-listening_run-05_channels.tsv
+      - sub-007_task-listening_run-05_eeg.eeg
+      - sub-007_task-listening_run-05_eeg.json
+      - sub-007_task-listening_run-05_eeg.vhdr
+      - sub-007_task-listening_run-05_eeg.vmrk
+      - sub-007_task-listening_run-06_channels.tsv
+      - sub-007_task-listening_run-06_eeg.eeg
+      - sub-007_task-listening_run-06_eeg.json
+      - sub-007_task-listening_run-06_eeg.vhdr
+      - sub-007_task-listening_run-06_eeg.vmrk
+      - sub-007_task-listening_run-07_channels.tsv
+      - sub-007_task-listening_run-07_eeg.eeg
+      - sub-007_task-listening_run-07_eeg.json
+      - sub-007_task-listening_run-07_eeg.vhdr
+      - sub-007_task-listening_run-07_eeg.vmrk
+      - sub-007_task-listening_run-08_channels.tsv
+      - sub-007_task-listening_run-08_eeg.eeg
+      - sub-007_task-listening_run-08_eeg.json
+      - sub-007_task-listening_run-08_eeg.vhdr
+      - sub-007_task-listening_run-08_eeg.vmrk
+      - sub-007_task-listening_run-09_channels.tsv
+      - sub-007_task-listening_run-09_eeg.eeg
+      - sub-007_task-listening_run-09_eeg.json
+      - sub-007_task-listening_run-09_eeg.vhdr
+      - sub-007_task-listening_run-09_eeg.vmrk
+      - sub-007_task-listening_run-10_channels.tsv
+      - sub-007_task-listening_run-10_eeg.eeg
+      - sub-007_task-listening_run-10_eeg.json
+      - sub-007_task-listening_run-10_eeg.vhdr
+      - sub-007_task-listening_run-10_eeg.vmrk
+      - sub-007_task-listening_run-11_channels.tsv
+      - sub-007_task-listening_run-11_eeg.eeg
+      - sub-007_task-listening_run-11_eeg.json
+      - sub-007_task-listening_run-11_eeg.vhdr
+      - sub-007_task-listening_run-11_eeg.vmrk
+      - sub-007_task-listening_run-12_channels.tsv
+      - sub-007_task-listening_run-12_eeg.eeg
+      - sub-007_task-listening_run-12_eeg.json
+      - sub-007_task-listening_run-12_eeg.vhdr
+      - sub-007_task-listening_run-12_eeg.vmrk
+      - sub-007_task-listening_run-13_channels.tsv
+      - sub-007_task-listening_run-13_eeg.eeg
+      - sub-007_task-listening_run-13_eeg.json
+      - sub-007_task-listening_run-13_eeg.vhdr
+      - sub-007_task-listening_run-13_eeg.vmrk
+      - sub-007_task-listening_run-14_channels.tsv
+      - sub-007_task-listening_run-14_eeg.eeg
+      - sub-007_task-listening_run-14_eeg.json
+      - sub-007_task-listening_run-14_eeg.vhdr
+      - sub-007_task-listening_run-14_eeg.vmrk
+      - sub-007_task-listening_run-15_channels.tsv
+      - sub-007_task-listening_run-15_eeg.eeg
+      - sub-007_task-listening_run-15_eeg.json
+      - sub-007_task-listening_run-15_eeg.vhdr
+      - sub-007_task-listening_run-15_eeg.vmrk
+      - sub-007_task-listening_run-16_channels.tsv
+      - sub-007_task-listening_run-16_eeg.eeg
+      - sub-007_task-listening_run-16_eeg.json
+      - sub-007_task-listening_run-16_eeg.vhdr
+      - sub-007_task-listening_run-16_eeg.vmrk
+      - sub-007_task-listening_run-17_channels.tsv
+      - sub-007_task-listening_run-17_eeg.eeg
+      - sub-007_task-listening_run-17_eeg.json
+      - sub-007_task-listening_run-17_eeg.vhdr
+      - sub-007_task-listening_run-17_eeg.vmrk
+      - sub-007_task-listening_run-18_channels.tsv
+      - sub-007_task-listening_run-18_eeg.eeg
+      - sub-007_task-listening_run-18_eeg.json
+      - sub-007_task-listening_run-18_eeg.vhdr
+      - sub-007_task-listening_run-18_eeg.vmrk
+      - sub-007_task-listening_run-19_channels.tsv
+      - sub-007_task-listening_run-19_eeg.eeg
+      - sub-007_task-listening_run-19_eeg.json
+      - sub-007_task-listening_run-19_eeg.vhdr
+      - sub-007_task-listening_run-19_eeg.vmrk
+      - sub-007_task-listening_run-20_channels.tsv
+      - sub-007_task-listening_run-20_eeg.eeg
+      - sub-007_task-listening_run-20_eeg.json
+      - sub-007_task-listening_run-20_eeg.vhdr
+      - sub-007_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-008_task-listening_run-01_channels.tsv
+      - sub-008_task-listening_run-01_eeg.eeg
+      - sub-008_task-listening_run-01_eeg.json
+      - sub-008_task-listening_run-01_eeg.vhdr
+      - sub-008_task-listening_run-01_eeg.vmrk
+      - sub-008_task-listening_run-02_channels.tsv
+      - sub-008_task-listening_run-02_eeg.eeg
+      - sub-008_task-listening_run-02_eeg.json
+      - sub-008_task-listening_run-02_eeg.vhdr
+      - sub-008_task-listening_run-02_eeg.vmrk
+      - sub-008_task-listening_run-03_channels.tsv
+      - sub-008_task-listening_run-03_eeg.eeg
+      - sub-008_task-listening_run-03_eeg.json
+      - sub-008_task-listening_run-03_eeg.vhdr
+      - sub-008_task-listening_run-03_eeg.vmrk
+      - sub-008_task-listening_run-04_channels.tsv
+      - sub-008_task-listening_run-04_eeg.eeg
+      - sub-008_task-listening_run-04_eeg.json
+      - sub-008_task-listening_run-04_eeg.vhdr
+      - sub-008_task-listening_run-04_eeg.vmrk
+      - sub-008_task-listening_run-05_channels.tsv
+      - sub-008_task-listening_run-05_eeg.eeg
+      - sub-008_task-listening_run-05_eeg.json
+      - sub-008_task-listening_run-05_eeg.vhdr
+      - sub-008_task-listening_run-05_eeg.vmrk
+      - sub-008_task-listening_run-06_channels.tsv
+      - sub-008_task-listening_run-06_eeg.eeg
+      - sub-008_task-listening_run-06_eeg.json
+      - sub-008_task-listening_run-06_eeg.vhdr
+      - sub-008_task-listening_run-06_eeg.vmrk
+      - sub-008_task-listening_run-07_channels.tsv
+      - sub-008_task-listening_run-07_eeg.eeg
+      - sub-008_task-listening_run-07_eeg.json
+      - sub-008_task-listening_run-07_eeg.vhdr
+      - sub-008_task-listening_run-07_eeg.vmrk
+      - sub-008_task-listening_run-08_channels.tsv
+      - sub-008_task-listening_run-08_eeg.eeg
+      - sub-008_task-listening_run-08_eeg.json
+      - sub-008_task-listening_run-08_eeg.vhdr
+      - sub-008_task-listening_run-08_eeg.vmrk
+      - sub-008_task-listening_run-09_channels.tsv
+      - sub-008_task-listening_run-09_eeg.eeg
+      - sub-008_task-listening_run-09_eeg.json
+      - sub-008_task-listening_run-09_eeg.vhdr
+      - sub-008_task-listening_run-09_eeg.vmrk
+      - sub-008_task-listening_run-10_channels.tsv
+      - sub-008_task-listening_run-10_eeg.eeg
+      - sub-008_task-listening_run-10_eeg.json
+      - sub-008_task-listening_run-10_eeg.vhdr
+      - sub-008_task-listening_run-10_eeg.vmrk
+      - sub-008_task-listening_run-11_channels.tsv
+      - sub-008_task-listening_run-11_eeg.eeg
+      - sub-008_task-listening_run-11_eeg.json
+      - sub-008_task-listening_run-11_eeg.vhdr
+      - sub-008_task-listening_run-11_eeg.vmrk
+      - sub-008_task-listening_run-12_channels.tsv
+      - sub-008_task-listening_run-12_eeg.eeg
+      - sub-008_task-listening_run-12_eeg.json
+      - sub-008_task-listening_run-12_eeg.vhdr
+      - sub-008_task-listening_run-12_eeg.vmrk
+      - sub-008_task-listening_run-13_channels.tsv
+      - sub-008_task-listening_run-13_eeg.eeg
+      - sub-008_task-listening_run-13_eeg.json
+      - sub-008_task-listening_run-13_eeg.vhdr
+      - sub-008_task-listening_run-13_eeg.vmrk
+      - sub-008_task-listening_run-14_channels.tsv
+      - sub-008_task-listening_run-14_eeg.eeg
+      - sub-008_task-listening_run-14_eeg.json
+      - sub-008_task-listening_run-14_eeg.vhdr
+      - sub-008_task-listening_run-14_eeg.vmrk
+      - sub-008_task-listening_run-15_channels.tsv
+      - sub-008_task-listening_run-15_eeg.eeg
+      - sub-008_task-listening_run-15_eeg.json
+      - sub-008_task-listening_run-15_eeg.vhdr
+      - sub-008_task-listening_run-15_eeg.vmrk
+      - sub-008_task-listening_run-16_channels.tsv
+      - sub-008_task-listening_run-16_eeg.eeg
+      - sub-008_task-listening_run-16_eeg.json
+      - sub-008_task-listening_run-16_eeg.vhdr
+      - sub-008_task-listening_run-16_eeg.vmrk
+      - sub-008_task-listening_run-17_channels.tsv
+      - sub-008_task-listening_run-17_eeg.eeg
+      - sub-008_task-listening_run-17_eeg.json
+      - sub-008_task-listening_run-17_eeg.vhdr
+      - sub-008_task-listening_run-17_eeg.vmrk
+      - sub-008_task-listening_run-18_channels.tsv
+      - sub-008_task-listening_run-18_eeg.eeg
+      - sub-008_task-listening_run-18_eeg.json
+      - sub-008_task-listening_run-18_eeg.vhdr
+      - sub-008_task-listening_run-18_eeg.vmrk
+      - sub-008_task-listening_run-19_channels.tsv
+      - sub-008_task-listening_run-19_eeg.eeg
+      - sub-008_task-listening_run-19_eeg.json
+      - sub-008_task-listening_run-19_eeg.vhdr
+      - sub-008_task-listening_run-19_eeg.vmrk
+      - sub-008_task-listening_run-20_channels.tsv
+      - sub-008_task-listening_run-20_eeg.eeg
+      - sub-008_task-listening_run-20_eeg.json
+      - sub-008_task-listening_run-20_eeg.vhdr
+      - sub-008_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-009_task-listening_run-01_channels.tsv
+      - sub-009_task-listening_run-01_eeg.eeg
+      - sub-009_task-listening_run-01_eeg.json
+      - sub-009_task-listening_run-01_eeg.vhdr
+      - sub-009_task-listening_run-01_eeg.vmrk
+      - sub-009_task-listening_run-02_channels.tsv
+      - sub-009_task-listening_run-02_eeg.eeg
+      - sub-009_task-listening_run-02_eeg.json
+      - sub-009_task-listening_run-02_eeg.vhdr
+      - sub-009_task-listening_run-02_eeg.vmrk
+      - sub-009_task-listening_run-03_channels.tsv
+      - sub-009_task-listening_run-03_eeg.eeg
+      - sub-009_task-listening_run-03_eeg.json
+      - sub-009_task-listening_run-03_eeg.vhdr
+      - sub-009_task-listening_run-03_eeg.vmrk
+      - sub-009_task-listening_run-04_channels.tsv
+      - sub-009_task-listening_run-04_eeg.eeg
+      - sub-009_task-listening_run-04_eeg.json
+      - sub-009_task-listening_run-04_eeg.vhdr
+      - sub-009_task-listening_run-04_eeg.vmrk
+      - sub-009_task-listening_run-05_channels.tsv
+      - sub-009_task-listening_run-05_eeg.eeg
+      - sub-009_task-listening_run-05_eeg.json
+      - sub-009_task-listening_run-05_eeg.vhdr
+      - sub-009_task-listening_run-05_eeg.vmrk
+      - sub-009_task-listening_run-06_channels.tsv
+      - sub-009_task-listening_run-06_eeg.eeg
+      - sub-009_task-listening_run-06_eeg.json
+      - sub-009_task-listening_run-06_eeg.vhdr
+      - sub-009_task-listening_run-06_eeg.vmrk
+      - sub-009_task-listening_run-07_channels.tsv
+      - sub-009_task-listening_run-07_eeg.eeg
+      - sub-009_task-listening_run-07_eeg.json
+      - sub-009_task-listening_run-07_eeg.vhdr
+      - sub-009_task-listening_run-07_eeg.vmrk
+      - sub-009_task-listening_run-08_channels.tsv
+      - sub-009_task-listening_run-08_eeg.eeg
+      - sub-009_task-listening_run-08_eeg.json
+      - sub-009_task-listening_run-08_eeg.vhdr
+      - sub-009_task-listening_run-08_eeg.vmrk
+      - sub-009_task-listening_run-09_channels.tsv
+      - sub-009_task-listening_run-09_eeg.eeg
+      - sub-009_task-listening_run-09_eeg.json
+      - sub-009_task-listening_run-09_eeg.vhdr
+      - sub-009_task-listening_run-09_eeg.vmrk
+      - sub-009_task-listening_run-10_channels.tsv
+      - sub-009_task-listening_run-10_eeg.eeg
+      - sub-009_task-listening_run-10_eeg.json
+      - sub-009_task-listening_run-10_eeg.vhdr
+      - sub-009_task-listening_run-10_eeg.vmrk
+      - sub-009_task-listening_run-11_channels.tsv
+      - sub-009_task-listening_run-11_eeg.eeg
+      - sub-009_task-listening_run-11_eeg.json
+      - sub-009_task-listening_run-11_eeg.vhdr
+      - sub-009_task-listening_run-11_eeg.vmrk
+      - sub-009_task-listening_run-12_channels.tsv
+      - sub-009_task-listening_run-12_eeg.eeg
+      - sub-009_task-listening_run-12_eeg.json
+      - sub-009_task-listening_run-12_eeg.vhdr
+      - sub-009_task-listening_run-12_eeg.vmrk
+      - sub-009_task-listening_run-13_channels.tsv
+      - sub-009_task-listening_run-13_eeg.eeg
+      - sub-009_task-listening_run-13_eeg.json
+      - sub-009_task-listening_run-13_eeg.vhdr
+      - sub-009_task-listening_run-13_eeg.vmrk
+      - sub-009_task-listening_run-14_channels.tsv
+      - sub-009_task-listening_run-14_eeg.eeg
+      - sub-009_task-listening_run-14_eeg.json
+      - sub-009_task-listening_run-14_eeg.vhdr
+      - sub-009_task-listening_run-14_eeg.vmrk
+      - sub-009_task-listening_run-15_channels.tsv
+      - sub-009_task-listening_run-15_eeg.eeg
+      - sub-009_task-listening_run-15_eeg.json
+      - sub-009_task-listening_run-15_eeg.vhdr
+      - sub-009_task-listening_run-15_eeg.vmrk
+      - sub-009_task-listening_run-16_channels.tsv
+      - sub-009_task-listening_run-16_eeg.eeg
+      - sub-009_task-listening_run-16_eeg.json
+      - sub-009_task-listening_run-16_eeg.vhdr
+      - sub-009_task-listening_run-16_eeg.vmrk
+      - sub-009_task-listening_run-17_channels.tsv
+      - sub-009_task-listening_run-17_eeg.eeg
+      - sub-009_task-listening_run-17_eeg.json
+      - sub-009_task-listening_run-17_eeg.vhdr
+      - sub-009_task-listening_run-17_eeg.vmrk
+      - sub-009_task-listening_run-18_channels.tsv
+      - sub-009_task-listening_run-18_eeg.eeg
+      - sub-009_task-listening_run-18_eeg.json
+      - sub-009_task-listening_run-18_eeg.vhdr
+      - sub-009_task-listening_run-18_eeg.vmrk
+      - sub-009_task-listening_run-19_channels.tsv
+      - sub-009_task-listening_run-19_eeg.eeg
+      - sub-009_task-listening_run-19_eeg.json
+      - sub-009_task-listening_run-19_eeg.vhdr
+      - sub-009_task-listening_run-19_eeg.vmrk
+      - sub-009_task-listening_run-20_channels.tsv
+      - sub-009_task-listening_run-20_eeg.eeg
+      - sub-009_task-listening_run-20_eeg.json
+      - sub-009_task-listening_run-20_eeg.vhdr
+      - sub-009_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-010_task-listening_run-01_channels.tsv
+      - sub-010_task-listening_run-01_eeg.eeg
+      - sub-010_task-listening_run-01_eeg.json
+      - sub-010_task-listening_run-01_eeg.vhdr
+      - sub-010_task-listening_run-01_eeg.vmrk
+      - sub-010_task-listening_run-02_channels.tsv
+      - sub-010_task-listening_run-02_eeg.eeg
+      - sub-010_task-listening_run-02_eeg.json
+      - sub-010_task-listening_run-02_eeg.vhdr
+      - sub-010_task-listening_run-02_eeg.vmrk
+      - sub-010_task-listening_run-03_channels.tsv
+      - sub-010_task-listening_run-03_eeg.eeg
+      - sub-010_task-listening_run-03_eeg.json
+      - sub-010_task-listening_run-03_eeg.vhdr
+      - sub-010_task-listening_run-03_eeg.vmrk
+      - sub-010_task-listening_run-04_channels.tsv
+      - sub-010_task-listening_run-04_eeg.eeg
+      - sub-010_task-listening_run-04_eeg.json
+      - sub-010_task-listening_run-04_eeg.vhdr
+      - sub-010_task-listening_run-04_eeg.vmrk
+      - sub-010_task-listening_run-05_channels.tsv
+      - sub-010_task-listening_run-05_eeg.eeg
+      - sub-010_task-listening_run-05_eeg.json
+      - sub-010_task-listening_run-05_eeg.vhdr
+      - sub-010_task-listening_run-05_eeg.vmrk
+      - sub-010_task-listening_run-06_channels.tsv
+      - sub-010_task-listening_run-06_eeg.eeg
+      - sub-010_task-listening_run-06_eeg.json
+      - sub-010_task-listening_run-06_eeg.vhdr
+      - sub-010_task-listening_run-06_eeg.vmrk
+      - sub-010_task-listening_run-07_channels.tsv
+      - sub-010_task-listening_run-07_eeg.eeg
+      - sub-010_task-listening_run-07_eeg.json
+      - sub-010_task-listening_run-07_eeg.vhdr
+      - sub-010_task-listening_run-07_eeg.vmrk
+      - sub-010_task-listening_run-08_channels.tsv
+      - sub-010_task-listening_run-08_eeg.eeg
+      - sub-010_task-listening_run-08_eeg.json
+      - sub-010_task-listening_run-08_eeg.vhdr
+      - sub-010_task-listening_run-08_eeg.vmrk
+      - sub-010_task-listening_run-09_channels.tsv
+      - sub-010_task-listening_run-09_eeg.eeg
+      - sub-010_task-listening_run-09_eeg.json
+      - sub-010_task-listening_run-09_eeg.vhdr
+      - sub-010_task-listening_run-09_eeg.vmrk
+      - sub-010_task-listening_run-10_channels.tsv
+      - sub-010_task-listening_run-10_eeg.eeg
+      - sub-010_task-listening_run-10_eeg.json
+      - sub-010_task-listening_run-10_eeg.vhdr
+      - sub-010_task-listening_run-10_eeg.vmrk
+      - sub-010_task-listening_run-11_channels.tsv
+      - sub-010_task-listening_run-11_eeg.eeg
+      - sub-010_task-listening_run-11_eeg.json
+      - sub-010_task-listening_run-11_eeg.vhdr
+      - sub-010_task-listening_run-11_eeg.vmrk
+      - sub-010_task-listening_run-12_channels.tsv
+      - sub-010_task-listening_run-12_eeg.eeg
+      - sub-010_task-listening_run-12_eeg.json
+      - sub-010_task-listening_run-12_eeg.vhdr
+      - sub-010_task-listening_run-12_eeg.vmrk
+      - sub-010_task-listening_run-13_channels.tsv
+      - sub-010_task-listening_run-13_eeg.eeg
+      - sub-010_task-listening_run-13_eeg.json
+      - sub-010_task-listening_run-13_eeg.vhdr
+      - sub-010_task-listening_run-13_eeg.vmrk
+      - sub-010_task-listening_run-14_channels.tsv
+      - sub-010_task-listening_run-14_eeg.eeg
+      - sub-010_task-listening_run-14_eeg.json
+      - sub-010_task-listening_run-14_eeg.vhdr
+      - sub-010_task-listening_run-14_eeg.vmrk
+      - sub-010_task-listening_run-15_channels.tsv
+      - sub-010_task-listening_run-15_eeg.eeg
+      - sub-010_task-listening_run-15_eeg.json
+      - sub-010_task-listening_run-15_eeg.vhdr
+      - sub-010_task-listening_run-15_eeg.vmrk
+      - sub-010_task-listening_run-16_channels.tsv
+      - sub-010_task-listening_run-16_eeg.eeg
+      - sub-010_task-listening_run-16_eeg.json
+      - sub-010_task-listening_run-16_eeg.vhdr
+      - sub-010_task-listening_run-16_eeg.vmrk
+      - sub-010_task-listening_run-17_channels.tsv
+      - sub-010_task-listening_run-17_eeg.eeg
+      - sub-010_task-listening_run-17_eeg.json
+      - sub-010_task-listening_run-17_eeg.vhdr
+      - sub-010_task-listening_run-17_eeg.vmrk
+      - sub-010_task-listening_run-18_channels.tsv
+      - sub-010_task-listening_run-18_eeg.eeg
+      - sub-010_task-listening_run-18_eeg.json
+      - sub-010_task-listening_run-18_eeg.vhdr
+      - sub-010_task-listening_run-18_eeg.vmrk
+      - sub-010_task-listening_run-19_channels.tsv
+      - sub-010_task-listening_run-19_eeg.eeg
+      - sub-010_task-listening_run-19_eeg.json
+      - sub-010_task-listening_run-19_eeg.vhdr
+      - sub-010_task-listening_run-19_eeg.vmrk
+      - sub-010_task-listening_run-20_channels.tsv
+      - sub-010_task-listening_run-20_eeg.eeg
+      - sub-010_task-listening_run-20_eeg.json
+      - sub-010_task-listening_run-20_eeg.vhdr
+      - sub-010_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-011_task-listening_run-01_channels.tsv
+      - sub-011_task-listening_run-01_eeg.eeg
+      - sub-011_task-listening_run-01_eeg.json
+      - sub-011_task-listening_run-01_eeg.vhdr
+      - sub-011_task-listening_run-01_eeg.vmrk
+      - sub-011_task-listening_run-02_channels.tsv
+      - sub-011_task-listening_run-02_eeg.eeg
+      - sub-011_task-listening_run-02_eeg.json
+      - sub-011_task-listening_run-02_eeg.vhdr
+      - sub-011_task-listening_run-02_eeg.vmrk
+      - sub-011_task-listening_run-03_channels.tsv
+      - sub-011_task-listening_run-03_eeg.eeg
+      - sub-011_task-listening_run-03_eeg.json
+      - sub-011_task-listening_run-03_eeg.vhdr
+      - sub-011_task-listening_run-03_eeg.vmrk
+      - sub-011_task-listening_run-04_channels.tsv
+      - sub-011_task-listening_run-04_eeg.eeg
+      - sub-011_task-listening_run-04_eeg.json
+      - sub-011_task-listening_run-04_eeg.vhdr
+      - sub-011_task-listening_run-04_eeg.vmrk
+      - sub-011_task-listening_run-05_channels.tsv
+      - sub-011_task-listening_run-05_eeg.eeg
+      - sub-011_task-listening_run-05_eeg.json
+      - sub-011_task-listening_run-05_eeg.vhdr
+      - sub-011_task-listening_run-05_eeg.vmrk
+      - sub-011_task-listening_run-06_channels.tsv
+      - sub-011_task-listening_run-06_eeg.eeg
+      - sub-011_task-listening_run-06_eeg.json
+      - sub-011_task-listening_run-06_eeg.vhdr
+      - sub-011_task-listening_run-06_eeg.vmrk
+      - sub-011_task-listening_run-07_channels.tsv
+      - sub-011_task-listening_run-07_eeg.eeg
+      - sub-011_task-listening_run-07_eeg.json
+      - sub-011_task-listening_run-07_eeg.vhdr
+      - sub-011_task-listening_run-07_eeg.vmrk
+      - sub-011_task-listening_run-08_channels.tsv
+      - sub-011_task-listening_run-08_eeg.eeg
+      - sub-011_task-listening_run-08_eeg.json
+      - sub-011_task-listening_run-08_eeg.vhdr
+      - sub-011_task-listening_run-08_eeg.vmrk
+      - sub-011_task-listening_run-09_channels.tsv
+      - sub-011_task-listening_run-09_eeg.eeg
+      - sub-011_task-listening_run-09_eeg.json
+      - sub-011_task-listening_run-09_eeg.vhdr
+      - sub-011_task-listening_run-09_eeg.vmrk
+      - sub-011_task-listening_run-10_channels.tsv
+      - sub-011_task-listening_run-10_eeg.eeg
+      - sub-011_task-listening_run-10_eeg.json
+      - sub-011_task-listening_run-10_eeg.vhdr
+      - sub-011_task-listening_run-10_eeg.vmrk
+      - sub-011_task-listening_run-11_channels.tsv
+      - sub-011_task-listening_run-11_eeg.eeg
+      - sub-011_task-listening_run-11_eeg.json
+      - sub-011_task-listening_run-11_eeg.vhdr
+      - sub-011_task-listening_run-11_eeg.vmrk
+      - sub-011_task-listening_run-12_channels.tsv
+      - sub-011_task-listening_run-12_eeg.eeg
+      - sub-011_task-listening_run-12_eeg.json
+      - sub-011_task-listening_run-12_eeg.vhdr
+      - sub-011_task-listening_run-12_eeg.vmrk
+      - sub-011_task-listening_run-13_channels.tsv
+      - sub-011_task-listening_run-13_eeg.eeg
+      - sub-011_task-listening_run-13_eeg.json
+      - sub-011_task-listening_run-13_eeg.vhdr
+      - sub-011_task-listening_run-13_eeg.vmrk
+      - sub-011_task-listening_run-14_channels.tsv
+      - sub-011_task-listening_run-14_eeg.eeg
+      - sub-011_task-listening_run-14_eeg.json
+      - sub-011_task-listening_run-14_eeg.vhdr
+      - sub-011_task-listening_run-14_eeg.vmrk
+      - sub-011_task-listening_run-15_channels.tsv
+      - sub-011_task-listening_run-15_eeg.eeg
+      - sub-011_task-listening_run-15_eeg.json
+      - sub-011_task-listening_run-15_eeg.vhdr
+      - sub-011_task-listening_run-15_eeg.vmrk
+      - sub-011_task-listening_run-16_channels.tsv
+      - sub-011_task-listening_run-16_eeg.eeg
+      - sub-011_task-listening_run-16_eeg.json
+      - sub-011_task-listening_run-16_eeg.vhdr
+      - sub-011_task-listening_run-16_eeg.vmrk
+      - sub-011_task-listening_run-17_channels.tsv
+      - sub-011_task-listening_run-17_eeg.eeg
+      - sub-011_task-listening_run-17_eeg.json
+      - sub-011_task-listening_run-17_eeg.vhdr
+      - sub-011_task-listening_run-17_eeg.vmrk
+      - sub-011_task-listening_run-18_channels.tsv
+      - sub-011_task-listening_run-18_eeg.eeg
+      - sub-011_task-listening_run-18_eeg.json
+      - sub-011_task-listening_run-18_eeg.vhdr
+      - sub-011_task-listening_run-18_eeg.vmrk
+      - sub-011_task-listening_run-19_channels.tsv
+      - sub-011_task-listening_run-19_eeg.eeg
+      - sub-011_task-listening_run-19_eeg.json
+      - sub-011_task-listening_run-19_eeg.vhdr
+      - sub-011_task-listening_run-19_eeg.vmrk
+      - sub-011_task-listening_run-20_channels.tsv
+      - sub-011_task-listening_run-20_eeg.eeg
+      - sub-011_task-listening_run-20_eeg.json
+      - sub-011_task-listening_run-20_eeg.vhdr
+      - sub-011_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-012_task-listening_run-01_channels.tsv
+      - sub-012_task-listening_run-01_eeg.eeg
+      - sub-012_task-listening_run-01_eeg.json
+      - sub-012_task-listening_run-01_eeg.vhdr
+      - sub-012_task-listening_run-01_eeg.vmrk
+      - sub-012_task-listening_run-02_channels.tsv
+      - sub-012_task-listening_run-02_eeg.eeg
+      - sub-012_task-listening_run-02_eeg.json
+      - sub-012_task-listening_run-02_eeg.vhdr
+      - sub-012_task-listening_run-02_eeg.vmrk
+      - sub-012_task-listening_run-03_channels.tsv
+      - sub-012_task-listening_run-03_eeg.eeg
+      - sub-012_task-listening_run-03_eeg.json
+      - sub-012_task-listening_run-03_eeg.vhdr
+      - sub-012_task-listening_run-03_eeg.vmrk
+      - sub-012_task-listening_run-04_channels.tsv
+      - sub-012_task-listening_run-04_eeg.eeg
+      - sub-012_task-listening_run-04_eeg.json
+      - sub-012_task-listening_run-04_eeg.vhdr
+      - sub-012_task-listening_run-04_eeg.vmrk
+      - sub-012_task-listening_run-05_channels.tsv
+      - sub-012_task-listening_run-05_eeg.eeg
+      - sub-012_task-listening_run-05_eeg.json
+      - sub-012_task-listening_run-05_eeg.vhdr
+      - sub-012_task-listening_run-05_eeg.vmrk
+      - sub-012_task-listening_run-06_channels.tsv
+      - sub-012_task-listening_run-06_eeg.eeg
+      - sub-012_task-listening_run-06_eeg.json
+      - sub-012_task-listening_run-06_eeg.vhdr
+      - sub-012_task-listening_run-06_eeg.vmrk
+      - sub-012_task-listening_run-07_channels.tsv
+      - sub-012_task-listening_run-07_eeg.eeg
+      - sub-012_task-listening_run-07_eeg.json
+      - sub-012_task-listening_run-07_eeg.vhdr
+      - sub-012_task-listening_run-07_eeg.vmrk
+      - sub-012_task-listening_run-08_channels.tsv
+      - sub-012_task-listening_run-08_eeg.eeg
+      - sub-012_task-listening_run-08_eeg.json
+      - sub-012_task-listening_run-08_eeg.vhdr
+      - sub-012_task-listening_run-08_eeg.vmrk
+      - sub-012_task-listening_run-09_channels.tsv
+      - sub-012_task-listening_run-09_eeg.eeg
+      - sub-012_task-listening_run-09_eeg.json
+      - sub-012_task-listening_run-09_eeg.vhdr
+      - sub-012_task-listening_run-09_eeg.vmrk
+      - sub-012_task-listening_run-10_channels.tsv
+      - sub-012_task-listening_run-10_eeg.eeg
+      - sub-012_task-listening_run-10_eeg.json
+      - sub-012_task-listening_run-10_eeg.vhdr
+      - sub-012_task-listening_run-10_eeg.vmrk
+      - sub-012_task-listening_run-11_channels.tsv
+      - sub-012_task-listening_run-11_eeg.eeg
+      - sub-012_task-listening_run-11_eeg.json
+      - sub-012_task-listening_run-11_eeg.vhdr
+      - sub-012_task-listening_run-11_eeg.vmrk
+      - sub-012_task-listening_run-12_channels.tsv
+      - sub-012_task-listening_run-12_eeg.eeg
+      - sub-012_task-listening_run-12_eeg.json
+      - sub-012_task-listening_run-12_eeg.vhdr
+      - sub-012_task-listening_run-12_eeg.vmrk
+      - sub-012_task-listening_run-13_channels.tsv
+      - sub-012_task-listening_run-13_eeg.eeg
+      - sub-012_task-listening_run-13_eeg.json
+      - sub-012_task-listening_run-13_eeg.vhdr
+      - sub-012_task-listening_run-13_eeg.vmrk
+      - sub-012_task-listening_run-14_channels.tsv
+      - sub-012_task-listening_run-14_eeg.eeg
+      - sub-012_task-listening_run-14_eeg.json
+      - sub-012_task-listening_run-14_eeg.vhdr
+      - sub-012_task-listening_run-14_eeg.vmrk
+      - sub-012_task-listening_run-15_channels.tsv
+      - sub-012_task-listening_run-15_eeg.eeg
+      - sub-012_task-listening_run-15_eeg.json
+      - sub-012_task-listening_run-15_eeg.vhdr
+      - sub-012_task-listening_run-15_eeg.vmrk
+      - sub-012_task-listening_run-16_channels.tsv
+      - sub-012_task-listening_run-16_eeg.eeg
+      - sub-012_task-listening_run-16_eeg.json
+      - sub-012_task-listening_run-16_eeg.vhdr
+      - sub-012_task-listening_run-16_eeg.vmrk
+      - sub-012_task-listening_run-17_channels.tsv
+      - sub-012_task-listening_run-17_eeg.eeg
+      - sub-012_task-listening_run-17_eeg.json
+      - sub-012_task-listening_run-17_eeg.vhdr
+      - sub-012_task-listening_run-17_eeg.vmrk
+      - sub-012_task-listening_run-18_channels.tsv
+      - sub-012_task-listening_run-18_eeg.eeg
+      - sub-012_task-listening_run-18_eeg.json
+      - sub-012_task-listening_run-18_eeg.vhdr
+      - sub-012_task-listening_run-18_eeg.vmrk
+      - sub-012_task-listening_run-19_channels.tsv
+      - sub-012_task-listening_run-19_eeg.eeg
+      - sub-012_task-listening_run-19_eeg.json
+      - sub-012_task-listening_run-19_eeg.vhdr
+      - sub-012_task-listening_run-19_eeg.vmrk
+      - sub-012_task-listening_run-20_channels.tsv
+      - sub-012_task-listening_run-20_eeg.eeg
+      - sub-012_task-listening_run-20_eeg.json
+      - sub-012_task-listening_run-20_eeg.vhdr
+      - sub-012_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-013_task-listening_run-01_channels.tsv
+      - sub-013_task-listening_run-01_eeg.eeg
+      - sub-013_task-listening_run-01_eeg.json
+      - sub-013_task-listening_run-01_eeg.vhdr
+      - sub-013_task-listening_run-01_eeg.vmrk
+      - sub-013_task-listening_run-02_channels.tsv
+      - sub-013_task-listening_run-02_eeg.eeg
+      - sub-013_task-listening_run-02_eeg.json
+      - sub-013_task-listening_run-02_eeg.vhdr
+      - sub-013_task-listening_run-02_eeg.vmrk
+      - sub-013_task-listening_run-03_channels.tsv
+      - sub-013_task-listening_run-03_eeg.eeg
+      - sub-013_task-listening_run-03_eeg.json
+      - sub-013_task-listening_run-03_eeg.vhdr
+      - sub-013_task-listening_run-03_eeg.vmrk
+      - sub-013_task-listening_run-04_channels.tsv
+      - sub-013_task-listening_run-04_eeg.eeg
+      - sub-013_task-listening_run-04_eeg.json
+      - sub-013_task-listening_run-04_eeg.vhdr
+      - sub-013_task-listening_run-04_eeg.vmrk
+      - sub-013_task-listening_run-05_channels.tsv
+      - sub-013_task-listening_run-05_eeg.eeg
+      - sub-013_task-listening_run-05_eeg.json
+      - sub-013_task-listening_run-05_eeg.vhdr
+      - sub-013_task-listening_run-05_eeg.vmrk
+      - sub-013_task-listening_run-06_channels.tsv
+      - sub-013_task-listening_run-06_eeg.eeg
+      - sub-013_task-listening_run-06_eeg.json
+      - sub-013_task-listening_run-06_eeg.vhdr
+      - sub-013_task-listening_run-06_eeg.vmrk
+      - sub-013_task-listening_run-07_channels.tsv
+      - sub-013_task-listening_run-07_eeg.eeg
+      - sub-013_task-listening_run-07_eeg.json
+      - sub-013_task-listening_run-07_eeg.vhdr
+      - sub-013_task-listening_run-07_eeg.vmrk
+      - sub-013_task-listening_run-08_channels.tsv
+      - sub-013_task-listening_run-08_eeg.eeg
+      - sub-013_task-listening_run-08_eeg.json
+      - sub-013_task-listening_run-08_eeg.vhdr
+      - sub-013_task-listening_run-08_eeg.vmrk
+      - sub-013_task-listening_run-09_channels.tsv
+      - sub-013_task-listening_run-09_eeg.eeg
+      - sub-013_task-listening_run-09_eeg.json
+      - sub-013_task-listening_run-09_eeg.vhdr
+      - sub-013_task-listening_run-09_eeg.vmrk
+      - sub-013_task-listening_run-10_channels.tsv
+      - sub-013_task-listening_run-10_eeg.eeg
+      - sub-013_task-listening_run-10_eeg.json
+      - sub-013_task-listening_run-10_eeg.vhdr
+      - sub-013_task-listening_run-10_eeg.vmrk
+      - sub-013_task-listening_run-11_channels.tsv
+      - sub-013_task-listening_run-11_eeg.eeg
+      - sub-013_task-listening_run-11_eeg.json
+      - sub-013_task-listening_run-11_eeg.vhdr
+      - sub-013_task-listening_run-11_eeg.vmrk
+      - sub-013_task-listening_run-12_channels.tsv
+      - sub-013_task-listening_run-12_eeg.eeg
+      - sub-013_task-listening_run-12_eeg.json
+      - sub-013_task-listening_run-12_eeg.vhdr
+      - sub-013_task-listening_run-12_eeg.vmrk
+      - sub-013_task-listening_run-13_channels.tsv
+      - sub-013_task-listening_run-13_eeg.eeg
+      - sub-013_task-listening_run-13_eeg.json
+      - sub-013_task-listening_run-13_eeg.vhdr
+      - sub-013_task-listening_run-13_eeg.vmrk
+      - sub-013_task-listening_run-14_channels.tsv
+      - sub-013_task-listening_run-14_eeg.eeg
+      - sub-013_task-listening_run-14_eeg.json
+      - sub-013_task-listening_run-14_eeg.vhdr
+      - sub-013_task-listening_run-14_eeg.vmrk
+      - sub-013_task-listening_run-15_channels.tsv
+      - sub-013_task-listening_run-15_eeg.eeg
+      - sub-013_task-listening_run-15_eeg.json
+      - sub-013_task-listening_run-15_eeg.vhdr
+      - sub-013_task-listening_run-15_eeg.vmrk
+      - sub-013_task-listening_run-16_channels.tsv
+      - sub-013_task-listening_run-16_eeg.eeg
+      - sub-013_task-listening_run-16_eeg.json
+      - sub-013_task-listening_run-16_eeg.vhdr
+      - sub-013_task-listening_run-16_eeg.vmrk
+      - sub-013_task-listening_run-17_channels.tsv
+      - sub-013_task-listening_run-17_eeg.eeg
+      - sub-013_task-listening_run-17_eeg.json
+      - sub-013_task-listening_run-17_eeg.vhdr
+      - sub-013_task-listening_run-17_eeg.vmrk
+      - sub-013_task-listening_run-18_channels.tsv
+      - sub-013_task-listening_run-18_eeg.eeg
+      - sub-013_task-listening_run-18_eeg.json
+      - sub-013_task-listening_run-18_eeg.vhdr
+      - sub-013_task-listening_run-18_eeg.vmrk
+      - sub-013_task-listening_run-19_channels.tsv
+      - sub-013_task-listening_run-19_eeg.eeg
+      - sub-013_task-listening_run-19_eeg.json
+      - sub-013_task-listening_run-19_eeg.vhdr
+      - sub-013_task-listening_run-19_eeg.vmrk
+      - sub-013_task-listening_run-20_channels.tsv
+      - sub-013_task-listening_run-20_eeg.eeg
+      - sub-013_task-listening_run-20_eeg.json
+      - sub-013_task-listening_run-20_eeg.vhdr
+      - sub-013_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-014_task-listening_run-01_channels.tsv
+      - sub-014_task-listening_run-01_eeg.eeg
+      - sub-014_task-listening_run-01_eeg.json
+      - sub-014_task-listening_run-01_eeg.vhdr
+      - sub-014_task-listening_run-01_eeg.vmrk
+      - sub-014_task-listening_run-02_channels.tsv
+      - sub-014_task-listening_run-02_eeg.eeg
+      - sub-014_task-listening_run-02_eeg.json
+      - sub-014_task-listening_run-02_eeg.vhdr
+      - sub-014_task-listening_run-02_eeg.vmrk
+      - sub-014_task-listening_run-03_channels.tsv
+      - sub-014_task-listening_run-03_eeg.eeg
+      - sub-014_task-listening_run-03_eeg.json
+      - sub-014_task-listening_run-03_eeg.vhdr
+      - sub-014_task-listening_run-03_eeg.vmrk
+      - sub-014_task-listening_run-04_channels.tsv
+      - sub-014_task-listening_run-04_eeg.eeg
+      - sub-014_task-listening_run-04_eeg.json
+      - sub-014_task-listening_run-04_eeg.vhdr
+      - sub-014_task-listening_run-04_eeg.vmrk
+      - sub-014_task-listening_run-05_channels.tsv
+      - sub-014_task-listening_run-05_eeg.eeg
+      - sub-014_task-listening_run-05_eeg.json
+      - sub-014_task-listening_run-05_eeg.vhdr
+      - sub-014_task-listening_run-05_eeg.vmrk
+      - sub-014_task-listening_run-06_channels.tsv
+      - sub-014_task-listening_run-06_eeg.eeg
+      - sub-014_task-listening_run-06_eeg.json
+      - sub-014_task-listening_run-06_eeg.vhdr
+      - sub-014_task-listening_run-06_eeg.vmrk
+      - sub-014_task-listening_run-07_channels.tsv
+      - sub-014_task-listening_run-07_eeg.eeg
+      - sub-014_task-listening_run-07_eeg.json
+      - sub-014_task-listening_run-07_eeg.vhdr
+      - sub-014_task-listening_run-07_eeg.vmrk
+      - sub-014_task-listening_run-08_channels.tsv
+      - sub-014_task-listening_run-08_eeg.eeg
+      - sub-014_task-listening_run-08_eeg.json
+      - sub-014_task-listening_run-08_eeg.vhdr
+      - sub-014_task-listening_run-08_eeg.vmrk
+      - sub-014_task-listening_run-09_channels.tsv
+      - sub-014_task-listening_run-09_eeg.eeg
+      - sub-014_task-listening_run-09_eeg.json
+      - sub-014_task-listening_run-09_eeg.vhdr
+      - sub-014_task-listening_run-09_eeg.vmrk
+      - sub-014_task-listening_run-10_channels.tsv
+      - sub-014_task-listening_run-10_eeg.eeg
+      - sub-014_task-listening_run-10_eeg.json
+      - sub-014_task-listening_run-10_eeg.vhdr
+      - sub-014_task-listening_run-10_eeg.vmrk
+      - sub-014_task-listening_run-11_channels.tsv
+      - sub-014_task-listening_run-11_eeg.eeg
+      - sub-014_task-listening_run-11_eeg.json
+      - sub-014_task-listening_run-11_eeg.vhdr
+      - sub-014_task-listening_run-11_eeg.vmrk
+      - sub-014_task-listening_run-12_channels.tsv
+      - sub-014_task-listening_run-12_eeg.eeg
+      - sub-014_task-listening_run-12_eeg.json
+      - sub-014_task-listening_run-12_eeg.vhdr
+      - sub-014_task-listening_run-12_eeg.vmrk
+      - sub-014_task-listening_run-13_channels.tsv
+      - sub-014_task-listening_run-13_eeg.eeg
+      - sub-014_task-listening_run-13_eeg.json
+      - sub-014_task-listening_run-13_eeg.vhdr
+      - sub-014_task-listening_run-13_eeg.vmrk
+      - sub-014_task-listening_run-14_channels.tsv
+      - sub-014_task-listening_run-14_eeg.eeg
+      - sub-014_task-listening_run-14_eeg.json
+      - sub-014_task-listening_run-14_eeg.vhdr
+      - sub-014_task-listening_run-14_eeg.vmrk
+      - sub-014_task-listening_run-15_channels.tsv
+      - sub-014_task-listening_run-15_eeg.eeg
+      - sub-014_task-listening_run-15_eeg.json
+      - sub-014_task-listening_run-15_eeg.vhdr
+      - sub-014_task-listening_run-15_eeg.vmrk
+      - sub-014_task-listening_run-16_channels.tsv
+      - sub-014_task-listening_run-16_eeg.eeg
+      - sub-014_task-listening_run-16_eeg.json
+      - sub-014_task-listening_run-16_eeg.vhdr
+      - sub-014_task-listening_run-16_eeg.vmrk
+      - sub-014_task-listening_run-17_channels.tsv
+      - sub-014_task-listening_run-17_eeg.eeg
+      - sub-014_task-listening_run-17_eeg.json
+      - sub-014_task-listening_run-17_eeg.vhdr
+      - sub-014_task-listening_run-17_eeg.vmrk
+      - sub-014_task-listening_run-18_channels.tsv
+      - sub-014_task-listening_run-18_eeg.eeg
+      - sub-014_task-listening_run-18_eeg.json
+      - sub-014_task-listening_run-18_eeg.vhdr
+      - sub-014_task-listening_run-18_eeg.vmrk
+      - sub-014_task-listening_run-19_channels.tsv
+      - sub-014_task-listening_run-19_eeg.eeg
+      - sub-014_task-listening_run-19_eeg.json
+      - sub-014_task-listening_run-19_eeg.vhdr
+      - sub-014_task-listening_run-19_eeg.vmrk
+      - sub-014_task-listening_run-20_channels.tsv
+      - sub-014_task-listening_run-20_eeg.eeg
+      - sub-014_task-listening_run-20_eeg.json
+      - sub-014_task-listening_run-20_eeg.vhdr
+      - sub-014_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-015_task-listening_run-01_channels.tsv
+      - sub-015_task-listening_run-01_eeg.eeg
+      - sub-015_task-listening_run-01_eeg.json
+      - sub-015_task-listening_run-01_eeg.vhdr
+      - sub-015_task-listening_run-01_eeg.vmrk
+      - sub-015_task-listening_run-02_channels.tsv
+      - sub-015_task-listening_run-02_eeg.eeg
+      - sub-015_task-listening_run-02_eeg.json
+      - sub-015_task-listening_run-02_eeg.vhdr
+      - sub-015_task-listening_run-02_eeg.vmrk
+      - sub-015_task-listening_run-03_channels.tsv
+      - sub-015_task-listening_run-03_eeg.eeg
+      - sub-015_task-listening_run-03_eeg.json
+      - sub-015_task-listening_run-03_eeg.vhdr
+      - sub-015_task-listening_run-03_eeg.vmrk
+      - sub-015_task-listening_run-04_channels.tsv
+      - sub-015_task-listening_run-04_eeg.eeg
+      - sub-015_task-listening_run-04_eeg.json
+      - sub-015_task-listening_run-04_eeg.vhdr
+      - sub-015_task-listening_run-04_eeg.vmrk
+      - sub-015_task-listening_run-05_channels.tsv
+      - sub-015_task-listening_run-05_eeg.eeg
+      - sub-015_task-listening_run-05_eeg.json
+      - sub-015_task-listening_run-05_eeg.vhdr
+      - sub-015_task-listening_run-05_eeg.vmrk
+      - sub-015_task-listening_run-06_channels.tsv
+      - sub-015_task-listening_run-06_eeg.eeg
+      - sub-015_task-listening_run-06_eeg.json
+      - sub-015_task-listening_run-06_eeg.vhdr
+      - sub-015_task-listening_run-06_eeg.vmrk
+      - sub-015_task-listening_run-07_channels.tsv
+      - sub-015_task-listening_run-07_eeg.eeg
+      - sub-015_task-listening_run-07_eeg.json
+      - sub-015_task-listening_run-07_eeg.vhdr
+      - sub-015_task-listening_run-07_eeg.vmrk
+      - sub-015_task-listening_run-08_channels.tsv
+      - sub-015_task-listening_run-08_eeg.eeg
+      - sub-015_task-listening_run-08_eeg.json
+      - sub-015_task-listening_run-08_eeg.vhdr
+      - sub-015_task-listening_run-08_eeg.vmrk
+      - sub-015_task-listening_run-09_channels.tsv
+      - sub-015_task-listening_run-09_eeg.eeg
+      - sub-015_task-listening_run-09_eeg.json
+      - sub-015_task-listening_run-09_eeg.vhdr
+      - sub-015_task-listening_run-09_eeg.vmrk
+      - sub-015_task-listening_run-10_channels.tsv
+      - sub-015_task-listening_run-10_eeg.eeg
+      - sub-015_task-listening_run-10_eeg.json
+      - sub-015_task-listening_run-10_eeg.vhdr
+      - sub-015_task-listening_run-10_eeg.vmrk
+      - sub-015_task-listening_run-11_channels.tsv
+      - sub-015_task-listening_run-11_eeg.eeg
+      - sub-015_task-listening_run-11_eeg.json
+      - sub-015_task-listening_run-11_eeg.vhdr
+      - sub-015_task-listening_run-11_eeg.vmrk
+      - sub-015_task-listening_run-12_channels.tsv
+      - sub-015_task-listening_run-12_eeg.eeg
+      - sub-015_task-listening_run-12_eeg.json
+      - sub-015_task-listening_run-12_eeg.vhdr
+      - sub-015_task-listening_run-12_eeg.vmrk
+      - sub-015_task-listening_run-13_channels.tsv
+      - sub-015_task-listening_run-13_eeg.eeg
+      - sub-015_task-listening_run-13_eeg.json
+      - sub-015_task-listening_run-13_eeg.vhdr
+      - sub-015_task-listening_run-13_eeg.vmrk
+      - sub-015_task-listening_run-14_channels.tsv
+      - sub-015_task-listening_run-14_eeg.eeg
+      - sub-015_task-listening_run-14_eeg.json
+      - sub-015_task-listening_run-14_eeg.vhdr
+      - sub-015_task-listening_run-14_eeg.vmrk
+      - sub-015_task-listening_run-15_channels.tsv
+      - sub-015_task-listening_run-15_eeg.eeg
+      - sub-015_task-listening_run-15_eeg.json
+      - sub-015_task-listening_run-15_eeg.vhdr
+      - sub-015_task-listening_run-15_eeg.vmrk
+      - sub-015_task-listening_run-16_channels.tsv
+      - sub-015_task-listening_run-16_eeg.eeg
+      - sub-015_task-listening_run-16_eeg.json
+      - sub-015_task-listening_run-16_eeg.vhdr
+      - sub-015_task-listening_run-16_eeg.vmrk
+      - sub-015_task-listening_run-17_channels.tsv
+      - sub-015_task-listening_run-17_eeg.eeg
+      - sub-015_task-listening_run-17_eeg.json
+      - sub-015_task-listening_run-17_eeg.vhdr
+      - sub-015_task-listening_run-17_eeg.vmrk
+      - sub-015_task-listening_run-18_channels.tsv
+      - sub-015_task-listening_run-18_eeg.eeg
+      - sub-015_task-listening_run-18_eeg.json
+      - sub-015_task-listening_run-18_eeg.vhdr
+      - sub-015_task-listening_run-18_eeg.vmrk
+      - sub-015_task-listening_run-19_channels.tsv
+      - sub-015_task-listening_run-19_eeg.eeg
+      - sub-015_task-listening_run-19_eeg.json
+      - sub-015_task-listening_run-19_eeg.vhdr
+      - sub-015_task-listening_run-19_eeg.vmrk
+      - sub-015_task-listening_run-20_channels.tsv
+      - sub-015_task-listening_run-20_eeg.eeg
+      - sub-015_task-listening_run-20_eeg.json
+      - sub-015_task-listening_run-20_eeg.vhdr
+      - sub-015_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-016_task-listening_run-01_channels.tsv
+      - sub-016_task-listening_run-01_eeg.eeg
+      - sub-016_task-listening_run-01_eeg.json
+      - sub-016_task-listening_run-01_eeg.vhdr
+      - sub-016_task-listening_run-01_eeg.vmrk
+      - sub-016_task-listening_run-02_channels.tsv
+      - sub-016_task-listening_run-02_eeg.eeg
+      - sub-016_task-listening_run-02_eeg.json
+      - sub-016_task-listening_run-02_eeg.vhdr
+      - sub-016_task-listening_run-02_eeg.vmrk
+      - sub-016_task-listening_run-03_channels.tsv
+      - sub-016_task-listening_run-03_eeg.eeg
+      - sub-016_task-listening_run-03_eeg.json
+      - sub-016_task-listening_run-03_eeg.vhdr
+      - sub-016_task-listening_run-03_eeg.vmrk
+      - sub-016_task-listening_run-04_channels.tsv
+      - sub-016_task-listening_run-04_eeg.eeg
+      - sub-016_task-listening_run-04_eeg.json
+      - sub-016_task-listening_run-04_eeg.vhdr
+      - sub-016_task-listening_run-04_eeg.vmrk
+      - sub-016_task-listening_run-05_channels.tsv
+      - sub-016_task-listening_run-05_eeg.eeg
+      - sub-016_task-listening_run-05_eeg.json
+      - sub-016_task-listening_run-05_eeg.vhdr
+      - sub-016_task-listening_run-05_eeg.vmrk
+      - sub-016_task-listening_run-06_channels.tsv
+      - sub-016_task-listening_run-06_eeg.eeg
+      - sub-016_task-listening_run-06_eeg.json
+      - sub-016_task-listening_run-06_eeg.vhdr
+      - sub-016_task-listening_run-06_eeg.vmrk
+      - sub-016_task-listening_run-07_channels.tsv
+      - sub-016_task-listening_run-07_eeg.eeg
+      - sub-016_task-listening_run-07_eeg.json
+      - sub-016_task-listening_run-07_eeg.vhdr
+      - sub-016_task-listening_run-07_eeg.vmrk
+      - sub-016_task-listening_run-08_channels.tsv
+      - sub-016_task-listening_run-08_eeg.eeg
+      - sub-016_task-listening_run-08_eeg.json
+      - sub-016_task-listening_run-08_eeg.vhdr
+      - sub-016_task-listening_run-08_eeg.vmrk
+      - sub-016_task-listening_run-09_channels.tsv
+      - sub-016_task-listening_run-09_eeg.eeg
+      - sub-016_task-listening_run-09_eeg.json
+      - sub-016_task-listening_run-09_eeg.vhdr
+      - sub-016_task-listening_run-09_eeg.vmrk
+      - sub-016_task-listening_run-10_channels.tsv
+      - sub-016_task-listening_run-10_eeg.eeg
+      - sub-016_task-listening_run-10_eeg.json
+      - sub-016_task-listening_run-10_eeg.vhdr
+      - sub-016_task-listening_run-10_eeg.vmrk
+      - sub-016_task-listening_run-11_channels.tsv
+      - sub-016_task-listening_run-11_eeg.eeg
+      - sub-016_task-listening_run-11_eeg.json
+      - sub-016_task-listening_run-11_eeg.vhdr
+      - sub-016_task-listening_run-11_eeg.vmrk
+      - sub-016_task-listening_run-12_channels.tsv
+      - sub-016_task-listening_run-12_eeg.eeg
+      - sub-016_task-listening_run-12_eeg.json
+      - sub-016_task-listening_run-12_eeg.vhdr
+      - sub-016_task-listening_run-12_eeg.vmrk
+      - sub-016_task-listening_run-13_channels.tsv
+      - sub-016_task-listening_run-13_eeg.eeg
+      - sub-016_task-listening_run-13_eeg.json
+      - sub-016_task-listening_run-13_eeg.vhdr
+      - sub-016_task-listening_run-13_eeg.vmrk
+      - sub-016_task-listening_run-14_channels.tsv
+      - sub-016_task-listening_run-14_eeg.eeg
+      - sub-016_task-listening_run-14_eeg.json
+      - sub-016_task-listening_run-14_eeg.vhdr
+      - sub-016_task-listening_run-14_eeg.vmrk
+      - sub-016_task-listening_run-15_channels.tsv
+      - sub-016_task-listening_run-15_eeg.eeg
+      - sub-016_task-listening_run-15_eeg.json
+      - sub-016_task-listening_run-15_eeg.vhdr
+      - sub-016_task-listening_run-15_eeg.vmrk
+      - sub-016_task-listening_run-16_channels.tsv
+      - sub-016_task-listening_run-16_eeg.eeg
+      - sub-016_task-listening_run-16_eeg.json
+      - sub-016_task-listening_run-16_eeg.vhdr
+      - sub-016_task-listening_run-16_eeg.vmrk
+      - sub-016_task-listening_run-17_channels.tsv
+      - sub-016_task-listening_run-17_eeg.eeg
+      - sub-016_task-listening_run-17_eeg.json
+      - sub-016_task-listening_run-17_eeg.vhdr
+      - sub-016_task-listening_run-17_eeg.vmrk
+      - sub-016_task-listening_run-18_channels.tsv
+      - sub-016_task-listening_run-18_eeg.eeg
+      - sub-016_task-listening_run-18_eeg.json
+      - sub-016_task-listening_run-18_eeg.vhdr
+      - sub-016_task-listening_run-18_eeg.vmrk
+      - sub-016_task-listening_run-19_channels.tsv
+      - sub-016_task-listening_run-19_eeg.eeg
+      - sub-016_task-listening_run-19_eeg.json
+      - sub-016_task-listening_run-19_eeg.vhdr
+      - sub-016_task-listening_run-19_eeg.vmrk
+      - sub-016_task-listening_run-20_channels.tsv
+      - sub-016_task-listening_run-20_eeg.eeg
+      - sub-016_task-listening_run-20_eeg.json
+      - sub-016_task-listening_run-20_eeg.vhdr
+      - sub-016_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-017_task-listening_run-01_channels.tsv
+      - sub-017_task-listening_run-01_eeg.eeg
+      - sub-017_task-listening_run-01_eeg.json
+      - sub-017_task-listening_run-01_eeg.vhdr
+      - sub-017_task-listening_run-01_eeg.vmrk
+      - sub-017_task-listening_run-02_channels.tsv
+      - sub-017_task-listening_run-02_eeg.eeg
+      - sub-017_task-listening_run-02_eeg.json
+      - sub-017_task-listening_run-02_eeg.vhdr
+      - sub-017_task-listening_run-02_eeg.vmrk
+      - sub-017_task-listening_run-03_channels.tsv
+      - sub-017_task-listening_run-03_eeg.eeg
+      - sub-017_task-listening_run-03_eeg.json
+      - sub-017_task-listening_run-03_eeg.vhdr
+      - sub-017_task-listening_run-03_eeg.vmrk
+      - sub-017_task-listening_run-04_channels.tsv
+      - sub-017_task-listening_run-04_eeg.eeg
+      - sub-017_task-listening_run-04_eeg.json
+      - sub-017_task-listening_run-04_eeg.vhdr
+      - sub-017_task-listening_run-04_eeg.vmrk
+      - sub-017_task-listening_run-05_channels.tsv
+      - sub-017_task-listening_run-05_eeg.eeg
+      - sub-017_task-listening_run-05_eeg.json
+      - sub-017_task-listening_run-05_eeg.vhdr
+      - sub-017_task-listening_run-05_eeg.vmrk
+      - sub-017_task-listening_run-06_channels.tsv
+      - sub-017_task-listening_run-06_eeg.eeg
+      - sub-017_task-listening_run-06_eeg.json
+      - sub-017_task-listening_run-06_eeg.vhdr
+      - sub-017_task-listening_run-06_eeg.vmrk
+      - sub-017_task-listening_run-07_channels.tsv
+      - sub-017_task-listening_run-07_eeg.eeg
+      - sub-017_task-listening_run-07_eeg.json
+      - sub-017_task-listening_run-07_eeg.vhdr
+      - sub-017_task-listening_run-07_eeg.vmrk
+      - sub-017_task-listening_run-08_channels.tsv
+      - sub-017_task-listening_run-08_eeg.eeg
+      - sub-017_task-listening_run-08_eeg.json
+      - sub-017_task-listening_run-08_eeg.vhdr
+      - sub-017_task-listening_run-08_eeg.vmrk
+      - sub-017_task-listening_run-09_channels.tsv
+      - sub-017_task-listening_run-09_eeg.eeg
+      - sub-017_task-listening_run-09_eeg.json
+      - sub-017_task-listening_run-09_eeg.vhdr
+      - sub-017_task-listening_run-09_eeg.vmrk
+      - sub-017_task-listening_run-10_channels.tsv
+      - sub-017_task-listening_run-10_eeg.eeg
+      - sub-017_task-listening_run-10_eeg.json
+      - sub-017_task-listening_run-10_eeg.vhdr
+      - sub-017_task-listening_run-10_eeg.vmrk
+      - sub-017_task-listening_run-11_channels.tsv
+      - sub-017_task-listening_run-11_eeg.eeg
+      - sub-017_task-listening_run-11_eeg.json
+      - sub-017_task-listening_run-11_eeg.vhdr
+      - sub-017_task-listening_run-11_eeg.vmrk
+      - sub-017_task-listening_run-12_channels.tsv
+      - sub-017_task-listening_run-12_eeg.eeg
+      - sub-017_task-listening_run-12_eeg.json
+      - sub-017_task-listening_run-12_eeg.vhdr
+      - sub-017_task-listening_run-12_eeg.vmrk
+      - sub-017_task-listening_run-13_channels.tsv
+      - sub-017_task-listening_run-13_eeg.eeg
+      - sub-017_task-listening_run-13_eeg.json
+      - sub-017_task-listening_run-13_eeg.vhdr
+      - sub-017_task-listening_run-13_eeg.vmrk
+      - sub-017_task-listening_run-14_channels.tsv
+      - sub-017_task-listening_run-14_eeg.eeg
+      - sub-017_task-listening_run-14_eeg.json
+      - sub-017_task-listening_run-14_eeg.vhdr
+      - sub-017_task-listening_run-14_eeg.vmrk
+      - sub-017_task-listening_run-15_channels.tsv
+      - sub-017_task-listening_run-15_eeg.eeg
+      - sub-017_task-listening_run-15_eeg.json
+      - sub-017_task-listening_run-15_eeg.vhdr
+      - sub-017_task-listening_run-15_eeg.vmrk
+      - sub-017_task-listening_run-16_channels.tsv
+      - sub-017_task-listening_run-16_eeg.eeg
+      - sub-017_task-listening_run-16_eeg.json
+      - sub-017_task-listening_run-16_eeg.vhdr
+      - sub-017_task-listening_run-16_eeg.vmrk
+      - sub-017_task-listening_run-17_channels.tsv
+      - sub-017_task-listening_run-17_eeg.eeg
+      - sub-017_task-listening_run-17_eeg.json
+      - sub-017_task-listening_run-17_eeg.vhdr
+      - sub-017_task-listening_run-17_eeg.vmrk
+      - sub-017_task-listening_run-18_channels.tsv
+      - sub-017_task-listening_run-18_eeg.eeg
+      - sub-017_task-listening_run-18_eeg.json
+      - sub-017_task-listening_run-18_eeg.vhdr
+      - sub-017_task-listening_run-18_eeg.vmrk
+      - sub-017_task-listening_run-19_channels.tsv
+      - sub-017_task-listening_run-19_eeg.eeg
+      - sub-017_task-listening_run-19_eeg.json
+      - sub-017_task-listening_run-19_eeg.vhdr
+      - sub-017_task-listening_run-19_eeg.vmrk
+      - sub-017_task-listening_run-20_channels.tsv
+      - sub-017_task-listening_run-20_eeg.eeg
+      - sub-017_task-listening_run-20_eeg.json
+      - sub-017_task-listening_run-20_eeg.vhdr
+      - sub-017_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-018_task-listening_run-01_channels.tsv
+      - sub-018_task-listening_run-01_eeg.eeg
+      - sub-018_task-listening_run-01_eeg.json
+      - sub-018_task-listening_run-01_eeg.vhdr
+      - sub-018_task-listening_run-01_eeg.vmrk
+      - sub-018_task-listening_run-02_channels.tsv
+      - sub-018_task-listening_run-02_eeg.eeg
+      - sub-018_task-listening_run-02_eeg.json
+      - sub-018_task-listening_run-02_eeg.vhdr
+      - sub-018_task-listening_run-02_eeg.vmrk
+      - sub-018_task-listening_run-03_channels.tsv
+      - sub-018_task-listening_run-03_eeg.eeg
+      - sub-018_task-listening_run-03_eeg.json
+      - sub-018_task-listening_run-03_eeg.vhdr
+      - sub-018_task-listening_run-03_eeg.vmrk
+      - sub-018_task-listening_run-04_channels.tsv
+      - sub-018_task-listening_run-04_eeg.eeg
+      - sub-018_task-listening_run-04_eeg.json
+      - sub-018_task-listening_run-04_eeg.vhdr
+      - sub-018_task-listening_run-04_eeg.vmrk
+      - sub-018_task-listening_run-05_channels.tsv
+      - sub-018_task-listening_run-05_eeg.eeg
+      - sub-018_task-listening_run-05_eeg.json
+      - sub-018_task-listening_run-05_eeg.vhdr
+      - sub-018_task-listening_run-05_eeg.vmrk
+      - sub-018_task-listening_run-06_channels.tsv
+      - sub-018_task-listening_run-06_eeg.eeg
+      - sub-018_task-listening_run-06_eeg.json
+      - sub-018_task-listening_run-06_eeg.vhdr
+      - sub-018_task-listening_run-06_eeg.vmrk
+      - sub-018_task-listening_run-07_channels.tsv
+      - sub-018_task-listening_run-07_eeg.eeg
+      - sub-018_task-listening_run-07_eeg.json
+      - sub-018_task-listening_run-07_eeg.vhdr
+      - sub-018_task-listening_run-07_eeg.vmrk
+      - sub-018_task-listening_run-08_channels.tsv
+      - sub-018_task-listening_run-08_eeg.eeg
+      - sub-018_task-listening_run-08_eeg.json
+      - sub-018_task-listening_run-08_eeg.vhdr
+      - sub-018_task-listening_run-08_eeg.vmrk
+      - sub-018_task-listening_run-09_channels.tsv
+      - sub-018_task-listening_run-09_eeg.eeg
+      - sub-018_task-listening_run-09_eeg.json
+      - sub-018_task-listening_run-09_eeg.vhdr
+      - sub-018_task-listening_run-09_eeg.vmrk
+      - sub-018_task-listening_run-10_channels.tsv
+      - sub-018_task-listening_run-10_eeg.eeg
+      - sub-018_task-listening_run-10_eeg.json
+      - sub-018_task-listening_run-10_eeg.vhdr
+      - sub-018_task-listening_run-10_eeg.vmrk
+      - sub-018_task-listening_run-11_channels.tsv
+      - sub-018_task-listening_run-11_eeg.eeg
+      - sub-018_task-listening_run-11_eeg.json
+      - sub-018_task-listening_run-11_eeg.vhdr
+      - sub-018_task-listening_run-11_eeg.vmrk
+      - sub-018_task-listening_run-12_channels.tsv
+      - sub-018_task-listening_run-12_eeg.eeg
+      - sub-018_task-listening_run-12_eeg.json
+      - sub-018_task-listening_run-12_eeg.vhdr
+      - sub-018_task-listening_run-12_eeg.vmrk
+      - sub-018_task-listening_run-13_channels.tsv
+      - sub-018_task-listening_run-13_eeg.eeg
+      - sub-018_task-listening_run-13_eeg.json
+      - sub-018_task-listening_run-13_eeg.vhdr
+      - sub-018_task-listening_run-13_eeg.vmrk
+      - sub-018_task-listening_run-14_channels.tsv
+      - sub-018_task-listening_run-14_eeg.eeg
+      - sub-018_task-listening_run-14_eeg.json
+      - sub-018_task-listening_run-14_eeg.vhdr
+      - sub-018_task-listening_run-14_eeg.vmrk
+      - sub-018_task-listening_run-15_channels.tsv
+      - sub-018_task-listening_run-15_eeg.eeg
+      - sub-018_task-listening_run-15_eeg.json
+      - sub-018_task-listening_run-15_eeg.vhdr
+      - sub-018_task-listening_run-15_eeg.vmrk
+      - sub-018_task-listening_run-16_channels.tsv
+      - sub-018_task-listening_run-16_eeg.eeg
+      - sub-018_task-listening_run-16_eeg.json
+      - sub-018_task-listening_run-16_eeg.vhdr
+      - sub-018_task-listening_run-16_eeg.vmrk
+      - sub-018_task-listening_run-17_channels.tsv
+      - sub-018_task-listening_run-17_eeg.eeg
+      - sub-018_task-listening_run-17_eeg.json
+      - sub-018_task-listening_run-17_eeg.vhdr
+      - sub-018_task-listening_run-17_eeg.vmrk
+      - sub-018_task-listening_run-18_channels.tsv
+      - sub-018_task-listening_run-18_eeg.eeg
+      - sub-018_task-listening_run-18_eeg.json
+      - sub-018_task-listening_run-18_eeg.vhdr
+      - sub-018_task-listening_run-18_eeg.vmrk
+      - sub-018_task-listening_run-19_channels.tsv
+      - sub-018_task-listening_run-19_eeg.eeg
+      - sub-018_task-listening_run-19_eeg.json
+      - sub-018_task-listening_run-19_eeg.vhdr
+      - sub-018_task-listening_run-19_eeg.vmrk
+      - sub-018_task-listening_run-20_channels.tsv
+      - sub-018_task-listening_run-20_eeg.eeg
+      - sub-018_task-listening_run-20_eeg.json
+      - sub-018_task-listening_run-20_eeg.vhdr
+      - sub-018_task-listening_run-20_eeg.vmrk
+    - eeg/
+      - sub-019_task-listening_run-01_channels.tsv
+      - sub-019_task-listening_run-01_eeg.eeg
+      - sub-019_task-listening_run-01_eeg.json
+      - sub-019_task-listening_run-01_eeg.vhdr
+      - sub-019_task-listening_run-01_eeg.vmrk
+      - sub-019_task-listening_run-02_channels.tsv
+      - sub-019_task-listening_run-02_eeg.eeg
+      - sub-019_task-listening_run-02_eeg.json
+      - sub-019_task-listening_run-02_eeg.vhdr
+      - sub-019_task-listening_run-02_eeg.vmrk
+      - sub-019_task-listening_run-03_channels.tsv
+      - sub-019_task-listening_run-03_eeg.eeg
+      - sub-019_task-listening_run-03_eeg.json
+      - sub-019_task-listening_run-03_eeg.vhdr
+      - sub-019_task-listening_run-03_eeg.vmrk
+      - sub-019_task-listening_run-04_channels.tsv
+      - sub-019_task-listening_run-04_eeg.eeg
+      - sub-019_task-listening_run-04_eeg.json
+      - sub-019_task-listening_run-04_eeg.vhdr
+      - sub-019_task-listening_run-04_eeg.vmrk
+      - sub-019_task-listening_run-05_channels.tsv
+      - sub-019_task-listening_run-05_eeg.eeg
+      - sub-019_task-listening_run-05_eeg.json
+      - sub-019_task-listening_run-05_eeg.vhdr
+      - sub-019_task-listening_run-05_eeg.vmrk
+      - sub-019_task-listening_run-06_channels.tsv
+      - sub-019_task-listening_run-06_eeg.eeg
+      - sub-019_task-listening_run-06_eeg.json
+      - sub-019_task-listening_run-06_eeg.vhdr
+      - sub-019_task-listening_run-06_eeg.vmrk
+      - sub-019_task-listening_run-07_channels.tsv
+      - sub-019_task-listening_run-07_eeg.eeg
+      - sub-019_task-listening_run-07_eeg.json
+      - sub-019_task-listening_run-07_eeg.vhdr
+      - sub-019_task-listening_run-07_eeg.vmrk
+      - sub-019_task-listening_run-08_channels.tsv
+      - sub-019_task-listening_run-08_eeg.eeg
+      - sub-019_task-listening_run-08_eeg.json
+      - sub-019_task-listening_run-08_eeg.vhdr
+      - sub-019_task-listening_run-08_eeg.vmrk
+      - sub-019_task-listening_run-09_channels.tsv
+      - sub-019_task-listening_run-09_eeg.eeg
+      - sub-019_task-listening_run-09_eeg.json
+      - sub-019_task-listening_run-09_eeg.vhdr
+      - sub-019_task-listening_run-09_eeg.vmrk
+      - sub-019_task-listening_run-10_channels.tsv
+      - sub-019_task-listening_run-10_eeg.eeg
+      - sub-019_task-listening_run-10_eeg.json
+      - sub-019_task-listening_run-10_eeg.vhdr
+      - sub-019_task-listening_run-10_eeg.vmrk
+      - sub-019_task-listening_run-11_channels.tsv
+      - sub-019_task-listening_run-11_eeg.eeg
+      - sub-019_task-listening_run-11_eeg.json
+      - sub-019_task-listening_run-11_eeg.vhdr
+      - sub-019_task-listening_run-11_eeg.vmrk
+      - sub-019_task-listening_run-12_channels.tsv
+      - sub-019_task-listening_run-12_eeg.eeg
+      - sub-019_task-listening_run-12_eeg.json
+      - sub-019_task-listening_run-12_eeg.vhdr
+      - sub-019_task-listening_run-12_eeg.vmrk
+      - sub-019_task-listening_run-13_channels.tsv
+      - sub-019_task-listening_run-13_eeg.eeg
+      - sub-019_task-listening_run-13_eeg.json
+      - sub-019_task-listening_run-13_eeg.vhdr
+      - sub-019_task-listening_run-13_eeg.vmrk
+      - sub-019_task-listening_run-14_channels.tsv
+      - sub-019_task-listening_run-14_eeg.eeg
+      - sub-019_task-listening_run-14_eeg.json
+      - sub-019_task-listening_run-14_eeg.vhdr
+      - sub-019_task-listening_run-14_eeg.vmrk
+      - sub-019_task-listening_run-15_channels.tsv
+      - sub-019_task-listening_run-15_eeg.eeg
+      - sub-019_task-listening_run-15_eeg.json
+      - sub-019_task-listening_run-15_eeg.vhdr
+      - sub-019_task-listening_run-15_eeg.vmrk
+      - sub-019_task-listening_run-16_channels.tsv
+      - sub-019_task-listening_run-16_eeg.eeg
+      - sub-019_task-listening_run-16_eeg.json
+      - sub-019_task-listening_run-16_eeg.vhdr
+      - sub-019_task-listening_run-16_eeg.vmrk
+      - sub-019_task-listening_run-17_channels.tsv
+      - sub-019_task-listening_run-17_eeg.eeg
+      - sub-019_task-listening_run-17_eeg.json
+      - sub-019_task-listening_run-17_eeg.vhdr
+      - sub-019_task-listening_run-17_eeg.vmrk
+      - sub-019_task-listening_run-18_channels.tsv
+      - sub-019_task-listening_run-18_eeg.eeg
+      - sub-019_task-listening_run-18_eeg.json
+      - sub-019_task-listening_run-18_eeg.vhdr
+      - sub-019_task-listening_run-18_eeg.vmrk
+      - sub-019_task-listening_run-19_channels.tsv
+      - sub-019_task-listening_run-19_eeg.eeg
+      - sub-019_task-listening_run-19_eeg.json
+      - sub-019_task-listening_run-19_eeg.vhdr
+      - sub-019_task-listening_run-19_eeg.vmrk
+      - sub-019_task-listening_run-20_channels.tsv
+      - sub-019_task-listening_run-20_eeg.eeg
+      - sub-019_task-listening_run-20_eeg.json
+      - sub-019_task-listening_run-20_eeg.vhdr
+      - sub-019_task-listening_run-20_eeg.vmrk
