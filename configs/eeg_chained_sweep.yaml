@@ -1,0 +1,40 @@
+base_configs:
+  reading: "eval_criss_cross_word_classification_eeg_reading"
+  listening: "eval_criss_cross_word_classification_eeg_listening"
+  reading_listening: "eval_criss_cross_word_classification_eeg_reading_listening"
+
+python_module: "brainstorm.evaluate_criss_cross_word_classification"
+metric_name: "balanced_top10_accuracy_retrieval250"
+metric_mode: "max"
+output_root: "./logs/eeg_chained_sweeps"
+checkpoint_root: "./checkpoints/eeg_chained_sweeps"
+promotion_root: "./checkpoints/eeg_promoted"
+promotion_record_dir: "./promotions"
+lineage_dir: "./promotions"
+
+defaults:
+  target_sfreq: 50
+  task_mode: "reading_listening"
+  tokenizer:
+    name: "biocodec"
+    checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
+  initialization: "pretrained"
+  seed: 42
+
+stages:
+  - name: "frequency_search"
+    target_sfreq: [25, 50, 100, 128, 200, 250]
+  - name: "tokenizer_search"
+    tokenizers:
+      - name: "biocodec"
+        checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
+      - name: "brainomni_base"
+        checkpoint: "./brainstorm/neuro_tokenizers/base/BrainOmni.pt"
+      - name: "brainomni_tiny"
+        checkpoint: "./brainstorm/neuro_tokenizers/tiny/BrainOmni.pt"
+      - name: "braintokenizer"
+        checkpoint: "./brainstorm/neuro_tokenizers/braintokenizer/BrainTokenizer.pt"
+  - name: "task_mode_search"
+    task_modes: ["reading", "listening", "reading_listening"]
+  - name: "final_training"
+    seeds: [42]

@@ -172,6 +172,9 @@ class ZuCoWordAlignedDataset(Dataset):
         baseline_duration: float = 0.5,
         clip_range: tuple = (-5, 5),
         eeg_sensor_type: str = "grad",
+        dataset_name: str = "zuco",
+        task_mode: str = "reading",
+        tokenizer_name: str = "biocodec",
     ):
         self.data_root = self._resolve_data_root(Path(data_root))
         self.preprocessed_root = self.data_root / "task1 - NR" / "Preprocessed"
@@ -192,6 +195,9 @@ class ZuCoWordAlignedDataset(Dataset):
         self.max_channel_dim = max_channel_dim
         self.eeg_sensor_type = eeg_sensor_type
         self.eeg_sensor_type_id = self._resolve_eeg_sensor_type(eeg_sensor_type)
+        self.dataset_name = dataset_name
+        self.task_mode = task_mode
+        self.tokenizer_name = tokenizer_name
 
         self.subjects = [self._normalize_subject(s) for s in subjects] if subjects is not None else None
         self.sessions = [self._normalize_session(s) for s in sessions] if sessions is not None else None
@@ -651,6 +657,8 @@ class ZuCoWordAlignedDataset(Dataset):
             "subject": rec["subject"],
             "session": rec["session"],
             "task": rec["task"],
+            "dataset_name": self.dataset_name,
+            "task_mode": self.task_mode,
             "sensor_xyzdir": torch.from_numpy(sensor_xyzdir).float(),
             "sensor_types": torch.from_numpy(sensor_types).int(),
             "sensor_mask": torch.from_numpy(sensor_mask).float(),
@@ -661,6 +669,36 @@ class ZuCoWordAlignedDataset(Dataset):
             "start_time": float(word_group[0]["window_start"]),
             "end_time": float(word_group[-1]["window_end"]),
         }
+
+    def get_segment_words(self, idx: int) -> List[str]:
+        rec_idx, group_idx = self.segment_index[idx]
+        return [word["word"] for word in self.word_groups[rec_idx][group_idx]]
+
+    def get_segment_metadata(self, idx: int) -> Dict[str, Any]:
+        rec_idx, group_idx = self.segment_index[idx]
+        rec = self.recordings[rec_idx]
+        return {
+            "dataset_name": self.dataset_name,
+            "task_mode": self.task_mode,
+            "subject": rec["subject"],
+            "session": rec["session"],
+            "task": rec["task"],
+            "run": "",
+            "recording_idx": rec_idx,
+            "segment_idx": group_idx,
+        }
+
+    def get_split_group(self, idx: int, group_kind: str = "auto") -> str:
+        meta = self.get_segment_metadata(idx)
+        if group_kind == "subject":
+            return f"{meta['dataset_name']}:{meta['subject']}"
+        if group_kind == "session":
+            return f"{meta['dataset_name']}:{meta['subject']}:{meta['session']}"
+        if group_kind == "recording":
+            return f"{meta['dataset_name']}:{meta['subject']}:{meta['session']}:{meta['task']}"
+        if group_kind == "sentence":
+            return " ".join(self.get_segment_words(idx))
+        return f"{meta['dataset_name']}:{meta['subject']}:{meta['session']}:{meta['task']}"
 
     def __del__(self):
         self.close()

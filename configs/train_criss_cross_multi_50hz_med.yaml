@@ -63,6 +63,8 @@ data:
 
 # Model settings
 model:
+  tokenizer_name: "biocodec"
+  tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
   tokenizer_ckpt: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
   latent_dim: 512
   num_layers: 8

@@ -1,0 +1,33 @@
+base_configs:
+  reading: "eval_criss_cross_word_classification_eeg_reading"
+  listening: "eval_criss_cross_word_classification_eeg_listening"
+  reading_listening: "eval_criss_cross_word_classification_eeg_reading_listening"
+
+target_sfreq: [25, 50, 100, 128, 200, 250]
+task_modes: ["reading", "listening", "reading_listening"]
+dataset_groups:
+  - name: "zuco-eegdash"
+    task_mode: "reading"
+    base_config: "eval_criss_cross_word_classification_eeg_reading"
+  - name: "ds004408-ds007808"
+    task_mode: "listening"
+    base_config: "eval_criss_cross_word_classification_eeg_listening"
+  - name: "zuco-eegdash-ds004408-ds007808"
+    task_mode: "reading_listening"
+    base_config: "eval_criss_cross_word_classification_eeg_reading_listening"
+initializations: ["scratch", "pretrained"]
+seeds: [42]
+
+tokenizers:
+  - name: "biocodec"
+    checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
+  - name: "brainomni_base"
+    checkpoint: "./brainstorm/neuro_tokenizers/base/BrainOmni.pt"
+  - name: "brainomni_tiny"
+    checkpoint: "./brainstorm/neuro_tokenizers/tiny/BrainOmni.pt"
+  - name: "braintokenizer"
+    checkpoint: "./brainstorm/neuro_tokenizers/braintokenizer/BrainTokenizer.pt"
+
+output_root: "./logs/eeg_sweeps"
+checkpoint_root: "./checkpoints/eeg_sweeps"
+python_module: "brainstorm.evaluate_criss_cross_word_classification"

@@ -26,7 +26,7 @@ sys.path.insert(0, str(project_root))
 
 from brainstorm.models.criss_cross_transformer import CrissCrossTransformerModule
 from brainstorm.data.multi_datamodule import MultiMEGDataModule
-from brainstorm.neuro_tokenizers.biocodec.model import BioCodecModel
+from brainstorm.neuro_tokenizers.factory import load_neuro_tokenizer
 
 
 class SamplerVerificationCallback(Callback):
@@ -71,50 +71,6 @@ class SamplerVerificationCallback(Callback):
                 print(f"✓ Single GPU: Using RecordingShuffleSampler (no distributed wrapper needed)")
             else:
                 print(f"⚠ Expected RecordingShuffleSampler, got {type(sampler).__name__}")
-
-
-def load_tokenizer(ckpt_path: str, device: str = "cpu") -> torch.nn.Module:
-    """
-    Load frozen BioCodec tokenizer from checkpoint.
-
-    Parameters
-    ----------
-    ckpt_path : str
-        Path to BioCodec checkpoint file
-    device : str
-        Device to load model on ("cpu" or "cuda")
-
-    Returns
-    -------
-    tokenizer : torch.nn.Module
-        Frozen BioCodec tokenizer
-    """
-    print(f"\n=== Loading BioCodec Tokenizer ===")
-    print(f"Checkpoint: {ckpt_path}")
-
-    # Create model
-    tokenizer = BioCodecModel._get_optimized_model()
-
-    # Load checkpoint
-    checkpoint = torch.load(ckpt_path, map_location=device)
-
-    # Remove _orig_mod prefix from state dict keys
-    new_state_dict = {}
-    for key, value in checkpoint["model_state_dict"].items():
-        if key.startswith("_orig_mod."):
-            new_key = key[len("_orig_mod."):]
-        else:
-            new_key = key
-        new_state_dict[new_key] = value
-
-    tokenizer.load_state_dict(new_state_dict)
-    tokenizer.eval()
-
-    print(f"✓ Tokenizer loaded successfully")
-    print(f"  RVQ levels: {tokenizer.quantizer.n_q}")
-    print(f"  Codebook size: {tokenizer.quantizer.bins}")
-
-    return tokenizer
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="train_criss_cross_multi")
@@ -222,14 +178,23 @@ def main(cfg: DictConfig):
     print("LOADING TOKENIZER")
     print("=" * 80)
 
-    tokenizer_path = Path(cfg.model.tokenizer_ckpt)
-    if not tokenizer_path.exists():
-        raise FileNotFoundError(
-            f"Tokenizer checkpoint not found: {tokenizer_path}\n"
-            f"Please ensure the BioCodec checkpoint is at this location."
-        )
-
-    tokenizer = load_tokenizer(str(tokenizer_path), device="cpu")
+    tokenizer_name = cfg.model.get("tokenizer_name", "biocodec")
+    tokenizer_checkpoint = cfg.model.get(
+        "tokenizer_checkpoint",
+        cfg.model.get("tokenizer_ckpt", None),
+    )
+    print(f"\n=== Loading Tokenizer ===")
+    print(f"Name: {tokenizer_name}")
+    print(f"Checkpoint: {tokenizer_checkpoint}")
+    tokenizer = load_neuro_tokenizer(
+        tokenizer_name=tokenizer_name,
+        checkpoint_path=tokenizer_checkpoint,
+        device="cpu",
+    )
+    print("✓ Tokenizer loaded/validated successfully")
+    print(f"  RVQ levels: {tokenizer.n_q}")
+    print(f"  Codebook size: {tokenizer.vocab_size}")
+    print(f"  Downsample ratio: {tokenizer.downsample_ratio}")
 
     # -------------------------------------------------------------------------
     # 3. Optional: Setup Checkpoint Resumption
@@ -297,9 +262,8 @@ def main(cfg: DictConfig):
     print(f"Number of subsegments to mask: {cfg.model.num_subsegments_to_mask}")
     print(f"Sampling rate: {cfg.model.sampling_rate}Hz")
     # Calculate mask length in encoded timesteps
-    biocodec_downsample_ratio = 12
     mask_samples = round(cfg.model.mask_duration * cfg.model.sampling_rate)
-    mask_length = mask_samples // biocodec_downsample_ratio
+    mask_length = mask_samples // tokenizer.downsample_ratio
     print(f"Mask length per subsegment (encoded timesteps): {mask_length}")
     print(f"Loss computed on ALL RVQ levels (averaged)")
 

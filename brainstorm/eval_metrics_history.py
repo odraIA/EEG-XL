@@ -38,14 +38,20 @@ def append_epoch_metrics_history(
 
     csv_path = save_dir / "metrics_history.csv"
     jsonl_path = save_dir / "metrics_history.jsonl"
+    epoch_csv_path = save_dir / "epoch_metrics.csv"
+    epoch_jsonl_path = save_dir / "epoch_metrics.jsonl"
 
     if reset:
         csv_path.unlink(missing_ok=True)
         jsonl_path.unlink(missing_ok=True)
+        epoch_csv_path.unlink(missing_ok=True)
+        epoch_jsonl_path.unlink(missing_ok=True)
 
     serializable_row = {str(key): _to_serializable(value) for key, value in row.items()}
 
     with jsonl_path.open("a") as f:
+        f.write(json.dumps(serializable_row, sort_keys=True) + "\n")
+    with epoch_jsonl_path.open("a") as f:
         f.write(json.dumps(serializable_row, sort_keys=True) + "\n")
 
     existing_rows: list[dict[str, Any]] = []
@@ -63,6 +69,11 @@ def append_epoch_metrics_history(
     existing_rows.append(serializable_row)
 
     with csv_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(existing_rows)
+
+    with epoch_csv_path.open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(existing_rows)

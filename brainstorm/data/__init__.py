@@ -9,6 +9,12 @@ from .libribrain_dataset import LibriBrainMEGDataset
 from .libribrain_word_aligned_dataset import LibriBrainWordAlignedDataset
 from .gwilliams_word_aligned_dataset import GwilliamsWordAlignedDataset
 from .zuco_word_aligned_dataset import ZuCoWordAlignedDataset
+from .eeg_word_aligned_dataset import (
+    BIDSEEGWordAlignedDataset,
+    EEGDashWordAlignedDataset,
+    OpenNeuroEEGWordAlignedDataset,
+    PooledWordAlignedDataset,
+)
 from .smn4lang_dataset import SMN4LangMEGDataset
 from .samplers import RecordingShuffleSampler
 from .multi_dataset import MultiMEGDataset
@@ -25,6 +31,10 @@ __all__ = [
     "LibriBrainWordAlignedDataset",
     "GwilliamsWordAlignedDataset",
     "ZuCoWordAlignedDataset",
+    "BIDSEEGWordAlignedDataset",
+    "EEGDashWordAlignedDataset",
+    "OpenNeuroEEGWordAlignedDataset",
+    "PooledWordAlignedDataset",
     "SMN4LangMEGDataset",
     "RecordingShuffleSampler",
     "MultiMEGDataset",

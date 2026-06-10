@@ -218,9 +218,18 @@ __pycache__/
 # MEG-XL
 datasets/
 checkpoints/
+logs/
+results/
+promotions/
+wandb/
+hf_cache/
+embeddings_cache/
+data/cache/
 wandb/
 hf_cache/
 data/
+!brainstorm/data/
+!brainstorm/data/*.py
 embeddings_cache/
 local/
 
@@ -229,3 +238,5 @@ datasets/*
 !datasets/eegdash/
 datasets/eegdash/*
 !datasets/eegdash/testing.ipynb
+
+neuro_tokenizers

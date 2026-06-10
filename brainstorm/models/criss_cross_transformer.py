@@ -16,7 +16,7 @@ class CrissCrossTransformerModule(pl.LightningModule):
     """
     Criss-Cross Transformer Lightning Module for multi-channel biosignal processing.
 
-    This module uses a frozen tokenizer (BioCodec) to encode multi-channel MEG signals
+    This module uses a frozen neural tokenizer to encode multi-channel MEG/EEG signals
     into discrete RVQ codes, then trains a criss-cross transformer with temporal block masking.
 
     Architecture:
@@ -29,7 +29,7 @@ class CrissCrossTransformerModule(pl.LightningModule):
     7. Predict masked tokens across all RVQ levels
 
     Args:
-        tokenizer: Frozen BioCodecModule instance for encoding signals
+        tokenizer: Frozen tokenizer adapter for encoding signals
         latent_dim: Transformer hidden dimension (default: 512)
         num_layers: Number of transformer layers (default: 8)
         num_heads: Number of attention heads (default: 8)
@@ -79,9 +79,17 @@ class CrissCrossTransformerModule(pl.LightningModule):
             param.requires_grad = False
         self.tokenizer.eval()
 
-        # Get number of RVQ levels from tokenizer
-        self.n_q = tokenizer.quantizer.n_q
-        self.vocab_size = vocab_size
+        # Get tokenizer dimensions through the adapter interface. Fall back to
+        # the legacy BioCodec attributes for old callers/tests.
+        legacy_quantizer = getattr(tokenizer, "quantizer", None)
+        self.n_q = int(getattr(tokenizer, "n_q", getattr(legacy_quantizer, "n_q", 0)))
+        tokenizer_vocab_size = int(getattr(tokenizer, "vocab_size", vocab_size))
+        if int(vocab_size) != tokenizer_vocab_size:
+            print(
+                f"Tokenizer vocab_size ({tokenizer_vocab_size}) differs from "
+                f"checkpoint/model vocab_size ({vocab_size}); using tokenizer value."
+            )
+        self.vocab_size = tokenizer_vocab_size
         self.latent_dim = latent_dim
         self.learning_rate = learning_rate
         self.warmup_steps = warmup_steps
@@ -91,24 +99,28 @@ class CrissCrossTransformerModule(pl.LightningModule):
         self.sampling_rate = sampling_rate
         self.num_sensor_types = num_sensor_types
 
-        # Calculate mask length in encoded timesteps
-        # BioCodec downsampling ratio is 12 (ratios=[3, 2, 2])
-        self.biocodec_downsample_ratio = 12
+        # Calculate mask length in encoded timesteps.
+        self.tokenizer_downsample_ratio = int(getattr(tokenizer, "downsample_ratio", 12))
+        # Backward-compatible alias used by old debugging code/checkpoints.
+        self.biocodec_downsample_ratio = self.tokenizer_downsample_ratio
         mask_samples = round(mask_duration * sampling_rate)
-        self.mask_length = mask_samples // self.biocodec_downsample_ratio
+        self.mask_length = mask_samples // self.tokenizer_downsample_ratio
 
-        # Get BioCodec embeddings from frozen quantizer
-        # Each layer has: tokenizer.quantizer.vq.layers[q]._codebook.embed
+        # Get tokenizer codebook embeddings from the frozen quantizer.
+        # Buffer names remain biocodec_embedding_* for checkpoint compatibility.
         # Shape: [vocab_size, codebook_dim] where codebook_dim = dimension // 8
-        biocodec_embeddings = []
+        tokenizer_embeddings = []
         for q in range(self.n_q):
-            codebook_embed = tokenizer.quantizer.vq.layers[q]._codebook.embed
+            if hasattr(tokenizer, "codebook_embedding"):
+                codebook_embed = tokenizer.codebook_embedding(q)
+            else:
+                codebook_embed = tokenizer.quantizer.vq.layers[q]._codebook.embed
             # Register as buffer (non-trainable but tracked by the model)
             self.register_buffer(f'biocodec_embedding_{q}', codebook_embed)
-            biocodec_embeddings.append(codebook_embed)
+            tokenizer_embeddings.append(codebook_embed)
 
         # Get codebook dimension from first layer
-        self.codebook_dim = biocodec_embeddings[0].shape[1]
+        self.codebook_dim = tokenizer_embeddings[0].shape[1]
 
         # RVQ projector: Concatenate all Q levels and project to latent_dim
         # Input: Q * codebook_dim -> Output: latent_dim
@@ -143,7 +155,7 @@ class CrissCrossTransformerModule(pl.LightningModule):
 
         # Output head: single linear layer predicting all Q levels
         # Output shape: [B, C, T', Q * vocab_size]
-        self.output_head = nn.Linear(latent_dim, self.n_q * vocab_size)
+        self.output_head = nn.Linear(latent_dim, self.n_q * self.vocab_size)
 
         # Gradient checkpointing flag
         self.gradient_checkpointing = False
@@ -170,13 +182,13 @@ class CrissCrossTransformerModule(pl.LightningModule):
 
     def _tokenize_multichannel(self, raw_meg: torch.Tensor) -> torch.Tensor:
         """
-        Tokenize multi-channel MEG signals using the frozen BioCodec.
+        Tokenize multi-channel MEG/EEG signals using the frozen tokenizer.
 
         Args:
             raw_meg: [B, C, T] raw MEG signals (T = segment_duration * sampling_rate)
 
         Returns:
-            codes: [B, C, Q, T'] discrete RVQ codes where T' = T/12 (downsample ratio)
+            codes: [B, C, Q, T'] discrete RVQ codes where T' is tokenizer-dependent
         """
         B, C, T = raw_meg.shape
 
@@ -278,7 +290,7 @@ class CrissCrossTransformerModule(pl.LightningModule):
         """
         # 1. Calculate number of subsegments based on segment length / 3s (word segment length)
         # Segment length in seconds = n_timesteps * downsample_ratio / sampling_rate
-        segment_length_seconds = (n_timesteps * self.biocodec_downsample_ratio) / self.sampling_rate
+        segment_length_seconds = (n_timesteps * self.tokenizer_downsample_ratio) / self.sampling_rate
         num_subsegments = int(segment_length_seconds / 3.0)
         subseg_length = n_timesteps // num_subsegments  # Integer division for clean boundaries
 

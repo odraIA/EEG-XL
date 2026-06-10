@@ -22,6 +22,7 @@
 """
 
 import argparse
+import csv
 import glob
 import json
 import os
@@ -40,12 +41,15 @@ BASE_DIR     = Path(os.environ.get("BASE_DIR", "/workspace"))
 LOGS_DIR     = BASE_DIR / "logs"
 RESULTS_DIR  = BASE_DIR / "results"
 CKPT_DIR     = BASE_DIR / "checkpoints"
+PROMOTIONS_DIR = BASE_DIR / "promotions"
 PLAN_FILE    = BASE_DIR / ".sweep_plan.json"
 REFRESH_SECS = 8
 DOCKER_SOCKET = Path(os.environ.get("DOCKER_SOCKET", "/var/run/docker.sock"))
 GENERIC_SCAN_ROOT_NAMES = ("logs", "checkpoints", "outputs", "multirun")
 GENERIC_RUN_MARKERS = (
     "final_results.txt",
+    "final_results.json",
+    "run_metadata.json",
     "checkpoint_best.pt",
     "checkpoint_latest.pt",
     ".hydra/config.yaml",
@@ -409,6 +413,7 @@ def get_sweep_context() -> dict:
     run_started_at = _get_active_run_started_at(plan, sweep_log_path, coordinator_log_path)
     compose_containers = get_compose_container_statuses()
     megxl_runs = discover_generic_megxl_runs(compose_containers)
+    megxl_runs.update(_discover_eeg_artifact_runs())
     return {
         "plan": plan,
         "run_ts": _infer_active_run_ts(plan),
@@ -1200,6 +1205,104 @@ def _parse_final_results_txt(path: Path | None) -> dict[str, float]:
     return metrics
 
 
+def _read_json_file(path: Path | None) -> dict:
+    if path is None or not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _read_latest_epoch_metrics(path: Path | None) -> dict:
+    if path is None or not path.exists():
+        return {}
+    for name in ("epoch_metrics.csv", "metrics_history.csv"):
+        csv_path = path / name
+        if not csv_path.exists():
+            continue
+        try:
+            with csv_path.open(newline="", encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+            return rows[-1] if rows else {}
+        except Exception:
+            return {}
+    return {}
+
+
+def _float_or_none(value):
+    try:
+        if value in (None, ""):
+            return None
+        return float(value)
+    except Exception:
+        return None
+
+
+def _metadata_dataset_label(metadata: dict) -> str | None:
+    datasets = metadata.get("datasets")
+    if isinstance(datasets, list) and datasets:
+        names = []
+        for item in datasets:
+            if not isinstance(item, dict):
+                continue
+            names.append(str(item.get("dataset_name") or item.get("dataset_type") or ""))
+        return "+".join(name for name in names if name) or None
+    return metadata.get("dataset_type")
+
+
+def _discover_eeg_artifact_runs() -> dict[str, dict]:
+    registry: dict[str, dict] = {}
+    roots = [path for path in (LOGS_DIR, RESULTS_DIR, CKPT_DIR) if path.exists()]
+    marker_names = ("run_metadata.json", "final_results.json", "epoch_metrics.csv", "metrics_history.csv")
+
+    for root in roots:
+        for marker in marker_names:
+            for path in root.rglob(marker):
+                run_dir = path.parent
+                metadata = _read_json_file(run_dir / "run_metadata.json")
+                final_json = _read_json_file(run_dir / "final_results.json")
+                experiment = (
+                    metadata.get("experiment_name")
+                    or final_json.get("experiment_name")
+                    or run_dir.name
+                )
+                if not experiment:
+                    continue
+
+                task_mode = metadata.get("task_mode") or final_json.get("task_mode")
+                if task_mode and task_mode not in {"reading", "listening", "reading_listening"}:
+                    continue
+                if not task_mode and "eeg" not in str(experiment).lower():
+                    continue
+
+                checkpoint_paths = metadata.get("checkpoint_paths") if isinstance(metadata.get("checkpoint_paths"), dict) else {}
+                artifact_paths = metadata.get("artifact_paths") if isinstance(metadata.get("artifact_paths"), dict) else {}
+                checkpoint_dir = Path(artifact_paths.get("checkpoint_dir") or checkpoint_paths.get("checkpoint_best", run_dir)).parent
+                save_dir = Path(artifact_paths.get("save_dir") or run_dir)
+                registry[str(experiment)] = {
+                    "exp": str(experiment),
+                    "display_name": str(experiment),
+                    "kind": "eeg_eval",
+                    "save_dir": save_dir,
+                    "checkpoint_dir": checkpoint_dir,
+                    "final_results": save_dir / "final_results.txt",
+                    "final_results_json": save_dir / "final_results.json",
+                    "checkpoint_latest": Path(checkpoint_paths.get("checkpoint_latest") or checkpoint_dir / "checkpoint_latest.pt"),
+                    "checkpoint_best": Path(checkpoint_paths.get("checkpoint_best") or checkpoint_dir / "checkpoint_best.pt"),
+                    "run_metadata": save_dir / "run_metadata.json",
+                    "run_log": Path(artifact_paths.get("stdout_stderr_log") or save_dir / "stdout_stderr.log"),
+                    "config_snapshot": Path(artifact_paths.get("config_snapshot") or save_dir / "config_resolved.yaml"),
+                    "dataset": _metadata_dataset_label(metadata),
+                    "task_mode": task_mode,
+                    "target_sfreq": metadata.get("target_sfreq") or final_json.get("target_sfreq"),
+                    "tokenizer": (metadata.get("tokenizer") or {}).get("name") if isinstance(metadata.get("tokenizer"), dict) else final_json.get("tokenizer_name"),
+                    "training_mode": metadata.get("training_mode") or final_json.get("training_mode"),
+                }
+    return registry
+
+
 def _pick_primary_metric(metrics: dict[str, float]) -> tuple[str | None, float | None]:
     if not metrics:
         return None, None
@@ -1280,21 +1383,27 @@ def _get_docker_compose_log(service: str | None, lines: int = 80) -> str:
 
 def _get_megxl_eval_status(exp: str, run: dict) -> dict:
     final_results = run.get("final_results")
+    final_results_json = run.get("final_results_json")
     checkpoint_latest = run.get("checkpoint_latest")
     checkpoint_best = run.get("checkpoint_best")
     hydra_log = run.get("hydra_log") or _find_newest_log_in_dir(run.get("hydra_dir"))
+    run_log = run.get("run_log")
     container = run.get("container")
     container_state = _container_status(container)
 
     metrics = _parse_final_results_txt(final_results)
+    final_json = _read_json_file(final_results_json if isinstance(final_results_json, Path) else None)
+    if isinstance(final_json.get("test_metrics"), dict):
+        metrics.update(final_json["test_metrics"])
     primary_name, primary_value = _pick_primary_metric(metrics)
+    latest_epoch = _read_latest_epoch_metrics(run.get("save_dir") if isinstance(run.get("save_dir"), Path) else None)
     latest_age = _artifact_age_min(checkpoint_latest) if isinstance(checkpoint_latest, Path) else None
     hydra_log_age = _artifact_age_min(hydra_log) if isinstance(hydra_log, Path) else None
 
     status = "pending"
     if container_state == "running":
         status = "running"
-    elif isinstance(final_results, Path) and final_results.exists():
+    elif (isinstance(final_results, Path) and final_results.exists()) or (isinstance(final_results_json, Path) and final_results_json.exists()):
         status = "done"
     elif container_state in {"done", "failed"}:
         status = container_state if metrics or container_state == "failed" else "failed"
@@ -1305,7 +1414,7 @@ def _get_megxl_eval_status(exp: str, run: dict) -> dict:
 
     artifact_times = [
         _safe_stat_mtime(p)
-        for p in (final_results, checkpoint_latest, checkpoint_best, hydra_log)
+        for p in (final_results, final_results_json, checkpoint_latest, checkpoint_best, hydra_log, run_log)
         if isinstance(p, Path)
     ]
     artifact_times = [t for t in artifact_times if t is not None]
@@ -1324,7 +1433,9 @@ def _get_megxl_eval_status(exp: str, run: dict) -> dict:
         elapsed_min = int((time.time() - min(start_candidates)) / 60)
 
     last_line = ""
-    if isinstance(hydra_log, Path):
+    if isinstance(run_log, Path):
+        last_line = _tail_last_line(run_log)
+    if not last_line and isinstance(hydra_log, Path):
         last_line = _tail_last_line(hydra_log)
     if not last_line and run.get("service_name"):
         docker_tail = _get_docker_compose_log(run.get("service_name"), lines=5)
@@ -1337,13 +1448,24 @@ def _get_megxl_eval_status(exp: str, run: dict) -> dict:
         "display_name": run.get("display_name") or exp,
         "kind": run.get("kind", "megxl_eval"),
         "dataset": run.get("dataset"),
+        "task_mode": run.get("task_mode"),
+        "target_sfreq": run.get("target_sfreq"),
+        "tokenizer": run.get("tokenizer"),
+        "training_mode": run.get("training_mode"),
         "service_name": run.get("service_name"),
         "status": status,
-        "epoch_current": None,
+        "epoch_current": int(float(latest_epoch["epoch"])) if latest_epoch.get("epoch") else None,
         "epoch_total": None,
         "f1_macro": primary_value,
         "balanced_acc": metrics.get("balanced_acc") or metrics.get("test_balanced_acc"),
-        "best_val_f1": None,
+        "best_val_f1": _float_or_none(latest_epoch.get("val/best_primary_metric") or latest_epoch.get("val/primary_metric_value")),
+        "train_loss": _float_or_none(latest_epoch.get("train/loss")),
+        "best_val_metric": _float_or_none(latest_epoch.get("val/best_primary_metric")),
+        "test_metric": primary_value,
+        "checkpoint_status": {
+            "latest": isinstance(checkpoint_latest, Path) and checkpoint_latest.exists(),
+            "best": isinstance(checkpoint_best, Path) and checkpoint_best.exists(),
+        },
         "primary_metric_name": primary_name,
         "primary_metric_label": primary_display,
         "primary_metric_value": primary_value,
@@ -1552,6 +1674,11 @@ def get_exp_log(exp: str, lines: int = 80, ctx: dict | None = None) -> str:
         if content.strip():
             return content
 
+        run_log = generic_run.get("run_log")
+        content = _read_recent_log(run_log, max_bytes=lines * 240, lines=lines)
+        if content.strip():
+            return content
+
         final_results = generic_run.get("final_results")
         if isinstance(final_results, Path) and final_results.exists():
             return _safe_read_text(final_results)
@@ -1567,6 +1694,115 @@ def get_exp_log(exp: str, lines: int = 80, ctx: dict | None = None) -> str:
         return fallback
 
     return f"[Sin log del sweep actual para {exp}]"
+
+
+def _read_csv_rows(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    try:
+        with path.open(newline="", encoding="utf-8") as f:
+            return list(csv.DictReader(f))
+    except Exception:
+        return []
+
+
+def get_results_payload() -> dict:
+    status = get_sweep_status()
+    return {
+        "timestamp": status["timestamp"],
+        "experiments": status["experiments"],
+        "leaderboard": status["leaderboard"],
+        "counts": status["counts"],
+    }
+
+
+def get_compare_payload() -> dict:
+    return {
+        "eeg_experiments": _read_csv_rows(RESULTS_DIR / "eeg_experiments_summary.csv"),
+        "chained_eeg_sweep": _read_csv_rows(RESULTS_DIR / "chained_eeg_sweep_summary.csv"),
+        "paths": {
+            "eeg_experiments_csv": str(RESULTS_DIR / "eeg_experiments_summary.csv"),
+            "eeg_experiments_md": str(RESULTS_DIR / "eeg_experiments_summary.md"),
+            "chained_csv": str(RESULTS_DIR / "chained_eeg_sweep_summary.csv"),
+            "chained_md": str(RESULTS_DIR / "chained_eeg_sweep_summary.md"),
+        },
+    }
+
+
+def _stage_name_from_candidate(name: str) -> tuple[int | None, str | None]:
+    match = re.search(r"eeg_chain_s(\d+)_([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)_", name)
+    if not match:
+        return None, None
+    stage_index = int(match.group(1))
+    stage_name = match.group(2)
+    for suffix in ("_zuco", "_ds004408", "_reading", "_listening"):
+        if suffix in stage_name:
+            stage_name = stage_name.split(suffix, 1)[0]
+    return stage_index, stage_name
+
+
+def get_chained_status() -> dict:
+    promotions = []
+    promotion_paths = sorted(PROMOTIONS_DIR.glob("stage_*_promotion.json")) if PROMOTIONS_DIR.exists() else []
+    for path in promotion_paths:
+        data = _read_json_file(path)
+        if data:
+            data["promotion_record"] = str(path)
+            promotions.append(data)
+
+    candidates_by_stage: dict[int, list[dict]] = {}
+    for root in (LOGS_DIR / "eeg_chained_sweeps", CKPT_DIR / "eeg_chained_sweeps"):
+        if not root.exists():
+            continue
+        for run_dir in root.iterdir():
+            if not run_dir.is_dir():
+                continue
+            stage_index, stage_name = _stage_name_from_candidate(run_dir.name)
+            if stage_index is None:
+                continue
+            final_results = run_dir / "final_results.json"
+            checkpoint_best = run_dir / "checkpoint_best.pt"
+            checkpoint_latest = run_dir / "checkpoint_latest.pt"
+            status = "pending"
+            if final_results.exists():
+                status = "completed"
+            elif checkpoint_latest.exists() or checkpoint_best.exists():
+                status = "running"
+            candidates_by_stage.setdefault(stage_index, []).append({
+                "experiment_name": run_dir.name,
+                "stage": stage_index,
+                "stage_name": stage_name,
+                "status": status,
+                "final_results": str(final_results),
+                "checkpoint_best": str(checkpoint_best),
+            })
+
+    completed_stage_indices = [
+        int(item.get("stage_index"))
+        for item in promotions
+        if str(item.get("stage_index", "")).isdigit()
+    ]
+    current_stage = (max(completed_stage_indices) + 1) if completed_stage_indices else 1
+    current_candidates = candidates_by_stage.get(current_stage, [])
+    completed_candidates = [c for c in current_candidates if c["status"] == "completed"]
+    failed_candidates = [c for c in current_candidates if c["status"] == "failed"]
+    latest_promotion = promotions[-1] if promotions else {}
+
+    return {
+        "current_stage": current_stage,
+        "candidates": current_candidates,
+        "completed_candidates": completed_candidates,
+        "failed_candidates": failed_candidates,
+        "best_candidate": latest_promotion.get("selected_candidate") or latest_promotion.get("selected_experiment"),
+        "previous_promoted_checkpoint": latest_promotion.get("promoted_checkpoint"),
+        "next_stage": current_stage + 1 if current_candidates or promotions else None,
+        "final_model_path": latest_promotion.get("promoted_checkpoint") if promotions else None,
+        "promotions": promotions,
+        "stages": {
+            str(stage): candidates
+            for stage, candidates in sorted(candidates_by_stage.items())
+        },
+    }
 
 
 # ==============================================================================
@@ -1819,6 +2055,8 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
   .exp-metric { font-size: 11px; color: var(--muted); }
   .exp-metric strong { color: var(--accent); font-size: 13px; }
+  .exp-meta { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .exp-last { font-size: 10px; color: #94a3b8; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .exp-epoch  { font-size: 10px; color: var(--muted); margin-top: 4px; }
   .epoch-bar {
     height: 2px;
@@ -2190,13 +2428,20 @@ function render(d) {
       : e.best_val_f1 != null
         ? `<div class="exp-metric">Val F1 <strong>${e.best_val_f1.toFixed(4)}</strong></div>`
         : '';
+    const eegMeta = e.kind === 'eeg_eval'
+      ? `<div class="exp-meta">${esc(e.task_mode || 'eeg')} · ${esc(e.target_sfreq || 'sfreq?')}Hz · ${esc(e.tokenizer || 'tok?')} · ${esc(e.training_mode || 'mode?')}</div>
+         <div class="exp-meta">ckpt ${(e.checkpoint_status && e.checkpoint_status.best) ? 'best' : '—'} / ${(e.checkpoint_status && e.checkpoint_status.latest) ? 'latest' : '—'}</div>`
+      : '';
+    const lastLine = e.last_line ? `<div class="exp-last" title="${esc(e.last_line)}">${esc(e.last_line)}</div>` : '';
     const running_icon = e.status === 'running' ? '<span class="spinner"></span>' : '';
     const sel = selectedExp === e.exp ? 'selected' : '';
     return `<div class="exp-card ${e.status} ${sel}" data-exp="${esc(e.exp)}" onclick="selectExp(this.dataset.exp)">
       <div class="exp-name">${running_icon}${esc(taskBadge)} · ${esc(shortName)}</div>
       <span class="exp-badge badge-${e.status}">${e.status}</span>
       ${metric}
+      ${eegMeta}
       ${epochInfo}
+      ${lastLine}
     </div>`;
   }).join('');
 
@@ -2312,6 +2557,15 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/status":
             self.send_json(get_sweep_status())
 
+        elif path == "/api/results":
+            self.send_json(get_results_payload())
+
+        elif path == "/api/compare":
+            self.send_json(get_compare_payload())
+
+        elif path == "/api/chained_status":
+            self.send_json(get_chained_status())
+
         elif path == "/api/log":
             exp   = params.get("exp", ["__sweep__"])[0]
             lines = int(params.get("lines", [80])[0])
@@ -2332,7 +2586,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    global BASE_DIR, LOGS_DIR, RESULTS_DIR, CKPT_DIR
+    global BASE_DIR, LOGS_DIR, RESULTS_DIR, CKPT_DIR, PROMOTIONS_DIR
     parser = argparse.ArgumentParser(description="MEG Sweep Monitor")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port",     type=int, default=8080)
@@ -2343,6 +2597,7 @@ def main():
     LOGS_DIR    = BASE_DIR / "logs"
     RESULTS_DIR = BASE_DIR / "results"
     CKPT_DIR    = BASE_DIR / "checkpoints"
+    PROMOTIONS_DIR = BASE_DIR / "promotions"
 
     print(f"[Monitor] Leyendo datos desde: {BASE_DIR}")
     print(f"[Monitor] Dashboard disponible en: http://{args.host}:{args.port}")

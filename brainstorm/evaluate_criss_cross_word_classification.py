@@ -28,6 +28,10 @@ Usage:
 
 import logging
 import hashlib
+import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from collections import Counter
@@ -48,15 +52,169 @@ from tqdm import tqdm
 import pandas as pd
 
 from brainstorm.models.criss_cross_transformer import CrissCrossTransformerModule
-from brainstorm.neuro_tokenizers.biocodec.model import BioCodecModel
+from brainstorm.neuro_tokenizers.factory import NeuroTokenizerAdapter, load_neuro_tokenizer
 from brainstorm.data.armeni_word_aligned_dataset import ArmeniWordAlignedDataset
 from brainstorm.data.gwilliams_word_aligned_dataset import GwilliamsWordAlignedDataset
 from brainstorm.data.libribrain_word_aligned_dataset import LibriBrainWordAlignedDataset
 from brainstorm.data.zuco_word_aligned_dataset import ZuCoWordAlignedDataset
+from brainstorm.data.eeg_word_aligned_dataset import (
+    EEGDashWordAlignedDataset,
+    OpenNeuroEEGWordAlignedDataset,
+    PooledWordAlignedDataset,
+)
 from brainstorm.eval_metrics_history import append_epoch_metrics_history, resolve_checkpoint_dir
 from brainstorm.losses.contrastive import SigLipLoss
 
 logger = logging.getLogger(__name__)
+
+
+class TeeStream:
+    """Mirror writes to the original stream and a run log file."""
+
+    def __init__(self, stream, log_file):
+        self.stream = stream
+        self.log_file = log_file
+
+    def write(self, data):
+        self.stream.write(data)
+        self.log_file.write(data)
+        self.log_file.flush()
+        return len(data)
+
+    def flush(self):
+        self.stream.flush()
+        self.log_file.flush()
+
+    def isatty(self):
+        return bool(getattr(self.stream, "isatty", lambda: False)())
+
+
+def _install_run_tee(save_dir: Path) -> Any:
+    log_path = save_dir / "stdout_stderr.log"
+    log_file = log_path.open("a", encoding="utf-8", buffering=1)
+    sys.stdout = TeeStream(sys.stdout, log_file)
+    sys.stderr = TeeStream(sys.stderr, log_file)
+    return log_file
+
+
+def _git_hash() -> Optional[str]:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=Path(__file__).resolve().parents[1],
+            stderr=subprocess.DEVNULL,
+            timeout=3,
+        ).decode("utf-8").strip()
+    except Exception:
+        return None
+
+
+def _command_line() -> List[str]:
+    return [sys.executable, *sys.argv]
+
+
+def _training_mode(cfg: DictConfig, init_mode: Optional[str] = None) -> str:
+    if init_mode:
+        return init_mode
+    if cfg.model.get("train_from_scratch", False):
+        return "scratch"
+    if cfg.model.get("use_promoted_checkpoint", False):
+        return "promoted"
+    return "pretrained"
+
+
+def _dataset_entries_for_metadata(cfg: DictConfig) -> List[Dict[str, Any]]:
+    entries = cfg.data.get("datasets", None)
+    if entries is None:
+        entries = [cfg.data]
+    datasets: List[Dict[str, Any]] = []
+    for entry in entries:
+        datasets.append({
+            "dataset_type": str(entry.get("dataset_type", cfg.data.get("dataset_type", ""))),
+            "dataset_name": str(entry.get("dataset_name", entry.get("dataset_type", cfg.data.get("dataset_type", "")))),
+            "task_mode": str(entry.get("task_mode", cfg.data.get("task_mode", ""))),
+            "root": str(entry.get("root", cfg.data.get("root", ""))),
+            "tasks": list(entry.get("tasks", cfg.data.get("tasks", [])) or []),
+        })
+    return datasets
+
+
+def _write_json(path: Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def write_resolved_config_snapshot(save_dir: Path, cfg: DictConfig) -> Path:
+    path = save_dir / "config_resolved.yaml"
+    path.write_text(OmegaConf.to_yaml(cfg, resolve=True), encoding="utf-8")
+    return path
+
+
+def write_run_metadata(
+    *,
+    save_dir: Path,
+    checkpoint_dir: Path,
+    cfg: DictConfig,
+    init_mode: str,
+    init_checkpoint: str,
+    architecture_checkpoint: Optional[str],
+    split_sizes: Dict[str, int],
+    channel_count: int,
+    tokenizer: NeuroTokenizerAdapter,
+    config_snapshot: Path,
+    extra: Optional[Dict[str, Any]] = None,
+) -> Path:
+    path = save_dir / "run_metadata.json"
+    payload: Dict[str, Any] = {
+        "experiment_name": str(cfg.logging.get("experiment_name", save_dir.name)),
+        "datasets": _dataset_entries_for_metadata(cfg),
+        "dataset_type": str(cfg.data.get("dataset_type", "")),
+        "task_mode": str(cfg.data.get("task_mode", "")),
+        "target_sfreq": float(cfg.data.get("target_sfreq", 0.0)),
+        "tokenizer": {
+            "name": str(cfg.model.get("tokenizer_name", "biocodec")),
+            "checkpoint": str(cfg.model.get("tokenizer_checkpoint", "")),
+            "downsample_ratio": int(getattr(tokenizer, "downsample_ratio", 0)),
+            "n_q": int(getattr(tokenizer, "n_q", 0)),
+            "vocab_size": int(getattr(tokenizer, "vocab_size", 0)),
+        },
+        "training_mode": _training_mode(cfg, init_mode),
+        "train_from_scratch": bool(cfg.model.get("train_from_scratch", False)),
+        "use_promoted_checkpoint": bool(cfg.model.get("use_promoted_checkpoint", False)),
+        "checkpoint_paths": {
+            "initial_checkpoint": str(init_checkpoint),
+            "architecture_checkpoint": str(architecture_checkpoint or ""),
+            "promoted_checkpoint": str(cfg.model.get("promoted_checkpoint", "") or ""),
+            "checkpoint_latest": str(checkpoint_dir / "checkpoint_latest.pt"),
+            "checkpoint_best": str(checkpoint_dir / "checkpoint_best.pt"),
+        },
+        "artifact_paths": {
+            "save_dir": str(save_dir),
+            "checkpoint_dir": str(checkpoint_dir),
+            "stdout_stderr_log": str(save_dir / "stdout_stderr.log"),
+            "epoch_metrics_csv": str(save_dir / "epoch_metrics.csv"),
+            "epoch_metrics_jsonl": str(save_dir / "epoch_metrics.jsonl"),
+            "final_results_txt": str(save_dir / "final_results.txt"),
+            "final_results_json": str(save_dir / "final_results.json"),
+            "config_snapshot": str(config_snapshot),
+        },
+        "split_sizes": split_sizes,
+        "channel_count": int(channel_count),
+        "command": _command_line(),
+        "timestamp": datetime_now_iso(),
+        "git_hash": _git_hash(),
+        "seed": int(cfg.seed),
+    }
+    if extra:
+        payload.update(extra)
+    _write_json(path, payload)
+    return path
+
+
+def datetime_now_iso() -> str:
+    from datetime import datetime, timezone
+
+    return datetime.now(timezone.utc).isoformat()
 
 
 # ============================================================================
@@ -78,6 +236,10 @@ def get_dataset_class(dataset_type: str):
         "gwilliams": GwilliamsWordAlignedDataset,
         "libribrain": LibriBrainWordAlignedDataset,
         "zuco": ZuCoWordAlignedDataset,
+        "eegdash": EEGDashWordAlignedDataset,
+        "openneuro_eeg": OpenNeuroEEGWordAlignedDataset,
+        "openneuro_ds004408": OpenNeuroEEGWordAlignedDataset,
+        "openneuro_ds007808": OpenNeuroEEGWordAlignedDataset,
     }
 
     if dataset_type not in dataset_classes:
@@ -103,6 +265,11 @@ def get_default_max_channel_dim(dataset_type: str) -> int:
         "gwilliams": 208,
         "libribrain": 306,
         "zuco": 105,
+        "eegdash": 128,
+        "openneuro_eeg": 128,
+        "openneuro_ds004408": 128,
+        "openneuro_ds007808": 128,
+        "eeg_pooled": 128,
     }
     return defaults.get(dataset_type, 306)
 
@@ -127,7 +294,16 @@ def resolve_sensor_type_id(sensor_type: str) -> int:
 
 def get_num_sensor_types_for_config(cfg: DictConfig) -> int:
     num_sensor_types = int(cfg.model.get("num_sensor_types", 2))
-    if cfg.data.get("dataset_type", "armeni") == "zuco":
+    dataset_type = cfg.data.get("dataset_type", "armeni")
+    has_eeg_dataset = dataset_type in {
+        "zuco",
+        "eegdash",
+        "openneuro_eeg",
+        "openneuro_ds004408",
+        "openneuro_ds007808",
+        "eeg_pooled",
+    } or cfg.data.get("datasets") is not None
+    if has_eeg_dataset:
         eeg_sensor_type = cfg.data.get("eeg_sensor_type", "grad")
         num_sensor_types = max(num_sensor_types, resolve_sensor_type_id(eeg_sensor_type) + 1)
     return num_sensor_types
@@ -137,8 +313,179 @@ def get_dataset_extra_kwargs(dataset_type: str, cfg: DictConfig) -> Dict[str, An
     if dataset_type == "zuco":
         return {
             "eeg_sensor_type": cfg.data.get("eeg_sensor_type", "grad"),
+            "dataset_name": cfg.data.get("dataset_name", "zuco"),
+            "task_mode": cfg.data.get("task_mode", "reading"),
+            "tokenizer_name": cfg.model.get("tokenizer_name", "biocodec"),
+        }
+    if dataset_type in {"eegdash", "openneuro_eeg", "openneuro_ds004408", "openneuro_ds007808"}:
+        return {
+            "dataset_name": cfg.data.get("dataset_name", dataset_type),
+            "task_mode": cfg.data.get("task_mode", "reading" if dataset_type == "eegdash" else "listening"),
+            "tokenizer_name": cfg.model.get("tokenizer_name", "biocodec"),
         }
     return {}
+
+
+def _as_list(value: Any) -> Optional[List[str]]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return [value]
+    if hasattr(value, "__iter__"):
+        return [str(item) for item in value]
+    return [str(value)]
+
+
+def _dataset_config_get(dataset_cfg: Any, key: str, default: Any = None) -> Any:
+    if isinstance(dataset_cfg, DictConfig):
+        return dataset_cfg.get(key, default)
+    if isinstance(dataset_cfg, dict):
+        return dataset_cfg.get(key, default)
+    return default
+
+
+def instantiate_word_dataset(
+    cfg: DictConfig,
+    sessions: Optional[List[str]],
+    data_override: Optional[Any] = None,
+):
+    data_cfg = data_override if data_override is not None else cfg.data
+    dataset_type = _dataset_config_get(data_cfg, "dataset_type", cfg.data.get("dataset_type", "armeni"))
+    DatasetClass = get_dataset_class(dataset_type)
+    max_channel_dim = _dataset_config_get(
+        data_cfg,
+        "max_channel_dim",
+        cfg.data.get("max_channel_dim", get_default_max_channel_dim(dataset_type)),
+    )
+
+    extra_cfg = OmegaConf.create(OmegaConf.to_container(cfg, resolve=False))
+    if data_override is not None:
+        extra_cfg.data.dataset_name = _dataset_config_get(data_cfg, "dataset_name", dataset_type)
+        extra_cfg.data.task_mode = _dataset_config_get(data_cfg, "task_mode", cfg.data.get("task_mode", ""))
+        extra_cfg.data.eeg_sensor_type = _dataset_config_get(data_cfg, "eeg_sensor_type", cfg.data.get("eeg_sensor_type", "eeg"))
+    dataset_extra_kwargs = get_dataset_extra_kwargs(dataset_type, extra_cfg)
+
+    return DatasetClass(
+        data_root=_dataset_config_get(data_cfg, "root", cfg.data.get("root")),
+        subjects=_as_list(_dataset_config_get(data_cfg, "subjects", cfg.data.get("subjects"))),
+        sessions=_as_list(_dataset_config_get(data_cfg, "sessions", sessions)),
+        tasks=_as_list(_dataset_config_get(data_cfg, "tasks", cfg.data.get("tasks"))),
+        segment_length=cfg.data.segment_length,
+        subsegment_duration=cfg.data.subsegment_duration,
+        words_per_segment=cfg.data.words_per_segment,
+        window_onset_offset=cfg.data.window_onset_offset,
+        cache_dir=_dataset_config_get(data_cfg, "cache_dir", cfg.data.cache_dir),
+        l_freq=cfg.data.l_freq,
+        h_freq=cfg.data.h_freq,
+        target_sfreq=cfg.data.target_sfreq,
+        max_channel_dim=max_channel_dim,
+        **dataset_extra_kwargs,
+    )
+
+
+def create_word_dataset(cfg: DictConfig, sessions: Optional[List[str]] = None):
+    dataset_entries = cfg.data.get("datasets", None)
+    if dataset_entries is None:
+        return instantiate_word_dataset(cfg, sessions=sessions)
+
+    datasets = []
+    for entry in dataset_entries:
+        try:
+            datasets.append(instantiate_word_dataset(cfg, sessions=sessions, data_override=entry))
+        except (FileNotFoundError, ValueError) as exc:
+            if _dataset_config_get(entry, "allow_missing", False):
+                logger.warning(f"Skipping optional dataset {_dataset_config_get(entry, 'dataset_name', entry)}: {exc}")
+                continue
+            raise
+
+    return PooledWordAlignedDataset(datasets)
+
+
+def get_dataset_words(dataset: Any, idx: int) -> List[str]:
+    if hasattr(dataset, "get_segment_words"):
+        return list(dataset.get_segment_words(idx))
+    if isinstance(dataset, torch.utils.data.Subset):
+        return get_dataset_words(dataset.dataset, dataset.indices[idx])
+    rec_idx, group_idx = dataset.segment_index[idx]
+    return [word["word"] for word in dataset.word_groups[rec_idx][group_idx]]
+
+
+def get_dataset_split_group(dataset: Any, idx: int, group_kind: str) -> str:
+    if hasattr(dataset, "get_split_group"):
+        return str(dataset.get_split_group(idx, group_kind))
+    if isinstance(dataset, torch.utils.data.Subset):
+        return get_dataset_split_group(dataset.dataset, dataset.indices[idx], group_kind)
+    if group_kind == "sentence":
+        return " ".join(get_dataset_words(dataset, idx))
+    rec_idx, group_idx = dataset.segment_index[idx]
+    rec = dataset.recordings[rec_idx]
+    dataset_name = getattr(dataset, "dataset_name", type(dataset).__name__)
+    subject = rec.get("subject", "")
+    session = rec.get("session", "")
+    task = rec.get("task", "")
+    if group_kind == "subject":
+        return f"{dataset_name}:{subject}"
+    if group_kind == "session":
+        return f"{dataset_name}:{subject}:{session}"
+    return f"{dataset_name}:{subject}:{session}:{task}:{rec_idx}"
+
+
+def hash_key_to_split(key: str, split_ratios: List[float], seed: int = 42) -> str:
+    salted = f"{seed}:{key}"
+    hash_obj = hashlib.sha256(salted.encode("utf-8"))
+    hash_float = (int(hash_obj.hexdigest(), 16) % 1_000_000) / 1_000_000.0
+    cumsum = 0.0
+    for split_name, ratio in zip(["train", "val", "test"], split_ratios):
+        cumsum += ratio
+        if hash_float < cumsum:
+            return split_name
+    return "test"
+
+
+def assign_no_leak_splits(dataset: Any, cfg: DictConfig) -> Tuple[List[int], List[int], List[int], Dict[int, str]]:
+    preference = cfg.data.get("split_group", "sentence")
+    candidates = ["sentence"] if preference == "sentence" else [preference]
+    if preference == "auto":
+        candidates = ["subject", "session", "recording", "sentence"]
+
+    best_result = None
+    for group_kind in candidates:
+        groups: Dict[str, List[int]] = {}
+        idx_to_key: Dict[int, str] = {}
+        for idx in range(len(dataset)):
+            key = get_dataset_split_group(dataset, idx, group_kind)
+            groups.setdefault(key, []).append(idx)
+            idx_to_key[idx] = key
+
+        split_indices = {"train": [], "val": [], "test": []}
+        for key, indices in groups.items():
+            split = hash_key_to_split(key, cfg.data.split_ratios, cfg.seed)
+            split_indices[split].extend(indices)
+
+        result = (
+            split_indices["train"],
+            split_indices["val"],
+            split_indices["test"],
+            idx_to_key,
+            group_kind,
+        )
+        best_result = result
+        if all(len(split_indices[name]) > 0 for name in ("train", "val", "test")):
+            break
+
+    assert best_result is not None
+    train_indices, val_indices, test_indices, idx_to_key, group_kind = best_result
+    logger.info(f"Using no-leak split group: {group_kind}")
+    return train_indices, val_indices, test_indices, idx_to_key
+
+
+def build_vocabulary_from_word_datasets(datasets: List[Any]) -> Tuple[List[str], Counter]:
+    word_counter = Counter()
+    for dataset in datasets:
+        for idx in range(len(dataset)):
+            word_counter.update(get_dataset_words(dataset, idx))
+    vocab = [word for word, _ in word_counter.most_common()]
+    return vocab, word_counter
 
 
 # ============================================================================
@@ -210,14 +557,10 @@ def map_raw_to_encoded_timesteps(
     """
     Map raw sample indices from subsegment_boundaries to encoded timesteps.
 
-    BioCodec downsampling ratio: 12x (ratios=[3, 2, 2])
-    - 30s segment: 7500 raw samples → 625 encoded timesteps
-    - 3s word window: 750 raw samples → 62.5 encoded timesteps (62-63 in practice)
-
     Args:
         start_sample: Start index in raw samples (from subsegment_boundaries)
         end_sample: End index in raw samples
-        downsample_ratio: BioCodec downsampling ratio (default: 12)
+        downsample_ratio: Tokenizer downsampling ratio
 
     Returns:
         (start_t, end_t): Encoded timestep range
@@ -533,50 +876,132 @@ def create_word_level_collate_fn(word_to_idx: Dict[str, int]):
 # Checkpoint Loading
 # ============================================================================
 
-def load_tokenizer(ckpt_path: str, device: str = "cpu") -> BioCodecModel:
-    """
-    Load BioCodec tokenizer from checkpoint.
-
-    Args:
-        ckpt_path: Path to BioCodec checkpoint
-        device: Device to load model on
-
-    Returns:
-        Loaded BioCodec tokenizer
-    """
-    logger.info(f"Loading BioCodec tokenizer from: {ckpt_path}")
-
-    tokenizer = BioCodecModel._get_optimized_model()
-    checkpoint = torch.load(ckpt_path, map_location=device)
-
-    # Handle torch.compile state dict prefix removal
-    new_state_dict = {}
-    for key, value in checkpoint["model_state_dict"].items():
-        if key.startswith("_orig_mod."):
-            new_key = key[len("_orig_mod."):]
-        else:
-            new_key = key
-        new_state_dict[new_key] = value
-
-    tokenizer.load_state_dict(new_state_dict)
-    tokenizer.eval()
-
-    logger.info("  BioCodec tokenizer loaded successfully")
+def load_tokenizer_from_config(cfg: DictConfig) -> NeuroTokenizerAdapter:
+    tokenizer_name = cfg.model.get("tokenizer_name", "biocodec")
+    tokenizer_checkpoint = cfg.model.get("tokenizer_checkpoint", None)
+    logger.info(f"Loading tokenizer: name={tokenizer_name}, checkpoint={tokenizer_checkpoint}")
+    tokenizer = load_neuro_tokenizer(
+        tokenizer_name=tokenizer_name,
+        checkpoint_path=tokenizer_checkpoint,
+        device=cfg.device,
+    )
+    logger.info(
+        f"  Tokenizer ready: n_q={tokenizer.n_q}, vocab_size={tokenizer.vocab_size}, "
+        f"downsample_ratio={tokenizer.downsample_ratio}"
+    )
     return tokenizer
+
+
+def _extract_criss_cross_state_dict(checkpoint: Dict[str, Any]) -> Dict[str, torch.Tensor]:
+    if "state_dict" in checkpoint:
+        return checkpoint["state_dict"]
+    if "criss_cross_state_dict" in checkpoint:
+        return checkpoint["criss_cross_state_dict"]
+    raise KeyError(
+        "Checkpoint does not contain 'state_dict' or 'criss_cross_state_dict'"
+    )
+
+
+def _extract_hparams(
+    checkpoint: Dict[str, Any],
+    architecture_checkpoint_path: Optional[str],
+    device: str,
+) -> Dict[str, Any]:
+    if "hyper_parameters" in checkpoint:
+        return dict(checkpoint["hyper_parameters"])
+    if architecture_checkpoint_path is None:
+        raise KeyError(
+            "Promoted word-classification checkpoint lacks Lightning hyper_parameters; "
+            "provide model.criss_cross_checkpoint as architecture source."
+        )
+    arch_checkpoint = torch.load(architecture_checkpoint_path, map_location=device)
+    if "hyper_parameters" not in arch_checkpoint:
+        raise KeyError(
+            f"Architecture checkpoint {architecture_checkpoint_path} lacks hyper_parameters"
+        )
+    return dict(arch_checkpoint["hyper_parameters"])
+
+
+def _write_checkpoint_load_report(
+    report_path: Path,
+    report: Dict[str, Any],
+) -> None:
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    logger.info(f"  Checkpoint load report written to {report_path}")
+
+
+def _filter_state_dict_for_model(
+    model: CrissCrossTransformerModule,
+    source_state_dict: Dict[str, torch.Tensor],
+) -> Tuple[Dict[str, torch.Tensor], Dict[str, Any]]:
+    target_state_dict = model.state_dict()
+    filtered_state_dict: Dict[str, torch.Tensor] = {}
+    loaded_keys = []
+    skipped_keys = []
+    mismatched_keys = []
+
+    for key, value in source_state_dict.items():
+        if key.startswith("_orig_mod."):
+            key = key[len("_orig_mod."):]
+
+        if "rope_embedding_layer.rotate" in key:
+            skipped_keys.append({"key": key, "reason": "deterministic_rope_buffer"})
+            continue
+
+        if key not in target_state_dict:
+            skipped_keys.append({"key": key, "reason": "not_in_target_model"})
+            continue
+
+        target_value = target_state_dict[key]
+        if tuple(value.shape) == tuple(target_value.shape):
+            filtered_state_dict[key] = value
+            loaded_keys.append(key)
+            continue
+
+        if key == "sensor_type_layer.weight" and value.ndim == target_value.ndim and value.shape[1] == target_value.shape[1]:
+            resized = target_value.clone()
+            rows_to_copy = min(value.shape[0], target_value.shape[0])
+            resized[:rows_to_copy] = value[:rows_to_copy].to(resized.device)
+            filtered_state_dict[key] = resized
+            loaded_keys.append(key)
+            mismatched_keys.append({
+                "key": key,
+                "source_shape": list(value.shape),
+                "target_shape": list(target_value.shape),
+                "resolution": f"resized_rows_copied_{rows_to_copy}",
+            })
+            continue
+
+        mismatched_keys.append({
+            "key": key,
+            "source_shape": list(value.shape),
+            "target_shape": list(target_value.shape),
+            "resolution": "skipped",
+        })
+
+    report = {
+        "loaded_keys": loaded_keys,
+        "skipped_keys": skipped_keys,
+        "mismatched_keys": mismatched_keys,
+    }
+    return filtered_state_dict, report
 
 
 def load_criss_cross_model(
     checkpoint_path: str,
-    tokenizer: BioCodecModel,
+    tokenizer: NeuroTokenizerAdapter,
     device: str = "cuda",
     num_sensor_types: Optional[int] = None,
+    architecture_checkpoint_path: Optional[str] = None,
+    report_path: Optional[Path] = None,
 ) -> CrissCrossTransformerModule:
     """
     Load CrissCrossTransformer from checkpoint.
 
     Args:
         checkpoint_path: Path to CrissCross checkpoint
-        tokenizer: Loaded BioCodec tokenizer
+        tokenizer: Loaded neural tokenizer adapter
         device: Device to load model on
 
     Returns:
@@ -588,9 +1013,10 @@ def load_criss_cross_model(
     checkpoint = torch.load(checkpoint_path, map_location=device)
 
     # Extract hyperparameters
-    hparams = dict(checkpoint['hyper_parameters'])
+    hparams = _extract_hparams(checkpoint, architecture_checkpoint_path, device)
     if num_sensor_types is not None:
         hparams['num_sensor_types'] = num_sensor_types
+    hparams['vocab_size'] = int(tokenizer.vocab_size)
 
     # Create model instance with saved hyperparameters
     model = CrissCrossTransformerModule(
@@ -598,51 +1024,17 @@ def load_criss_cross_model(
         **hparams
     )
 
-    # Handle RoPE size mismatch: Skip loading RoPE weights
-    # RoPE rotation matrices are deterministically computed from position indices and frequencies:
-    #   rotate = torch.polar(ones, torch.outer(positions, freqs))
-    # where freqs = 1.0 / (10000 ** (torch.arange(0, dim, 2) / dim))
-    # The model will recompute identical values when it expands to 625 positions on first forward pass.
-
-    state_dict = checkpoint['state_dict']
-    filtered_state_dict = {}
-    skipped_rope_keys = []
-
-    for key, value in state_dict.items():
-        if 'rope_embedding_layer.rotate' in key:
-            skipped_rope_keys.append(key)
-        else:
-            filtered_state_dict[key] = value
-
-    logger.info(f"  Skipping {len(skipped_rope_keys)} RoPE rotation buffers (deterministic, will be recomputed)")
-
-    sensor_type_key = 'sensor_type_layer.weight'
-    if sensor_type_key in filtered_state_dict:
-        checkpoint_weight = filtered_state_dict[sensor_type_key]
-        model_weight = model.state_dict()[sensor_type_key]
-        if checkpoint_weight.shape != model_weight.shape:
-            checkpoint_weight = checkpoint_weight.to(model_weight.device)
-            if checkpoint_weight.shape[1] != model_weight.shape[1]:
-                raise ValueError(
-                    f"Cannot resize {sensor_type_key}: checkpoint shape "
-                    f"{tuple(checkpoint_weight.shape)} vs model shape {tuple(model_weight.shape)}"
-                )
-            resized_weight = model_weight.clone()
-            rows_to_copy = min(checkpoint_weight.shape[0], model_weight.shape[0])
-            resized_weight[:rows_to_copy] = checkpoint_weight[:rows_to_copy]
-            filtered_state_dict[sensor_type_key] = resized_weight
-            logger.info(
-                f"  Resized {sensor_type_key}: copied {rows_to_copy} pretrained rows, "
-                f"using initialized weights for {model_weight.shape[0] - rows_to_copy} new rows"
-            )
-
-    # Load all weights except RoPE
+    state_dict = _extract_criss_cross_state_dict(checkpoint)
+    filtered_state_dict, report = _filter_state_dict_for_model(model, state_dict)
     missing_keys, unexpected_keys = model.load_state_dict(filtered_state_dict, strict=False)
-
-    if missing_keys:
-        logger.info(f"  Missing keys: {len(missing_keys)} (RoPE buffers)")
-    if unexpected_keys:
-        logger.warning(f"  Unexpected keys: {unexpected_keys}")
+    report.update({
+        "checkpoint_path": str(checkpoint_path),
+        "architecture_checkpoint_path": str(architecture_checkpoint_path or checkpoint_path),
+        "missing_keys_after_load": list(missing_keys),
+        "unexpected_keys_after_load": list(unexpected_keys),
+    })
+    if report_path is not None:
+        _write_checkpoint_load_report(report_path, report)
 
     logger.info(f"  Successfully loaded checkpoint (RoPE will auto-expand to 625 on first forward pass)")
 
@@ -659,9 +1051,10 @@ def load_criss_cross_model(
 
 def initialize_criss_cross_from_scratch(
     checkpoint_path: str,
-    tokenizer: BioCodecModel,
+    tokenizer: NeuroTokenizerAdapter,
     device: str = "cuda",
     num_sensor_types: Optional[int] = None,
+    report_path: Optional[Path] = None,
 ) -> CrissCrossTransformerModule:
     """
     Initialize CrissCross with random weights using architecture from checkpoint.
@@ -672,7 +1065,7 @@ def initialize_criss_cross_from_scratch(
 
     Args:
         checkpoint_path: Path to checkpoint (used only for architecture params)
-        tokenizer: Loaded BioCodec tokenizer
+        tokenizer: Loaded neural tokenizer adapter
         device: Device to load model on
 
     Returns:
@@ -685,6 +1078,7 @@ def initialize_criss_cross_from_scratch(
     hparams = dict(checkpoint['hyper_parameters'])
     if num_sensor_types is not None:
         hparams['num_sensor_types'] = num_sensor_types
+    hparams['vocab_size'] = int(tokenizer.vocab_size)
 
     # Create model instance with saved hyperparameters but random weights
     model = CrissCrossTransformerModule(
@@ -699,8 +1093,85 @@ def initialize_criss_cross_from_scratch(
 
     model.to(device)
     model.eval()  # Start in eval mode
+    if report_path is not None:
+        _write_checkpoint_load_report(report_path, {
+            "mode": "train_from_scratch",
+            "architecture_checkpoint_path": str(checkpoint_path),
+            "loaded_keys": [],
+            "skipped_keys": [],
+            "mismatched_keys": [],
+        })
 
     return model
+
+
+def resolve_initial_checkpoint(cfg: DictConfig) -> Tuple[str, Optional[str], str]:
+    architecture_checkpoint = cfg.model.get("criss_cross_checkpoint", None)
+    if cfg.model.get("train_from_scratch", False):
+        if not architecture_checkpoint or not Path(architecture_checkpoint).exists():
+            raise FileNotFoundError(
+                f"model.train_from_scratch=true requires an existing "
+                f"model.criss_cross_checkpoint architecture source, got {architecture_checkpoint}"
+            )
+        return architecture_checkpoint, None, "scratch"
+
+    if cfg.model.get("use_promoted_checkpoint", False):
+        promoted = cfg.model.get("promoted_checkpoint", None)
+        if not promoted or not Path(promoted).exists():
+            raise FileNotFoundError(
+                f"model.use_promoted_checkpoint=true but promoted checkpoint is missing: {promoted}"
+            )
+        if not architecture_checkpoint or not Path(architecture_checkpoint).exists():
+            raise FileNotFoundError(
+                "Promoted checkpoints require model.criss_cross_checkpoint "
+                "as architecture source."
+            )
+        return promoted, architecture_checkpoint, "promoted"
+
+    if not architecture_checkpoint or not Path(architecture_checkpoint).exists():
+        raise FileNotFoundError(
+            f"model.criss_cross_checkpoint not found: {architecture_checkpoint}"
+        )
+    return architecture_checkpoint, None, "pretrained"
+
+
+def maybe_load_word_mlp_from_checkpoint(
+    word_mlp: CrissCrossWordEmbeddingExtractor,
+    checkpoint_path: str,
+    report_path: Path,
+    device: str,
+) -> None:
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    if "word_mlp_state_dict" not in checkpoint:
+        return
+    source_state = checkpoint["word_mlp_state_dict"]
+    target_state = word_mlp.state_dict()
+    filtered = {}
+    loaded = []
+    mismatched = []
+    skipped = []
+    for key, value in source_state.items():
+        if key in target_state and tuple(value.shape) == tuple(target_state[key].shape):
+            filtered[key] = value
+            loaded.append(key)
+        elif key in target_state:
+            mismatched.append({
+                "key": key,
+                "source_shape": list(value.shape),
+                "target_shape": list(target_state[key].shape),
+                "resolution": "skipped",
+            })
+        else:
+            skipped.append({"key": key, "reason": "not_in_target_word_mlp"})
+    missing, unexpected = word_mlp.load_state_dict(filtered, strict=False)
+    _write_checkpoint_load_report(report_path, {
+        "checkpoint_path": str(checkpoint_path),
+        "loaded_keys": loaded,
+        "skipped_keys": skipped,
+        "mismatched_keys": mismatched,
+        "missing_keys_after_load": list(missing),
+        "unexpected_keys_after_load": list(unexpected),
+    })
 
 
 # ============================================================================
@@ -979,7 +1450,8 @@ def training_step(
     word_mlp: CrissCrossWordEmbeddingExtractor,
     vocab_embeddings: torch.Tensor,
     criterion: SigLipLoss,
-    device: str
+    device: str,
+    downsample_ratio: int,
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """
     Training step handling 10 words per 30s sample.
@@ -1022,7 +1494,7 @@ def training_step(
         end_sample = info['end_sample']
 
         # Map to encoded timesteps
-        start_t, end_t = map_raw_to_encoded_timesteps(start_sample, end_sample)
+        start_t, end_t = map_raw_to_encoded_timesteps(start_sample, end_sample, downsample_ratio)
 
         # Extract features for this word
         word_features = features[b_idx, :, start_t:end_t, :]  # [C, T_subseg, 512]
@@ -1051,7 +1523,8 @@ def evaluate_epoch(
     criterion: SigLipLoss,
     device: str,
     retrieval_set_sizes: List[int] = [50, 250],
-    k: int = 10
+    k: int = 10,
+    downsample_ratio: int = 12,
 ) -> Dict[str, float]:
     """
     Evaluate on validation or test set.
@@ -1089,7 +1562,7 @@ def evaluate_epoch(
 
             loss, pred_embs, target_embs = training_step(
                 batch, criss_cross_model, word_mlp,
-                vocab_embeddings, criterion, device
+                vocab_embeddings, criterion, device, downsample_ratio
             )
 
             all_losses.append(loss.item())
@@ -1137,7 +1610,8 @@ def train_and_evaluate(
     test_loader: DataLoader,
     vocab_embeddings: torch.Tensor,
     cfg: DictConfig,
-    device: str
+    device: str,
+    downsample_ratio: int,
 ) -> Dict[str, float]:
     """
     Main training and evaluation loop.
@@ -1246,7 +1720,7 @@ def train_and_evaluate(
 
             loss, pred_embs, target_embs = training_step(
                 batch, criss_cross_model, word_mlp,
-                vocab_embeddings, criterion, device
+                vocab_embeddings, criterion, device, downsample_ratio
             )
 
             loss.backward()
@@ -1277,7 +1751,8 @@ def train_and_evaluate(
             criss_cross_model, word_mlp, val_loader,
             vocab_embeddings, criterion, device,
             retrieval_set_sizes=cfg.evaluation.retrieval_set_sizes,
-            k=cfg.evaluation.k
+            k=cfg.evaluation.k,
+            downsample_ratio=downsample_ratio,
         )
 
         # Also evaluate on test set to understand dynamics (but don't use for early stopping)
@@ -1285,7 +1760,8 @@ def train_and_evaluate(
             criss_cross_model, word_mlp, test_loader,
             vocab_embeddings, criterion, device,
             retrieval_set_sizes=cfg.evaluation.retrieval_set_sizes,
-            k=cfg.evaluation.k
+            k=cfg.evaluation.k,
+            downsample_ratio=downsample_ratio,
         )
 
         # Get primary retrieval set size for early stopping (largest in list)
@@ -1425,7 +1901,8 @@ def train_and_evaluate(
         criss_cross_model, word_mlp, test_loader,
         vocab_embeddings, criterion, device,
         retrieval_set_sizes=cfg.evaluation.retrieval_set_sizes,
-        k=cfg.evaluation.k
+        k=cfg.evaluation.k,
+        downsample_ratio=downsample_ratio,
     )
 
     logger.info("\n=== Final Test Results Comparison ===")
@@ -1466,19 +1943,23 @@ def train_and_evaluate(
 def main(cfg: DictConfig):
     """Main entry point for CrissCross word classification evaluation."""
 
-    # Setup logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-
     # Setup output directory
     save_dir = Path(cfg.logging.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
     checkpoint_dir = resolve_checkpoint_dir(cfg.logging)
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    _run_log_file = _install_run_tee(save_dir)
+
+    # Setup logging after stdout/stderr tee so logs are persisted with console output.
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        force=True,
+    )
     logger.info(f"Metrics/results directory: {save_dir}")
     logger.info(f"Checkpoint directory: {checkpoint_dir}")
+    config_snapshot = write_resolved_config_snapshot(save_dir, cfg)
+    logger.info(f"Resolved config snapshot: {config_snapshot}")
 
     # Setup WandB
     wandb_config = OmegaConf.to_container(cfg, resolve=True)
@@ -1494,26 +1975,31 @@ def main(cfg: DictConfig):
     pl.seed_everything(cfg.seed, workers=True)
 
     # 1. Load tokenizer
-    tokenizer = load_tokenizer(cfg.model.tokenizer_checkpoint, cfg.device)
+    tokenizer = load_tokenizer_from_config(cfg)
 
     # 2. Load or initialize CrissCross model
     num_sensor_types = get_num_sensor_types_for_config(cfg)
     logger.info(f"Using {num_sensor_types} sensor type embeddings")
-    if cfg.model.train_from_scratch:
+    init_checkpoint, architecture_checkpoint, init_mode = resolve_initial_checkpoint(cfg)
+    report_path = checkpoint_dir / "checkpoint_load_report.json"
+    if init_mode == "scratch":
         logger.info("Training mode: FROM SCRATCH (random initialization)")
         criss_cross_model = initialize_criss_cross_from_scratch(
-            cfg.model.criss_cross_checkpoint,  # Still needed for architecture
+            init_checkpoint,
             tokenizer,
             cfg.device,
-            num_sensor_types=num_sensor_types
+            num_sensor_types=num_sensor_types,
+            report_path=report_path,
         )
     else:
-        logger.info("Training mode: FINE-TUNING (pretrained checkpoint)")
+        logger.info(f"Training mode: {init_mode.upper()} initialization")
         criss_cross_model = load_criss_cross_model(
-            cfg.model.criss_cross_checkpoint,
+            init_checkpoint,
             tokenizer,
             cfg.device,
-            num_sensor_types=num_sensor_types
+            num_sensor_types=num_sensor_types,
+            architecture_checkpoint_path=architecture_checkpoint,
+            report_path=report_path,
         )
 
     # 3. Build vocabulary - will be done after dataset creation for both split modes
@@ -1526,74 +2012,25 @@ def main(cfg: DictConfig):
     # 5. Create datasets
     logger.info("\nCreating datasets...")
 
-    # Get dataset class and max_channel_dim based on config
+    # Get dataset metadata based on config
     dataset_type = cfg.data.get('dataset_type', 'armeni')
-    DatasetClass = get_dataset_class(dataset_type)
     max_channel_dim = cfg.data.get('max_channel_dim', get_default_max_channel_dim(dataset_type))
-    dataset_extra_kwargs = get_dataset_extra_kwargs(dataset_type, cfg)
 
     logger.info(f"Using dataset type: {dataset_type}")
-    logger.info(f"Dataset class: {DatasetClass.__name__}")
+    if cfg.data.get("datasets") is not None:
+        logger.info(f"Using pooled datasets: {[entry.get('dataset_name', entry.get('dataset_type')) for entry in cfg.data.datasets]}")
     logger.info(f"Max channel dim: {max_channel_dim}")
-    if dataset_extra_kwargs:
-        logger.info(f"Dataset extra kwargs: {dataset_extra_kwargs}")
 
     if cfg.data.get('use_hashed_split', False):
         logger.info("Using hashed sentence-based split...")
 
-        # Create single dataset with ALL sessions
-        full_dataset = DatasetClass(
-            data_root=cfg.data.root,
-            subjects=cfg.data.subjects,
-            sessions=cfg.data.all_sessions,  # Load all sessions
-            tasks=list(cfg.data.tasks) if cfg.data.tasks is not None and hasattr(cfg.data.tasks, '__iter__') and not isinstance(cfg.data.tasks, str) else ([cfg.data.tasks] if cfg.data.tasks is not None else None),
-            segment_length=cfg.data.segment_length,
-            subsegment_duration=cfg.data.subsegment_duration,
-            words_per_segment=cfg.data.words_per_segment,
-            window_onset_offset=cfg.data.window_onset_offset,
-            cache_dir=cfg.data.cache_dir,
-            l_freq=cfg.data.l_freq,
-            h_freq=cfg.data.h_freq,
-            target_sfreq=cfg.data.target_sfreq,
-            max_channel_dim=max_channel_dim,
-            **dataset_extra_kwargs
-        )
+        # Create single dataset with ALL sessions/dataset entries
+        full_dataset = create_word_dataset(cfg, sessions=_as_list(cfg.data.get("all_sessions", None)))
 
         logger.info(f"Total segments across all sessions: {len(full_dataset)}")
 
-        # Compute sentence hash for each segment and assign to splits
-        # Optimize: access word_groups directly instead of loading full MEG data
-        train_indices = []
-        val_indices = []
-        test_indices = []
-        sentence_counts = {}  # Track sentence occurrences
-        idx_to_sentence = {}  # Cache sentences for validation
-
-        logger.info("Assigning segments to splits based on sentence hashes...")
-        idx = 0
-        for word_groups in full_dataset.word_groups:
-            for word_group in word_groups:
-                # Extract words directly from word_group without loading MEG data
-                words = [w['word'] for w in word_group]
-                sentence = " ".join(words)
-
-                # Cache sentence for later validation
-                idx_to_sentence[idx] = sentence
-
-                # Count sentence occurrences for statistics
-                sentence_counts[sentence] = sentence_counts.get(sentence, 0) + 1
-
-                # Assign to split based on hash
-                split = hash_sentence_to_split(words, cfg.data.split_ratios, cfg.seed)
-
-                if split == "train":
-                    train_indices.append(idx)
-                elif split == "val":
-                    val_indices.append(idx)
-                else:  # test
-                    test_indices.append(idx)
-
-                idx += 1
+        train_indices, val_indices, test_indices, idx_to_group = assign_no_leak_splits(full_dataset, cfg)
+        sentence_counts = Counter(" ".join(get_dataset_words(full_dataset, idx)) for idx in range(len(full_dataset)))
 
         # Log statistics
         total_sentences = len(sentence_counts)
@@ -1624,14 +2061,21 @@ def main(cfg: DictConfig):
             [sample_size, remaining_size],
             generator=torch.Generator().manual_seed(cfg.seed)
         )
+        split_sizes = {
+            "train_full": int(total_size),
+            "train": int(len(train_dataset)),
+            "val": int(len(val_dataset)),
+            "test": int(len(test_dataset)),
+            "total": int(len(full_dataset)),
+        }
 
         # Validate no sentence leakage across splits
         logger.info("\nValidating split integrity...")
 
         # Reuse cached sentences from hashing step (no need to reconstruct)
-        train_sentences = {idx_to_sentence[idx] for idx in train_indices}
-        val_sentences = {idx_to_sentence[idx] for idx in val_indices}
-        test_sentences = {idx_to_sentence[idx] for idx in test_indices}
+        train_sentences = {idx_to_group[idx] for idx in train_indices}
+        val_sentences = {idx_to_group[idx] for idx in val_indices}
+        test_sentences = {idx_to_group[idx] for idx in test_indices}
 
         # Check for overlaps
         train_val_overlap = train_sentences & val_sentences
@@ -1652,16 +2096,7 @@ def main(cfg: DictConfig):
         # Build vocabulary from ENTIRE dataset using ALL unique words
         # Training uses all words (no OOV), evaluation filters by retrieval set
         logger.info("\nBuilding vocabulary from entire dataset (ALL words)...")
-        word_counter = Counter()
-
-        # Count words across ALL segments (train + val + test)
-        for word_groups in full_dataset.word_groups:
-            for word_group in word_groups:
-                words = [w['word'] for w in word_group]
-                word_counter.update(words)
-
-        # Use ALL words, ordered by frequency (most frequent first for retrieval set indexing)
-        vocab = [word for word, _ in word_counter.most_common()]
+        vocab, word_counter = build_vocabulary_from_word_datasets([full_dataset])
 
         logger.info(f"  Total unique words (vocabulary size): {len(vocab)}")
         logger.info(f"  Most frequent word: '{vocab[0]}' ({word_counter[vocab[0]]} occurrences)")
@@ -1684,22 +2119,7 @@ def main(cfg: DictConfig):
         # Use existing session-based temporal split
         logger.info("Using session-based temporal split...")
 
-        train_dataset = DatasetClass(
-            data_root=cfg.data.root,
-            subjects=cfg.data.subjects,
-            sessions=cfg.data.train_sessions,
-            tasks=list(cfg.data.tasks) if cfg.data.tasks is not None and hasattr(cfg.data.tasks, '__iter__') and not isinstance(cfg.data.tasks, str) else ([cfg.data.tasks] if cfg.data.tasks is not None else None),
-            segment_length=cfg.data.segment_length,
-            subsegment_duration=cfg.data.subsegment_duration,
-            words_per_segment=cfg.data.words_per_segment,
-            window_onset_offset=cfg.data.window_onset_offset,
-            cache_dir=cfg.data.cache_dir,
-            l_freq=cfg.data.l_freq,
-            h_freq=cfg.data.h_freq,
-            target_sfreq=cfg.data.target_sfreq,
-            max_channel_dim=max_channel_dim,
-            **dataset_extra_kwargs
-        )
+        train_dataset = create_word_dataset(cfg, sessions=_as_list(cfg.data.train_sessions))
 
         print("Original training dataset size:", len(train_dataset))
         print("Sampling", cfg.data.train_pct * 100, "% of training data...")
@@ -1718,57 +2138,23 @@ def main(cfg: DictConfig):
 
         train_dataset = train_subset
 
-        val_dataset = DatasetClass(
-            data_root=cfg.data.root,
-            subjects=cfg.data.subjects,
-            sessions=cfg.data.val_sessions,
-            tasks=list(cfg.data.tasks) if cfg.data.tasks is not None and hasattr(cfg.data.tasks, '__iter__') and not isinstance(cfg.data.tasks, str) else ([cfg.data.tasks] if cfg.data.tasks is not None else None),
-            segment_length=cfg.data.segment_length,
-            subsegment_duration=cfg.data.subsegment_duration,
-            words_per_segment=cfg.data.words_per_segment,
-            window_onset_offset=cfg.data.window_onset_offset,
-            cache_dir=cfg.data.cache_dir,
-            l_freq=cfg.data.l_freq,
-            h_freq=cfg.data.h_freq,
-            target_sfreq=cfg.data.target_sfreq,
-            max_channel_dim=max_channel_dim,
-            **dataset_extra_kwargs
-        )
-
-        test_dataset = DatasetClass(
-            data_root=cfg.data.root,
-            subjects=cfg.data.subjects,
-            sessions=cfg.data.test_sessions,
-            tasks=list(cfg.data.tasks) if cfg.data.tasks is not None and hasattr(cfg.data.tasks, '__iter__') and not isinstance(cfg.data.tasks, str) else ([cfg.data.tasks] if cfg.data.tasks is not None else None),
-            segment_length=cfg.data.segment_length,
-            subsegment_duration=cfg.data.subsegment_duration,
-            words_per_segment=cfg.data.words_per_segment,
-            window_onset_offset=cfg.data.window_onset_offset,
-            cache_dir=cfg.data.cache_dir,
-            l_freq=cfg.data.l_freq,
-            h_freq=cfg.data.h_freq,
-            target_sfreq=cfg.data.target_sfreq,
-            max_channel_dim=max_channel_dim,
-            **dataset_extra_kwargs
-        )
+        val_dataset = create_word_dataset(cfg, sessions=_as_list(cfg.data.val_sessions))
+        test_dataset = create_word_dataset(cfg, sessions=_as_list(cfg.data.test_sessions))
+        split_sizes = {
+            "train_full": int(total_size),
+            "train": int(len(train_dataset)),
+            "val": int(len(val_dataset)),
+            "test": int(len(test_dataset)),
+            "total": int(len(train_dataset) + len(val_dataset) + len(test_dataset)),
+        }
 
         # Build vocabulary from ALL datasets using ALL unique words
         # Training uses all words (no OOV), evaluation filters by retrieval set
         logger.info("\nBuilding vocabulary from all datasets (ALL words)...")
-        word_counter = Counter()
-
         # Get underlying dataset from train_dataset (which is a Subset)
         train_base = train_dataset.dataset if hasattr(train_dataset, 'dataset') else train_dataset
 
-        # Count words from all datasets
-        for dataset in [train_base, val_dataset, test_dataset]:
-            for word_groups in dataset.word_groups:
-                for word_group in word_groups:
-                    words = [w['word'] for w in word_group]
-                    word_counter.update(words)
-
-        # Use ALL words, ordered by frequency (most frequent first for retrieval set indexing)
-        vocab = [word for word, _ in word_counter.most_common()]
+        vocab, word_counter = build_vocabulary_from_word_datasets([train_base, val_dataset, test_dataset])
 
         logger.info(f"  Total unique words (vocabulary size): {len(vocab)}")
         logger.info(f"  Most frequent word: '{vocab[0]}' ({word_counter[vocab[0]]} occurrences)")
@@ -1840,11 +2226,34 @@ def main(cfg: DictConfig):
     logger.info(f"  Hidden dim: {cfg.model.word_mlp.hidden_dim}")
     logger.info(f"  Output dim: {cfg.model.word_mlp.embed_dim}")
 
+    if init_mode == "promoted":
+        maybe_load_word_mlp_from_checkpoint(
+            word_mlp,
+            init_checkpoint,
+            checkpoint_dir / "word_mlp_checkpoint_load_report.json",
+            cfg.device,
+        )
+
+    metadata_path = write_run_metadata(
+        save_dir=save_dir,
+        checkpoint_dir=checkpoint_dir,
+        cfg=cfg,
+        init_mode=init_mode,
+        init_checkpoint=init_checkpoint,
+        architecture_checkpoint=architecture_checkpoint,
+        split_sizes=split_sizes,
+        channel_count=num_channels,
+        tokenizer=tokenizer,
+        config_snapshot=config_snapshot,
+    )
+    logger.info(f"Run metadata saved to: {metadata_path}")
+
     # 7. Train and evaluate
     test_metrics = train_and_evaluate(
         criss_cross_model, word_mlp,
         train_loader, val_loader, test_loader,
-        vocab_embeddings, cfg, cfg.device
+        vocab_embeddings, cfg, cfg.device,
+        downsample_ratio=int(tokenizer.downsample_ratio),
     )
 
     # 8. Save final results
@@ -1855,9 +2264,39 @@ def main(cfg: DictConfig):
         for k, v in test_metrics.items():
             f.write(f"{k}: {v:.4f}\n")
 
+    final_results_json = {
+        "experiment_name": str(cfg.logging.get("experiment_name", save_dir.name)),
+        "task_mode": str(cfg.data.get("task_mode", "")),
+        "target_sfreq": float(cfg.data.get("target_sfreq", 0.0)),
+        "tokenizer_name": str(cfg.model.get("tokenizer_name", "biocodec")),
+        "training_mode": _training_mode(cfg, init_mode),
+        "seed": int(cfg.seed),
+        "test_metrics": test_metrics,
+        "checkpoint_best": str(checkpoint_dir / "checkpoint_best.pt"),
+        "checkpoint_latest": str(checkpoint_dir / "checkpoint_latest.pt"),
+        "run_metadata": str(metadata_path),
+        "timestamp": datetime_now_iso(),
+    }
+    _write_json(save_dir / "final_results.json", final_results_json)
+
+    write_run_metadata(
+        save_dir=save_dir,
+        checkpoint_dir=checkpoint_dir,
+        cfg=cfg,
+        init_mode=init_mode,
+        init_checkpoint=init_checkpoint,
+        architecture_checkpoint=architecture_checkpoint,
+        split_sizes=split_sizes,
+        channel_count=num_channels,
+        tokenizer=tokenizer,
+        config_snapshot=config_snapshot,
+        extra={"final_metrics": test_metrics},
+    )
+
     logger.info(f"\nResults saved to: {results_path}")
 
     wandb.finish()
+    _run_log_file.flush()
 
     return test_metrics
 

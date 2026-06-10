@@ -37,6 +37,55 @@ x-megxl-eval-base: &megxl-eval-base
     - ./wandb:/workspace/wandb
   environment: *megxl-eval-env
 
+x-eegxl-env: &eegxl-env
+  CRISS_CROSS_CHECKPOINT: ${CRISS_CROSS_CHECKPOINT:-./checkpoints/baseline/meg-xl-med.ckpt}
+  BIOCODEC_CHECKPOINT: ${BIOCODEC_CHECKPOINT:-./brainstorm/neuro_tokenizers/biocodec_ckpt.pt}
+  BRAINOMNI_CHECKPOINT: ${BRAINOMNI_CHECKPOINT:-./brainstorm/neuro_tokenizers/base/BrainOmni.pt}
+  EEG_DATASETS_DIR: ${EEG_DATASETS_DIR:-/workspace/datasets}
+  EEG_READING_ROOTS: ${EEG_READING_ROOTS:-/workspace/datasets/zuco2/data/zuco2,/workspace/datasets/eegdash/data/nm000228}
+  EEG_LISTENING_ROOTS: ${EEG_LISTENING_ROOTS:-/workspace/datasets/OpenNeuroEEG_ds004408,/workspace/datasets/OpenNeuroEEG_ds007808}
+  EEG_TARGET_SFREQ: ${EEG_TARGET_SFREQ:-50}
+  EEG_TOKENIZER_NAME: ${EEG_TOKENIZER_NAME:-biocodec}
+  EEG_TRAIN_FROM_SCRATCH: ${EEG_TRAIN_FROM_SCRATCH:-false}
+  EEG_USE_PROMOTED_CHECKPOINT: ${EEG_USE_PROMOTED_CHECKPOINT:-false}
+  EEG_PROMOTED_CHECKPOINT: ${EEG_PROMOTED_CHECKPOINT:-}
+  EEG_SWEEP_FREQUENCIES: ${EEG_SWEEP_FREQUENCIES:-25,50,100,128,200,250}
+  EEG_SELECTION_METRIC: ${EEG_SELECTION_METRIC:-balanced_top10_accuracy_retrieval250}
+  EEG_SELECTION_MODE: ${EEG_SELECTION_MODE:-max}
+  HDF5_USE_FILE_LOCKING: "FALSE"
+  HF_HOME: /workspace/hf_cache
+  HYDRA_FULL_ERROR: "1"
+  MPLCONFIGDIR: /workspace/hf_cache/matplotlib
+  OMP_NUM_THREADS: ${OMP_NUM_THREADS:-8}
+  TOKENIZERS_PARALLELISM: "false"
+  TRANSFORMERS_CACHE: /workspace/hf_cache/transformers
+  UV_PROJECT_ENVIRONMENT: /opt/venv
+  WANDB_API_KEY: ${WANDB_API_KEY:-}
+  WANDB_DIR: /workspace/wandb
+  WANDB_MODE: ${WANDB_MODE:-offline}
+
+x-eegxl-base: &eegxl-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: scrabrain-megxl:latest
+  working_dir: /workspace
+  init: true
+  shm_size: "${SHM_SIZE:-64gb}"
+  volumes:
+    - .:/workspace
+    - ${EEG_DATASETS_DIR:-./datasets}:/workspace/datasets:ro
+    - ./datasets_info:/workspace/datasets_info:ro
+    - ./data/cache:/workspace/data/cache
+    - ./logs:/workspace/logs
+    - ./checkpoints:/workspace/checkpoints
+    - ./promotions:/workspace/promotions
+    - ./results:/workspace/results
+    - ./wandb:/workspace/wandb
+    - ./embeddings_cache:/workspace/embeddings_cache
+    - ./hf_cache:/workspace/hf_cache
+  environment: *eegxl-env
+
 services:
   monitor:
     build:
@@ -68,6 +117,40 @@ services:
       --port 8080
       --base-dir /workspace'
 
+  eeg_monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scrabrain-megxl:latest
+    container_name: scrabrain_eeg_monitor
+    working_dir: /workspace
+    init: true
+    ports:
+      - "${EEG_MONITOR_PORT:-8082}:8080"
+    volumes:
+      - .:/workspace
+      - ${EEG_DATASETS_DIR:-./datasets}:/workspace/datasets:ro
+      - ./datasets_info:/workspace/datasets_info:ro
+      - ./data/cache:/workspace/data/cache:ro
+      - ./logs:/workspace/logs:ro
+      - ./checkpoints:/workspace/checkpoints:ro
+      - ./promotions:/workspace/promotions:ro
+      - ./results:/workspace/results:ro
+      - ./wandb:/workspace/wandb:ro
+      - ./embeddings_cache:/workspace/embeddings_cache:ro
+      - ./hf_cache:/workspace/hf_cache:ro
+      - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
+    environment:
+      <<: *eegxl-env
+      BASE_DIR: /workspace
+      DOCKER_SOCKET: /var/run/docker.sock
+      PYTHONUNBUFFERED: "1"
+    command: >
+      bash -lc 'uv run --no-sync python monitor_server.py
+      --host 0.0.0.0
+      --port 8080
+      --base-dir /workspace'
+
   eval_libribrain:
     <<: *megxl-eval-base
     container_name: scrabrain_eval_libribrain
@@ -86,6 +169,116 @@ services:
           devices:
             - driver: nvidia
               device_ids: ["${EVAL_GPU:-0}"]
+              capabilities: [gpu]
+
+  eval_eeg_reading:
+    <<: *eegxl-base
+    container_name: scrabrain_eval_eeg_reading
+    environment:
+      <<: *eegxl-env
+      NVIDIA_VISIBLE_DEVICES: ${EEG_GPU:-0}
+    command: >
+      bash -lc 'uv run --no-sync python -m brainstorm.evaluate_criss_cross_word_classification
+      --config-name=eval_criss_cross_word_classification_eeg_reading
+      model.criss_cross_checkpoint="$${CRISS_CROSS_CHECKPOINT}"
+      model.tokenizer_name="$${EEG_TOKENIZER_NAME}"
+      model.tokenizer_checkpoint="$${BIOCODEC_CHECKPOINT}"
+      model.train_from_scratch="$${EEG_TRAIN_FROM_SCRATCH}"
+      model.use_promoted_checkpoint="$${EEG_USE_PROMOTED_CHECKPOINT}"
+      model.promoted_checkpoint="$${EEG_PROMOTED_CHECKPOINT}"
+      data.root="$${EEG_DATASETS_DIR}"
+      data.target_sfreq="$${EEG_TARGET_SFREQ}"
+      hydra.run.dir="./logs/hydra/eval_eeg_reading/$$(date +%Y%m%d_%H%M%S)"'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${EEG_GPU:-0}"]
+              capabilities: [gpu]
+
+  eval_eeg_listening:
+    <<: *eegxl-base
+    container_name: scrabrain_eval_eeg_listening
+    environment:
+      <<: *eegxl-env
+      NVIDIA_VISIBLE_DEVICES: ${EEG_GPU:-0}
+    command: >
+      bash -lc 'uv run --no-sync python -m brainstorm.evaluate_criss_cross_word_classification
+      --config-name=eval_criss_cross_word_classification_eeg_listening
+      model.criss_cross_checkpoint="$${CRISS_CROSS_CHECKPOINT}"
+      model.tokenizer_name="$${EEG_TOKENIZER_NAME}"
+      model.tokenizer_checkpoint="$${BIOCODEC_CHECKPOINT}"
+      model.train_from_scratch="$${EEG_TRAIN_FROM_SCRATCH}"
+      model.use_promoted_checkpoint="$${EEG_USE_PROMOTED_CHECKPOINT}"
+      model.promoted_checkpoint="$${EEG_PROMOTED_CHECKPOINT}"
+      data.root="$${EEG_DATASETS_DIR}"
+      data.target_sfreq="$${EEG_TARGET_SFREQ}"
+      hydra.run.dir="./logs/hydra/eval_eeg_listening/$$(date +%Y%m%d_%H%M%S)"'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${EEG_GPU:-0}"]
+              capabilities: [gpu]
+
+  eval_eeg_reading_listening:
+    <<: *eegxl-base
+    container_name: scrabrain_eval_eeg_reading_listening
+    environment:
+      <<: *eegxl-env
+      NVIDIA_VISIBLE_DEVICES: ${EEG_GPU:-0}
+    command: >
+      bash -lc 'uv run --no-sync python -m brainstorm.evaluate_criss_cross_word_classification
+      --config-name=eval_criss_cross_word_classification_eeg_reading_listening
+      model.criss_cross_checkpoint="$${CRISS_CROSS_CHECKPOINT}"
+      model.tokenizer_name="$${EEG_TOKENIZER_NAME}"
+      model.tokenizer_checkpoint="$${BIOCODEC_CHECKPOINT}"
+      model.train_from_scratch="$${EEG_TRAIN_FROM_SCRATCH}"
+      model.use_promoted_checkpoint="$${EEG_USE_PROMOTED_CHECKPOINT}"
+      model.promoted_checkpoint="$${EEG_PROMOTED_CHECKPOINT}"
+      data.root="$${EEG_DATASETS_DIR}"
+      data.target_sfreq="$${EEG_TARGET_SFREQ}"
+      hydra.run.dir="./logs/hydra/eval_eeg_reading_listening/$$(date +%Y%m%d_%H%M%S)"'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${EEG_GPU:-0}"]
+              capabilities: [gpu]
+
+  eeg_sweep:
+    <<: *eegxl-base
+    container_name: scrabrain_eeg_sweep
+    environment:
+      <<: *eegxl-env
+      NVIDIA_VISIBLE_DEVICES: ${EEG_GPU:-0}
+    command: >
+      bash -lc 'uv run --no-sync python scripts/run_eeg_sweep.py --continue-on-error'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${EEG_GPU:-0}"]
+              capabilities: [gpu]
+
+  eeg_chained_sweep:
+    <<: *eegxl-base
+    container_name: scrabrain_eeg_chained_sweep
+    environment:
+      <<: *eegxl-env
+      NVIDIA_VISIBLE_DEVICES: ${EEG_GPU:-0}
+    command: >
+      bash -lc 'uv run --no-sync python scripts/run_eeg_chained_sweep.py --continue-on-error'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${EEG_GPU:-0}"]
               capabilities: [gpu]
 
   eval_armeni:

@@ -579,7 +579,13 @@ def compute_preproc_hash(
     l_freq: float,
     h_freq: float,
     target_sfreq: float,
-    channel_filter_name: str = "default"
+    channel_filter_name: str = "default",
+    dataset_name: Optional[str] = None,
+    task_mode: Optional[str] = None,
+    segment_length: Optional[float] = None,
+    subsegment_duration: Optional[float] = None,
+    window_onset_offset: Optional[float] = None,
+    tokenizer_name: Optional[str] = None,
 ) -> str:
     """
     Compute a hash of preprocessing parameters for cache identification.
@@ -607,6 +613,15 @@ def compute_preproc_hash(
         "channel_filter": channel_filter_name,
         "version": "with_orientations_v2"
     }
+    optional_fields = {
+        "dataset": dataset_name,
+        "task_mode": task_mode,
+        "segment_length": segment_length,
+        "subsegment_duration": subsegment_duration,
+        "window_onset_offset": window_onset_offset,
+        "tokenizer_name": tokenizer_name,
+    }
+    config.update({key: value for key, value in optional_fields.items() if value is not None})
     # Create deterministic JSON string (sorted keys)
     config_str = json.dumps(config, sort_keys=True)
     # Compute SHA256 hash and take first 8 characters
@@ -622,7 +637,13 @@ def get_cache_path(
     l_freq: float = 0.1,
     h_freq: float = 40.0,
     target_sfreq: float = 50.0,
-    channel_filter_name: str = "default"
+    channel_filter_name: str = "default",
+    dataset_name: Optional[str] = None,
+    task_mode: Optional[str] = None,
+    segment_length: Optional[float] = None,
+    subsegment_duration: Optional[float] = None,
+    window_onset_offset: Optional[float] = None,
+    tokenizer_name: Optional[str] = None,
 ) -> Path:
     """
     Generate cache file path for a given recording with preprocessing parameters.
@@ -654,7 +675,18 @@ def get_cache_path(
     cache_path : Path
         Full path to the cache file including preprocessing hash
     """
-    preproc_hash = compute_preproc_hash(l_freq, h_freq, target_sfreq, channel_filter_name)
+    preproc_hash = compute_preproc_hash(
+        l_freq,
+        h_freq,
+        target_sfreq,
+        channel_filter_name,
+        dataset_name=dataset_name,
+        task_mode=task_mode,
+        segment_length=segment_length,
+        subsegment_duration=subsegment_duration,
+        window_onset_offset=window_onset_offset,
+        tokenizer_name=tokenizer_name,
+    )
     filename = f"{subject}_{session}_task-{task}_preproc-{preproc_hash}.h5"
     return cache_dir / filename
 
