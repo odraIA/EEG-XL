@@ -22,7 +22,9 @@ bash scripts/download_eegdash_docker.sh
 
 `clone_openneuro_ds004408.sh` clones or updates the DataLad/Git-annex mirror
 and materializes `stimuli/*.TextGrid` by default. Those TextGrid files are
-required by the ds004408 word-aligned listening dataset.
+required by the ds004408 word-aligned listening dataset. If `git-annex` is not
+installed, the helper falls back to Docker/AWS CLI and fetches only the TextGrid
+stimuli from OpenNeuro S3.
 
 Download the complete EEGDash NM000228 cache used by the reading evaluation:
 
