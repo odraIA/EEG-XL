@@ -21,18 +21,26 @@ echo "Expected training root after download: ${DEST_ABS}/nm000228"
 
 exec "${DOCKER_CMD[@]}" run --rm \
   --user "$(id -u):$(id -g)" \
+  -e HOME=/tmp/eegdash-home \
+  -e PIP_CACHE_DIR=/tmp/eegdash-pip-cache \
   -v "${REPO_ROOT}:/workspace" \
   -v "${DEST_ABS}:/data" \
   -w /workspace \
   "${IMAGE}" \
   bash -lc '
     set -euo pipefail
+    export HOME=/tmp/eegdash-home
+    export PIP_CACHE_DIR=/tmp/eegdash-pip-cache
+    mkdir -p "${HOME}" "${PIP_CACHE_DIR}"
+
     python_bin=python
     if ! python -c "import eegdash" >/dev/null 2>&1; then
+      echo "eegdash is not installed in the image; creating temporary venv in /tmp/eegdash-venv"
       python -m venv /tmp/eegdash-venv
-      /tmp/eegdash-venv/bin/python -m pip install --quiet --upgrade pip
-      /tmp/eegdash-venv/bin/python -m pip install --quiet eegdash
+      /tmp/eegdash-venv/bin/python -m pip install --quiet --cache-dir /tmp/eegdash-pip-cache --upgrade pip
+      /tmp/eegdash-venv/bin/python -m pip install --quiet --cache-dir /tmp/eegdash-pip-cache eegdash
       python_bin=/tmp/eegdash-venv/bin/python
     fi
+    echo "Starting EEGDash NM000228 download"
     exec "${python_bin}" scripts/download_eegdash_nm000228.py --cache-dir /data "$@"
   ' bash "$@"

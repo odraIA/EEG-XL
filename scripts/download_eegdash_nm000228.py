@@ -17,6 +17,13 @@ from pathlib import Path
 from typing import Any
 
 
+BAD_FILE_MARKERS = (
+    "Bad BDF file provided",
+    "file does not start with",
+    "invalid literal for int()",
+)
+
+
 def _description_dict(description: Any) -> dict[str, Any]:
     if description is None:
         return {}
@@ -48,6 +55,26 @@ def _sidecar_status(raw_path: Path) -> dict[str, bool]:
         "channels": raw_path.with_name(f"{stem}_channels.tsv").exists(),
         "eeg_json": raw_path.with_name(f"{stem}_eeg.json").exists(),
     }
+
+
+def _read_recording(recording: Any) -> tuple[Any, Path]:
+    raw = recording.raw
+    if raw is None:
+        raise RuntimeError("recording.raw returned None")
+    return raw, Path(recording.filecache)
+
+
+def _should_retry_bad_file(exc: Exception) -> bool:
+    message = repr(exc)
+    return any(marker in message for marker in BAD_FILE_MARKERS)
+
+
+def _remove_cached_recording_file(recording: Any) -> Path | None:
+    raw_path = Path(recording.filecache)
+    if raw_path.exists():
+        raw_path.unlink()
+        return raw_path
+    return None
 
 
 def main() -> int:
@@ -131,10 +158,17 @@ def main() -> int:
         )
         print(f"[{idx + 1:04d}/{len(recordings):04d}] downloading {label}", flush=True)
         try:
-            raw = recording.raw
-            if raw is None:
-                raise RuntimeError("recording.raw returned None")
-            raw_path = Path(recording.filecache)
+            try:
+                raw, raw_path = _read_recording(recording)
+            except Exception as exc:
+                if not _should_retry_bad_file(exc):
+                    raise
+                removed_path = _remove_cached_recording_file(recording)
+                if removed_path is not None:
+                    print(f"    removed corrupt cached file: {removed_path}", flush=True)
+                print("    retrying download once", flush=True)
+                raw, raw_path = _read_recording(recording)
+
             sidecars = _sidecar_status(raw_path)
             if not all(sidecars.values()):
                 missing_sidecars.append({
