@@ -472,6 +472,16 @@ class BIDSEEGWordAlignedDataset(Dataset):
         textgrid_path = self._find_textgrid(rec)
         if textgrid_path is None:
             return []
+        if not textgrid_path.exists():
+            raise FileNotFoundError(
+                f"TextGrid sidecar exists but is not materialized: {textgrid_path}. "
+                "If this is a DataLad/OpenNeuro dataset, fetch the stimuli files first."
+            )
+        if textgrid_path.stat().st_size == 0:
+            raise ValueError(
+                f"TextGrid sidecar is empty: {textgrid_path}. "
+                "If this is a DataLad/OpenNeuro dataset, fetch the stimuli files first."
+            )
 
         audio_onset = 0.0
         df = self._read_events(rec)
@@ -495,20 +505,48 @@ class BIDSEEGWordAlignedDataset(Dataset):
                 events.append(self._word_event(word, onset, token_duration, rec))
 
         events.sort(key=lambda item: item["window_start"])
+        if not events and self._read_events(rec) is None:
+            raise ValueError(f"TextGrid sidecar contains no parseable word intervals: {textgrid_path}")
         return events
 
     def _find_textgrid(self, rec: Dict[str, Any]) -> Optional[Path]:
+        stimuli_root = self.data_root / "stimuli"
+        if not stimuli_root.exists():
+            return None
+
         run = rec.get("run")
         if run:
-            candidates = [
-                self.data_root / "stimuli" / f"audio{int(run):02d}.TextGrid",
-                self.data_root / "stimuli" / f"audio{int(run):02d}.textgrid",
-            ]
+            run_text = str(run)
+            run_names = {run_text}
+            candidates = []
+            if run_text.isdigit():
+                run_num = int(run_text)
+                run_names.update({str(run_num), f"{run_num:02d}"})
+                candidates.extend([
+                    stimuli_root / f"audio{run_num:02d}.TextGrid",
+                    stimuli_root / f"audio{run_num:02d}.textgrid",
+                    stimuli_root / f"audio{run_num}.TextGrid",
+                    stimuli_root / f"audio{run_num}.textgrid",
+                ])
+            candidates.extend([
+                stimuli_root / f"audio{run_text}.TextGrid",
+                stimuli_root / f"audio{run_text}.textgrid",
+            ])
             for candidate in candidates:
-                if candidate.exists():
+                if candidate.exists() or candidate.is_symlink():
+                    return candidate
+            for candidate in sorted(stimuli_root.iterdir()):
+                if candidate.suffix.lower() != ".textgrid":
+                    continue
+                match = re.fullmatch(r"audio0*(\d+)", candidate.stem, flags=re.IGNORECASE)
+                if match and match.group(1) in run_names:
                     return candidate
 
-        matches = sorted((self.data_root / "stimuli").glob("*.TextGrid")) if (self.data_root / "stimuli").exists() else []
+        matches = sorted(
+            path
+            for path in stimuli_root.iterdir()
+            if path.suffix.lower() == ".textgrid" and (path.exists() or path.is_symlink())
+        )
         return matches[0] if len(matches) == 1 else None
 
     def _build_generic_events_word_events(self, rec: Dict[str, Any]) -> List[Dict[str, Any]]:
