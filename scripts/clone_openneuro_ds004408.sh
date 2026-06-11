@@ -21,17 +21,38 @@ fetch_textgrids_with_docker() {
     return 1
   fi
 
-  mkdir -p "${DEST_DIR}"
+  mkdir -p "${DEST_DIR}/stimuli"
   local dest_abs
   dest_abs="$(cd "${DEST_DIR}" && pwd)"
-  echo "Fetching ds004408 TextGrid stimuli with Docker/AWS CLI into ${dest_abs}"
-  "${DOCKER_CMD[@]}" run --rm \
+  local staging_dir
+  staging_dir="$(mktemp -d "${TMPDIR:-/tmp}/ds004408-textgrids.XXXXXX")"
+
+  echo "Fetching ds004408 TextGrid stimuli with Docker/AWS CLI into ${staging_dir}"
+  if ! "${DOCKER_CMD[@]}" run --rm \
     --user "$(id -u):$(id -g)" \
-    -v "${dest_abs}:/data" \
+    -v "${staging_dir}:/staging" \
     amazon/aws-cli \
-    s3 sync --no-sign-request "s3://openneuro.org/ds004408" /data \
+    s3 sync --no-sign-request "s3://openneuro.org/ds004408/stimuli" /staging \
       --exclude "*" \
-      --include "stimuli/*.TextGrid"
+      --include "*.TextGrid"; then
+    rm -rf "${staging_dir}"
+    return 1
+  fi
+
+  local fetched_count=0
+  while IFS= read -r textgrid_path; do
+    local target_path="${dest_abs}/stimuli/$(basename "${textgrid_path}")"
+    rm -f "${target_path}"
+    cp "${textgrid_path}" "${target_path}"
+    fetched_count=$((fetched_count + 1))
+  done < <(find "${staging_dir}" -maxdepth 1 -type f -name "*.TextGrid" | sort)
+  rm -rf "${staging_dir}"
+
+  if [[ "${fetched_count}" -eq 0 ]]; then
+    echo "No ds004408 TextGrid stimuli were downloaded from OpenNeuro S3." >&2
+    return 1
+  fi
+  echo "Materialized ${fetched_count} ds004408 TextGrid stimuli in ${dest_abs}/stimuli"
 }
 
 fetch_textgrids() {
