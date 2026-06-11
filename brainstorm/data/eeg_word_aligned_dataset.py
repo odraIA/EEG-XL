@@ -89,6 +89,8 @@ def scan_bids_eeg_channel_counts(
     for raw_path in sorted(root.rglob("*_eeg.*")):
         if raw_path.suffix.lower() not in BIDSEEGWordAlignedDataset.raw_suffixes:
             continue
+        if _raw_eeg_unavailable_reason(raw_path) is not None:
+            continue
         entities = _entity_dict(raw_path)
         task = entities.get("task", "").lower()
         if task == "speechopen":
@@ -159,6 +161,36 @@ def _normalize_filter(values: Optional[Sequence[str]]) -> Optional[set[str]]:
     if values is None:
         return None
     return {str(value).removeprefix("sub-").removeprefix("ses-").lower() for value in values}
+
+
+def _raw_eeg_unavailable_reason(raw_path: Path) -> Optional[str]:
+    if not raw_path.exists():
+        return "raw EEG file is not materialized"
+    if not raw_path.is_file():
+        return "raw EEG path is not a file"
+
+    if raw_path.suffix.lower() != ".vhdr":
+        return None
+
+    try:
+        header = raw_path.read_text(errors="replace")
+    except OSError as exc:
+        return f"raw EEG header is not readable: {exc}"
+
+    for key in ("DataFile", "MarkerFile"):
+        match = re.search(rf"(?im)^\s*{key}\s*=\s*(?P<path>.+?)\s*$", header)
+        if match is None:
+            continue
+        sidecar_text = match.group("path").strip().strip('"').strip("'")
+        if not sidecar_text:
+            continue
+        sidecar_path = Path(sidecar_text.replace("\\", "/"))
+        if not sidecar_path.is_absolute():
+            sidecar_path = raw_path.parent / sidecar_path
+        if not sidecar_path.exists() or not sidecar_path.is_file():
+            return f"BrainVision {key} is not materialized: {sidecar_path}"
+
+    return None
 
 
 def _safe_attr(value: Any) -> Any:
@@ -248,9 +280,22 @@ class BIDSEEGWordAlignedDataset(Dataset):
 
         self.recordings = self._discover_recordings()
         if not self.recordings:
+            unavailable_raw = [
+                item for item in self.alignment_report["skipped_recordings"]
+                if "materialized" in str(item.get("reason", "")) or item.get("reason") == "raw EEG path is not a file"
+            ]
+            raw_hint = ""
+            if unavailable_raw:
+                examples = ", ".join(item["path"] for item in unavailable_raw[:5])
+                if len(unavailable_raw) > 5:
+                    examples += f", ... ({len(unavailable_raw)} total)"
+                raw_hint = (
+                    f" Skipped {len(unavailable_raw)} unavailable raw EEG file(s): {examples}. "
+                    "Materialize the raw EEG files or narrow the subjects/sessions/tasks filter."
+                )
             raise ValueError(
                 f"No EEG recordings found in {self.data_root} for dataset={dataset_name}, "
-                f"subjects={subjects}, sessions={sessions}, tasks={tasks}"
+                f"subjects={subjects}, sessions={sessions}, tasks={tasks}.{raw_hint}"
             )
         self._preflight_textgrid_sidecars()
 
@@ -287,6 +332,19 @@ class BIDSEEGWordAlignedDataset(Dataset):
             if self.tasks is not None and task.lower() not in self.tasks:
                 continue
             if task.lower() == "speechopen":
+                continue
+            unavailable_reason = _raw_eeg_unavailable_reason(raw_path)
+            if unavailable_reason is not None:
+                self._record_skip(
+                    {
+                        "raw_path": raw_path,
+                        "subject": subject or "sub-unknown",
+                        "session": session or "",
+                        "task": task or "unknown",
+                        "run": run,
+                    },
+                    unavailable_reason,
+                )
                 continue
 
             base = raw_path.name.rsplit("_eeg.", 1)[0]

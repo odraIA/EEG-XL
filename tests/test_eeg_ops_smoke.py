@@ -77,6 +77,37 @@ class EEGOpsSmokeTests(unittest.TestCase):
                     tasks=["listening"],
                 )
 
+    def test_openneuro_discovery_skips_unmaterialized_raw_eeg(self) -> None:
+        try:
+            from brainstorm.data.eeg_word_aligned_dataset import OpenNeuroEEGWordAlignedDataset
+        except ModuleNotFoundError as exc:
+            self.skipTest(f"missing optional dependency: {exc.name}")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            eeg_dir = root / "sub-001" / "eeg"
+            eeg_dir.mkdir(parents=True)
+            raw = eeg_dir / "sub-001_task-listening_run-01_eeg.vhdr"
+            raw.symlink_to(root / ".git" / "annex" / "missing-raw")
+            (eeg_dir / "sub-001_task-listening_run-01_events.tsv").write_text(
+                "onset\tduration\ttrial_type\n0.75\t1.00\taudio\n",
+                encoding="utf-8",
+            )
+            stimuli = root / "stimuli"
+            stimuli.mkdir()
+            (stimuli / "audio01.TextGrid").write_text(
+                'xmin = 0.0\nxmax = 0.5\ntext = "hello"\n',
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "unavailable raw EEG"):
+                OpenNeuroEEGWordAlignedDataset(
+                    data_root=str(root),
+                    dataset_name="openneuro_ds004408",
+                    task_mode="listening",
+                    tasks=["listening"],
+                )
+
     def test_hydra_sweep_config_loading(self) -> None:
         from scripts.make_eeg_sweep_plan import build_plan, load_config
 
