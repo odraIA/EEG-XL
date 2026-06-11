@@ -16,6 +16,25 @@ Useful EEG download helpers already in this repo:
 ```bash
 bash scripts/download_openneuro_eeg_docker.sh
 bash scripts/export_openneuro_eeg_folder_tree_docker.sh
+bash scripts/download_eegdash_docker.sh
+```
+
+Download the complete EEGDash NM000228 cache used by the reading evaluation:
+
+```bash
+docker compose build
+bash scripts/download_eegdash_docker.sh
+```
+
+The downloader is based on `datasets_info/eegdash/testing.ipynb`: it queries
+`NM000228` through the EEGDash API, then accesses each lazy `recording.raw` so
+the raw BIDS files and sidecars are materialized under
+`datasets/eegdash/data/nm000228`. For a quick server check before the full
+download:
+
+```bash
+bash scripts/download_eegdash_docker.sh --limit 1
+python scripts/smoke_eeg_word_datasets.py --eegdash-root datasets/eegdash/data/nm000228
 ```
 
 ## Smoke Tests
