@@ -21,6 +21,13 @@ from .multi_dataset import MultiMEGDataset
 from .multi_datamodule import MultiMEGDataModule
 from .subsampled_dataset import SubsampledRecordingDataset
 
+"""Data loading and preprocessing utilities for EEG datasets."""
+
+from .openneuroEEG_ds004408_word_aligned_dataset import OpenNeuroEEGDs004408WordAlignedDataset
+from .openneuroEEG_ds007808_word_aligned_dataset import OpenNeuroEEGDs007808WordAlignedDataset
+from .eeg_multi_dataset import MultiEEGDataset
+from .eeg_multi_datamodule import MultiEEGDataModule
+
 __all__ = [
     "ArmeniMEGDataset",
     "OmegaMEGDataset",
@@ -40,4 +47,8 @@ __all__ = [
     "MultiMEGDataset",
     "MultiMEGDataModule",
     "SubsampledRecordingDataset",
+    "OpenNeuroEEGDs004408WordAlignedDataset",
+    "OpenNeuroEEGDs007808WordAlignedDataset",
+    "MultiEEGDataset",
+    "MultiEEGDataModule",
 ]

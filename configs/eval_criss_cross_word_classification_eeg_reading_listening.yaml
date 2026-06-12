@@ -58,6 +58,7 @@ data:
       cache_dir: "./data/cache/eeg_reading_listening/openneuro_ds004408"
       max_channel_dim: auto
       tasks: ["listening"]
+      allow_missing: true
     - dataset_type: "openneuro_ds007808"
       dataset_name: "openneuro_ds007808"
       task_mode: "listening"
@@ -65,6 +66,7 @@ data:
       cache_dir: "./data/cache/eeg_reading_listening/openneuro_ds007808"
       max_channel_dim: auto
       tasks: ["listening", "listeningcovert"]
+      allow_missing: true
 
 t5:
   model_name: "t5-large"

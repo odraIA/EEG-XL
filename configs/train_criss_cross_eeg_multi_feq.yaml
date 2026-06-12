@@ -1,0 +1,194 @@
+# Multi-Dataset EEG Criss-Cross Transformer Training Configuration
+# OpenNeuro EEG: ds004408 + ds007808
+#
+# Important:
+# - This config is for an EEG training entrypoint that uses:
+#     brainstorm.data.eeg_multi_datamodule.MultiEEGDataModule
+#   The original MEG script imports MultiMEGDataModule, so duplicate/adapt that
+#   script before using this YAML.
+# - The provided dataset summaries do not define official train/val/test splits.
+#   The splits below follow the same style as the MEG configs: held-out subjects
+#   when subject IDs are available.
+# - To test another EEG frequency, override BOTH values together:
+#     data.target_sfreq=100.0 model.sampling_rate=100
+#   The current training code expects scalar values, not a list.
+
+datasets_config:
+
+  - type: "openneuro_ds004408"
+    data_root: "/workspace/datasets/OpenNeuroEEG_ds004408"
+    subjects: null
+    sessions: null
+    tasks: ["listening"]
+    # Subject-held-out validation, mirroring the MEG subject-based splits.
+    # ds004408 has 19 subjects in the provided summary.
+    val_subjects: ["sub-017", "sub-018", "sub-019"]
+    allow_missing_word_alignment: false
+
+  - type: "openneuro_ds007808"
+    data_root: "/workspace/datasets/OpenNeuroEEG_ds007808"
+    subjects: null
+    sessions: null
+    tasks: ["listening", "listeningcovert"]
+    # this way we have from the 3 subjects: 
+    # training:   ~178.7 h
+    # validation: ~28.3 h
+    # validation percentage: ~14.1%
+    val_sessions: ["ses-20240621", "ses-20240624", "ses-20240625", "ses-20240626", "ses-20240627", "ses-20240628", "ses-20240701", "ses-20241119", "ses-20241227"]
+    allow_missing_word_alignment: false
+
+# Shared data settings
+data:
+  cache_dir: "./data/cache/eeg"
+  segment_length: 150.0
+  subsegment_duration: 3.0
+  words_per_segment: 50
+  window_onset_offset: -0.5
+  debug_mode: false
+
+  # Preprocessing parameters
+  l_freq: 0.1
+  h_freq: 40.0
+  target_sfreq: 50.0
+
+  # EEG channel handling.
+  # Leave max_channel_dim null and let MultiEEGDataModule infer the largest EEG
+  # channel count from the materialized BIDS headers/channels.tsv files.
+  max_channel_dim: null
+  infer_max_channel_dim: true
+
+  # Data quality / loading behavior.
+  allow_missing_word_alignment: false
+
+  # Recording subsampling for ablation experiments.
+  recording_subsample_prop: null
+
+  # Candidate values for frequency experiments.
+  # This list is informational only unless your launcher iterates over it.
+  # For Hydra/CLI sweeps, override target_sfreq and model.sampling_rate together.
+  frequency_grid: [25.0, 50.0, 100.0, 128.0]
+
+# Available neuro-tokenizers.
+# This block is informational unless your training script explicitly reads it.
+neuro_tokenizers:
+  biocodec:
+    tokenizer_name: "biocodec"
+    tokenizer_variant: "default"
+    tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
+    tokenizer_ckpt: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
+    tokenizer_config_path: null
+    vocab_size: 256
+    num_quantizers: 6
+    num_quantizers_used: 6
+    tokenizer_downsample_ratio: 12
+    overlap_ratio: 0.0
+
+  brainomni_base:
+    tokenizer_name: "brainomni"
+    tokenizer_variant: "base"
+    tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/base/BrainOmni.pt"
+    tokenizer_ckpt: "./brainstorm/neuro_tokenizers/base/BrainOmni.pt"
+    tokenizer_config_path: "./brainstorm/neuro_tokenizers/base/model_cfg.json"
+    vocab_size: 512
+    num_quantizers: 4
+    num_quantizers_used: 4
+    tokenizer_downsample_ratio: 64
+    overlap_ratio: 0.25
+
+  brainomni_tiny:
+    tokenizer_name: "brainomni"
+    tokenizer_variant: "tiny"
+    tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/tiny/BrainOmni.pt"
+    tokenizer_ckpt: "./brainstorm/neuro_tokenizers/tiny/BrainOmni.pt"
+    tokenizer_config_path: "./brainstorm/neuro_tokenizers/tiny/model_cfg.json"
+    vocab_size: 512
+    num_quantizers: 4
+    num_quantizers_used: 4
+    tokenizer_downsample_ratio: 64
+    overlap_ratio: 0.25
+
+  braintokenizer_default:
+    tokenizer_name: "braintokenizer"
+    tokenizer_variant: "default"
+    tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/braintokenizer/BrainTokenizer.pt"
+    tokenizer_ckpt: "./brainstorm/neuro_tokenizers/braintokenizer/BrainTokenizer.pt"
+    tokenizer_config_path: "./brainstorm/neuro_tokenizers/braintokenizer/model_cfg.json"
+    vocab_size: 512
+    num_quantizers: 4
+    num_quantizers_used: 4
+    tokenizer_downsample_ratio: 64
+    overlap_ratio: 0.0
+
+# neuro_tokenizer settings
+model:
+  # Active tokenizer.
+  # Options you want to test:
+  #   biocodec
+  #   brainomni
+  #   braintokenizer
+  tokenizer_name: "biocodec"
+  tokenizer_variant: "default"
+
+  # Active tokenizer files.
+  tokenizer_checkpoint: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
+  tokenizer_ckpt: "./brainstorm/neuro_tokenizers/biocodec_ckpt.pt"
+  tokenizer_config_path: null
+
+  # Tokenizer shape.
+  # BioCodec default used by MEG-XL-style setup:
+  vocab_size: 256
+  num_quantizers: 6
+  num_quantizers_used: 6
+  tokenizer_downsample_ratio: 12
+  overlap_ratio: 0.0
+
+  latent_dim: 512
+  num_layers: 8
+  num_heads: 8
+  use_gradient_checkpointing: true
+
+# Training settings
+training:
+  batch_size: 1
+  num_epochs: 50
+  max_steps: null
+  learning_rate: 1e-4
+  warmup_steps: 250
+  gradient_clip_val: 1.0
+
+  # DataLoader settings
+  num_workers: 6
+  pin_memory: true
+  persistent_workers: true
+
+  # Sampler settings
+  use_recording_sampler: true
+  sampler_seed: 42
+
+# Logging settings
+logging:
+  wandb_project: "brainstorm"
+  wandb_entity: null
+  experiment_name: "criss-cross-eeg-multi-feq-50Hz"
+  log_every_n_steps: 10
+
+# Checkpoint settings
+checkpoint:
+  save_dir: "./checkpoints"
+  every_n_train_steps: 5000
+  save_top_k: -1
+  save_last: true
+  resume: false
+  resume_path: null
+
+# Trainer settings
+trainer:
+  accelerator: "gpu"
+  devices: 2
+  strategy: "fsdp"
+  precision: "bf16-mixed"
+  accumulate_grad_batches: 1
+  val_check_interval: 500
+
+# Reproducibility
+seed: 42
