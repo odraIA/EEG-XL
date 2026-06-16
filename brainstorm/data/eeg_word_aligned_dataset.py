@@ -664,14 +664,13 @@ class BIDSEEGWordAlignedDataset(Dataset):
 
         for _, row in df.iterrows():
             row_dict = row.to_dict()
-            if rec.get("task", "").lower() == "listeningcovert":
-                phase = " ".join(
-                    str(row_dict.get(col, ""))
-                    for col in ("phase", "condition", "trial_type", "task")
-                ).lower()
-                if phase and ("speak" in phase or "speechopen" in phase):
-                    continue
 
+            if rec.get("task", "").lower() == "listeningcovert":
+                trial_type = str(row_dict.get("trial_type", "")).strip().lower()
+
+                if trial_type != "listening":
+                    continue
+ 
             text_value = None
             for column in explicit_columns:
                 if column not in row_dict:
