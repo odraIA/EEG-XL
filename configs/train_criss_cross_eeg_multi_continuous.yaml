@@ -75,3 +75,14 @@ logging:
 
 checkpoint:
   save_dir: "./checkpoints/eeg_continuous_training"
+
+trainer:
+  accelerator: "gpu"
+  devices: 1
+  strategy: "auto"
+  precision: "bf16-mixed"
+  accumulate_grad_batches: 1
+  val_check_interval: 500
+
+training:
+  gradient_clip_val: 1.0
