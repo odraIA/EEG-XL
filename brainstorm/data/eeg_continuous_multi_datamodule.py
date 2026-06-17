@@ -429,5 +429,20 @@ class MultiEEGDataModule(pl.LightningDataModule):
             if callable(close):
                 close()
 
+    def get_dataset_name_mapping(self) -> Dict[int, str]:
+        dataset = (
+            self.val_dataset.dataset
+            if isinstance(self.val_dataset, Subset)
+            else self.val_dataset
+        )
+
+        if dataset is None or not hasattr(dataset, "dataset_names"):
+            return {}
+
+        return {
+            idx: name
+            for idx, name in enumerate(dataset.dataset_names)
+        }
+
 
 __all__ = ["MultiEEGDataModule"]
