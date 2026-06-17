@@ -380,6 +380,151 @@ class OpenNeuroEEGContinuousDataset(Dataset):
             )
             self._preprocess_recording(recording)
 
+    def _apply_eeg_montage(raw, raw_path: Path) -> None:
+        channel_set = set(raw.ch_names)
+
+        # ---------------------------------------------------------
+        # ds004408: BioSemi 128
+        # ---------------------------------------------------------
+        biosemi128_channels = {
+            f"{group}{index}"
+            for group in ("A", "B", "C", "D")
+            for index in range(1, 33)
+        }
+
+        if channel_set == biosemi128_channels:
+            montage = mne.channels.make_standard_montage("biosemi128")
+            raw.set_montage(
+                montage,
+                match_case=True,
+                on_missing="raise",
+            )
+            print("Applied BioSemi 128 montage")
+            return
+
+        # ---------------------------------------------------------
+        # ds007808: g.Pangolin coordinates from BIDS sidecars
+        # ---------------------------------------------------------
+        if all(re.fullmatch(r"EEG\d{3}", name) for name in raw.ch_names):
+            eeg_dir = raw_path.parent
+
+            acquisition_match = re.search(r"_acq-([^_]+)", raw_path.name)
+            acquisition = (
+                acquisition_match.group(1)
+                if acquisition_match is not None
+                else None
+            )
+
+            electrode_candidates = list(eeg_dir.glob("*_electrodes.tsv"))
+
+            if acquisition is not None:
+                acquisition_candidates = [
+                    path
+                    for path in electrode_candidates
+                    if f"_acq-{acquisition}" in path.name
+                ]
+
+                if acquisition_candidates:
+                    electrode_candidates = acquisition_candidates
+
+            if len(electrode_candidates) != 1:
+                raise RuntimeError(
+                    f"Could not identify a unique electrodes.tsv for {raw_path}. "
+                    f"Candidates: {electrode_candidates}"
+                )
+
+            electrodes_path = electrode_candidates[0]
+            coordsystem_path = electrodes_path.with_name(
+                electrodes_path.name.replace(
+                    "_electrodes.tsv",
+                    "_coordsystem.json",
+                )
+            )
+
+            if not coordsystem_path.exists():
+                raise FileNotFoundError(
+                    f"Missing coordinate system file: {coordsystem_path}"
+                )
+
+            electrodes = pd.read_csv(electrodes_path, sep="\t")
+
+            required_columns = {"name", "x", "y", "z"}
+            missing_columns = required_columns - set(electrodes.columns)
+
+            if missing_columns:
+                raise ValueError(
+                    f"{electrodes_path} is missing columns "
+                    f"{sorted(missing_columns)}"
+                )
+
+            with open(coordsystem_path, "r", encoding="utf-8") as file:
+                coordinate_metadata = json.load(file)
+
+            unit = str(
+                coordinate_metadata.get("EEGCoordinateUnits", "m")
+            ).lower()
+
+            unit_scale = {
+                "m": 1.0,
+                "cm": 1e-2,
+                "mm": 1e-3,
+            }
+
+            if unit not in unit_scale:
+                raise ValueError(
+                    f"Unsupported EEG coordinate unit: {unit}"
+                )
+
+            scale = unit_scale[unit]
+            raw_channels = set(raw.ch_names)
+            channel_positions = {}
+
+            for _, row in electrodes.iterrows():
+                name = str(row["name"]).strip()
+
+                if name not in raw_channels:
+                    continue
+
+                xyz = np.asarray(
+                    [row["x"], row["y"], row["z"]],
+                    dtype=np.float64,
+                )
+
+                if not np.all(np.isfinite(xyz)):
+                    continue
+
+                channel_positions[name] = xyz * scale
+
+            missing_positions = raw_channels - set(channel_positions)
+
+            if missing_positions:
+                raise ValueError(
+                    f"Missing positions for {len(missing_positions)} channels: "
+                    f"{sorted(missing_positions)[:10]}"
+                )
+
+            montage = mne.channels.make_dig_montage(
+                ch_pos=channel_positions,
+                coord_frame="head",
+            )
+
+            raw.set_montage(
+                montage,
+                match_case=True,
+                on_missing="raise",
+            )
+
+            print(
+                f"Applied g.Pangolin BIDS montage from "
+                f"{electrodes_path.name}"
+            )
+            return
+
+        print(
+            "No known montage detected; existing channel positions "
+            "will be used."
+        )
+
     def _preprocess_recording(self, recording: Dict[str, Any]) -> None:
         raw_path = Path(recording["raw_path"])
         raw = self._read_raw(raw_path, preload=True)
@@ -505,6 +650,8 @@ class OpenNeuroEEGContinuousDataset(Dataset):
 
             total_channels = len(raw.ch_names)
             raw.pick(channel_names)
+
+            self._apply_eeg_montage(raw, raw_path)
 
             print(
                 f"{raw_path.name}: selected "
