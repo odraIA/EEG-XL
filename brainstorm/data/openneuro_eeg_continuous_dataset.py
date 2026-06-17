@@ -21,6 +21,7 @@ import bisect
 import hashlib
 import json
 import math
+import re
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
@@ -363,11 +364,7 @@ class OpenNeuroEEGContinuousDataset(Dataset):
         except Exception:
             return False
 
-    def _apply_eeg_montage(
-        self,
-        raw: mne.io.BaseRaw,
-        raw_path: Path,
-    ) -> None:
+    def _preprocess_all(self) -> None:
         for index, recording in enumerate(self.source_recordings, start=1):
             cache_path = Path(recording["cache_path"])
             if self._cache_is_readable(cache_path):
@@ -384,7 +381,11 @@ class OpenNeuroEEGContinuousDataset(Dataset):
             )
             self._preprocess_recording(recording)
 
-    def _apply_eeg_montage(raw, raw_path: Path) -> None:
+    @staticmethod
+    def _apply_eeg_montage(
+        raw: mne.io.BaseRaw,
+        raw_path: Path,
+    ) -> None:
         channel_set = set(raw.ch_names)
 
         # ---------------------------------------------------------
