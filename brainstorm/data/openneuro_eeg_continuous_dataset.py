@@ -383,7 +383,92 @@ class OpenNeuroEEGContinuousDataset(Dataset):
     def _preprocess_recording(self, recording: Dict[str, Any]) -> None:
         raw_path = Path(recording["raw_path"])
         raw = self._read_raw(raw_path, preload=True)
+
         try:
+            # ---------------------------------------------------------
+            # Apply the channel types declared in the BIDS channels.tsv
+            # ---------------------------------------------------------
+            channels_path_value = recording.get("channels_path")
+
+            if channels_path_value is not None:
+                channels_path = Path(channels_path_value)
+            else:
+                marker = "_eeg."
+
+                if marker not in raw_path.name:
+                    raise ValueError(
+                        f"Cannot infer channels.tsv path from {raw_path}"
+                    )
+
+                bids_prefix = raw_path.name.split(marker, maxsplit=1)[0]
+                channels_path = raw_path.with_name(
+                    f"{bids_prefix}_channels.tsv"
+                )
+
+            if not channels_path.exists():
+                raise FileNotFoundError(
+                    f"Missing BIDS channels file for {raw_path}: "
+                    f"{channels_path}"
+                )
+
+            channels_df = pd.read_csv(channels_path, sep="\t")
+
+            required_columns = {"name", "type"}
+            missing_columns = required_columns - set(channels_df.columns)
+
+            if missing_columns:
+                raise ValueError(
+                    f"{channels_path} is missing columns: "
+                    f"{sorted(missing_columns)}"
+                )
+
+            bids_to_mne_type = {
+                "EEG": "eeg",
+                "EOG": "eog",
+                "ECG": "ecg",
+                "EMG": "emg",
+                "MISC": "misc",
+                "TRIG": "stim",
+                "STIM": "stim",
+            }
+
+            channel_types = {}
+            missing_from_raw = []
+
+            for _, row in channels_df.iterrows():
+                channel_name = str(row["name"]).strip()
+                bids_type = str(row["type"]).strip().upper()
+
+                if channel_name not in raw.ch_names:
+                    missing_from_raw.append(channel_name)
+                    continue
+
+                channel_types[channel_name] = bids_to_mne_type.get(
+                    bids_type,
+                    "misc",
+                )
+
+            if not channel_types:
+                raise ValueError(
+                    f"No channels from {channels_path} matched "
+                    f"the channels in {raw_path}"
+                )
+
+            raw.set_channel_types(
+                channel_types,
+                on_unit_change="ignore",
+            )
+
+            if missing_from_raw:
+                warnings.warn(
+                    f"{len(missing_from_raw)} channels from "
+                    f"{channels_path} were not found in {raw_path}: "
+                    f"{missing_from_raw[:10]}"
+                )
+
+            # ---------------------------------------------------------
+            # Keep only genuine EEG channels
+            # ---------------------------------------------------------
             eeg_picks = mne.pick_types(
                 raw.info,
                 eeg=True,
@@ -394,21 +479,49 @@ class OpenNeuroEEGContinuousDataset(Dataset):
                 stim=False,
                 exclude=[],
             )
+
             if len(eeg_picks) == 0:
-                raise ValueError(f"No EEG channels found in {raw_path}")
+                raise ValueError(
+                    f"No EEG channels found in {raw_path}"
+                )
 
-            channel_names = [raw.ch_names[index] for index in eeg_picks]
+            channel_names = [
+                raw.ch_names[index]
+                for index in eeg_picks
+            ]
+
             if self.channel_filter is not None:
-                channel_names = [name for name in channel_names if self.channel_filter(name)]
-            if not channel_names:
-                raise ValueError(f"Channel filter removed every EEG channel in {raw_path}")
+                channel_names = [
+                    name
+                    for name in channel_names
+                    if self.channel_filter(name)
+                ]
 
+            if not channel_names:
+                raise ValueError(
+                    f"Channel filter removed every EEG channel "
+                    f"in {raw_path}"
+                )
+
+            total_channels = len(raw.ch_names)
             raw.pick(channel_names)
+
+            print(
+                f"{raw_path.name}: selected "
+                f"{len(raw.ch_names)} EEG channels from "
+                f"{total_channels} total channels"
+            )
+
+            # ---------------------------------------------------------
+            # Filtering and resampling
+            # ---------------------------------------------------------
             nyquist = float(raw.info["sfreq"]) / 2.0
+
             if self.h_freq >= nyquist:
                 raise ValueError(
-                    f"h_freq={self.h_freq} must be below the original Nyquist "
-                    f"frequency {nyquist:.3f} Hz for {raw_path}"
+                    f"h_freq={self.h_freq} must be below the "
+                    f"original Nyquist frequency {nyquist:.3f} Hz "
+                    f"for {raw_path}"
                 )
 
             raw.filter(
@@ -418,39 +531,96 @@ class OpenNeuroEEGContinuousDataset(Dataset):
                 n_jobs=1,
                 verbose=False,
             )
-            if not math.isclose(float(raw.info["sfreq"]), self.target_sfreq, rel_tol=0, abs_tol=1e-6):
-                raw.resample(self.target_sfreq, n_jobs=1, verbose=False)
 
-            data = raw.get_data().astype(np.float32, copy=False)
+            if not math.isclose(
+                float(raw.info["sfreq"]),
+                self.target_sfreq,
+                rel_tol=0,
+                abs_tol=1e-6,
+            ):
+                raw.resample(
+                    self.target_sfreq,
+                    n_jobs=1,
+                    verbose=False,
+                )
+
+            # ---------------------------------------------------------
+            # Cache preprocessed EEG
+            # ---------------------------------------------------------
+            data = raw.get_data().astype(
+                np.float32,
+                copy=False,
+            )
+
             sensor_xyzdir = self._sensor_xyzdir(raw)
-            sensor_types = np.full(data.shape[0], EEG_SENSOR_TYPE_ID, dtype=np.int16)
-            channel_names_array = np.asarray(raw.ch_names, dtype=h5py.string_dtype("utf-8"))
+
+            sensor_types = np.full(
+                data.shape[0],
+                EEG_SENSOR_TYPE_ID,
+                dtype=np.int16,
+            )
+
+            channel_names_array = np.asarray(
+                raw.ch_names,
+                dtype=h5py.string_dtype("utf-8"),
+            )
 
             cache_path = Path(recording["cache_path"])
-            cache_path.parent.mkdir(parents=True, exist_ok=True)
-            temporary_path = cache_path.with_suffix(cache_path.suffix + ".tmp")
+            cache_path.parent.mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            temporary_path = cache_path.with_suffix(
+                cache_path.suffix + ".tmp"
+            )
+
             if temporary_path.exists():
                 temporary_path.unlink()
 
             with h5py.File(temporary_path, "w") as h5_file:
-                h5_file.create_dataset("data", data=data, compression="lzf")
-                h5_file.create_dataset("sensor_xyzdir", data=sensor_xyzdir)
-                h5_file.create_dataset("sensor_types", data=sensor_types)
-                h5_file.create_dataset("channel_names", data=channel_names_array)
+                h5_file.create_dataset(
+                    "data",
+                    data=data,
+                    compression="lzf",
+                )
+
+                h5_file.create_dataset(
+                    "sensor_xyzdir",
+                    data=sensor_xyzdir,
+                )
+
+                h5_file.create_dataset(
+                    "sensor_types",
+                    data=sensor_types,
+                )
+
+                h5_file.create_dataset(
+                    "channel_names",
+                    data=channel_names_array,
+                )
+
                 h5_file.attrs["n_samples"] = int(data.shape[1])
                 h5_file.attrs["n_channels"] = int(data.shape[0])
-                h5_file.attrs["sample_freq"] = float(self.target_sfreq)
+                h5_file.attrs["sample_freq"] = float(
+                    self.target_sfreq
+                )
                 h5_file.attrs["subject"] = recording["subject"]
                 h5_file.attrs["session"] = recording["session"]
                 h5_file.attrs["task"] = recording["task"]
                 h5_file.attrs["run"] = recording["run"]
                 h5_file.attrs["raw_path"] = str(raw_path)
+                h5_file.attrs["channels_path"] = str(
+                    channels_path
+                )
                 h5_file.attrs["l_freq"] = self.l_freq
                 h5_file.attrs["h_freq"] = self.h_freq
 
             temporary_path.replace(cache_path)
+
         finally:
             close = getattr(raw, "close", None)
+
             if callable(close):
                 close()
 
