@@ -1,70 +1,122 @@
 import torch
+import torch.nn as nn
 
-from brainstorm.models.eeg_criss_cross_transformer import (
-    MaskedSpatialTemporalEncoder,
+from brainstorm.data.eeg_continuous_masked_dataset import (
+    ContinuityAwareEEGMixin,
+)
+from brainstorm.models.criss_cross_transformer import (
+    CrissCrossTransformerModule,
 )
 
 
-def test_invalid_sensor_and_time_tokens_cannot_change_valid_outputs():
-    torch.manual_seed(7)
-    encoder = MaskedSpatialTemporalEncoder(
-        dim=16,
-        depth=2,
-        heads=4,
-        dropout=0.0,
-        causal=False,
+class DummyTokenizer(nn.Module):
+    n_q = 1
+    vocab_size = 8
+    downsample_ratio = 2
+
+    def __init__(self):
+        super().__init__()
+        self.register_buffer("codebook", torch.randn(8, 2))
+
+    def codebook_embedding(self, quantizer_idx):
+        assert quantizer_idx == 0
+        return self.codebook
+
+
+def make_model():
+    torch.manual_seed(3)
+    return CrissCrossTransformerModule(
+        tokenizer=DummyTokenizer(),
+        latent_dim=8,
+        num_layers=1,
+        num_heads=2,
+        vocab_size=8,
+        sampling_rate=2,
+        mask_duration=2.0,
+        num_subsegments_to_mask=2,
+        fourier_pos_dim=4,
+        num_sensor_types=3,
     ).eval()
 
-    x = torch.randn(1, 4, 8, 16)
-    sensor_mask = torch.tensor([[True, True, True, False]])
-    time_mask = torch.tensor(
-        [[True, True, True, True, True, False, False, False]]
-    )
-    valid = sensor_mask.unsqueeze(-1) & time_mask.unsqueeze(1)
 
-    changed = x.clone()
-    changed[~valid] = torch.randn_like(changed[~valid]) * 1000.0
+def test_complete_run_windows_drop_incomplete_remainder():
+    dataset = object.__new__(ContinuityAwareEEGMixin)
+    dataset.segment_length = 10.0
+    dataset.target_sfreq = 1.0
+    dataset.subsegment_duration = 3.0
+    dataset.segment_starts = []
+    dataset.recordings = [
+        {
+            "total_samples": 25,
+            "target_ranges": [(0, 25)],
+        }
+    ]
+
+    index = ContinuityAwareEEGMixin._build_segment_index(dataset)
+
+    assert dataset.segment_starts == [[0, 10]]
+    assert index == [(0, 0), (0, 1)]
+
+
+def test_targeted_mask_never_leaves_listening_or_valid_sensors():
+    model = make_model()
+    target_mask = torch.tensor(
+        [[False, False, True, True, True, True, True, True, False, False]]
+    )
+    sensor_mask = torch.tensor([[True, False]])
+
+    mask, _ = model._generate_temporal_block_mask(
+        B=1,
+        n_channels=2,
+        n_timesteps=10,
+        sensor_mask=sensor_mask,
+        device=torch.device("cpu"),
+        target_mask=target_mask,
+    )
+
+    assert not mask[0, 1].any()
+    assert torch.all(mask[0, 0] <= target_mask[0])
+    assert int(mask[0, 0].sum()) <= 2 * model.mask_length
+
+
+def test_eeg_orientation_is_gated_but_meg_orientation_is_kept():
+    model = make_model()
+    codes = torch.zeros(1, 2, 1, 3, dtype=torch.long)
+    sensor_xyz = torch.zeros(1, 2, 3)
+    sensor_types = torch.tensor([[2, 0]])  # EEG, GRAD
+
+    orientation_a = torch.zeros(1, 2, 3)
+    orientation_b = orientation_a.clone()
+    orientation_b[:, :, 0] = 0.75
 
     with torch.no_grad():
-        output = encoder(
-            x,
-            sensor_mask=sensor_mask,
-            time_mask=time_mask,
+        embedded_a, _ = model._construct_embeddings(
+            codes,
+            sensor_xyz,
+            orientation_a,
+            sensor_types,
         )
-        changed_output = encoder(
-            changed,
-            sensor_mask=sensor_mask,
-            time_mask=time_mask,
+        embedded_b, _ = model._construct_embeddings(
+            codes,
+            sensor_xyz,
+            orientation_b,
+            sensor_types,
         )
 
-    assert torch.allclose(
-        output[valid],
-        changed_output[valid],
-        atol=1e-5,
-        rtol=1e-5,
+    assert torch.allclose(embedded_a[:, 0], embedded_b[:, 0])
+    assert not torch.allclose(embedded_a[:, 1], embedded_b[:, 1])
+
+
+def test_meg_batch_keeps_original_five_item_interface():
+    batch = (
+        torch.randn(2, 4, 20),
+        torch.randn(2, 4, 6),
+        torch.zeros(2, 4, dtype=torch.long),
+        torch.ones(2, 4),
+        torch.tensor([0, 1]),
     )
-    assert torch.count_nonzero(output[~valid]) == 0
-    assert torch.count_nonzero(changed_output[~valid]) == 0
 
+    unpacked = CrissCrossTransformerModule._unpack_batch(batch)
 
-def test_all_invalid_attention_rows_remain_finite_and_zero():
-    encoder = MaskedSpatialTemporalEncoder(
-        dim=16,
-        depth=1,
-        heads=4,
-        dropout=0.0,
-        causal=False,
-    ).eval()
-    x = torch.randn(2, 3, 5, 16)
-    sensor_mask = torch.zeros(2, 3, dtype=torch.bool)
-    time_mask = torch.zeros(2, 5, dtype=torch.bool)
-
-    with torch.no_grad():
-        output = encoder(
-            x,
-            sensor_mask=sensor_mask,
-            time_mask=time_mask,
-        )
-
-    assert torch.isfinite(output).all()
-    assert torch.count_nonzero(output) == 0
+    assert unpacked[4] is None
+    assert torch.equal(unpacked[5], batch[4])
