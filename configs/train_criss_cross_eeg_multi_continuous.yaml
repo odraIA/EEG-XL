@@ -57,6 +57,27 @@ datasets_config:
     short_stream_policy: "repeat"
     merge_gap_seconds: 0.0
 
+  - type: "sparrkulee"
+    data_root: "/workspace/datasets/sparrkulee"
+    subjects: null
+    sessions: null
+    tasks: ["listeningActive"]
+
+    # Keep subjects entirely disjoint between train and validation. These five
+    # subjects are present in the downloaded varyingStories12 cohort.
+    val_subjects:
+      - "sub-101"
+      - "sub-102"
+      - "sub-103"
+      - "sub-104"
+      - "sub-105"
+
+    # SparrKULee recordings are continuous active listening runs. The loader
+    # also supports the .bdf.gz files used by older sessions and removes the
+    # temporary decompressed BDF after creating the 50 Hz cache.
+    cover_all_samples: true
+    short_stream_policy: "repeat"
+
 data:
   task_mode: "listening"
   cache_dir: "./data/cache/eeg_continuous"
@@ -70,7 +91,7 @@ data:
   allow_missing_word_alignment: true
 
 logging:
-  experiment_name: "criss-cross-eeg-continuous-listening-50hz"
+  experiment_name: "criss-cross-eeg-continuous-listening-sparrkulee-50hz"
   save_dir: "./logs/eeg_continuous_training"
 
 checkpoint:
