@@ -1,4 +1,4 @@
-"""Multi-dataset DataModule for continuous OpenNeuro EEG pre-training.
+"""Multi-dataset DataModule for continuous EEG pre-training.
 
 This module has the same public class name and nearly the same constructor as
 ``eeg_multi_datamodule.py`` so the existing EEG training script can use it
@@ -19,6 +19,10 @@ from torch.utils.data import DataLoader, Subset
 from .eeg_multi_dataset import MultiEEGDataset
 from .eeg_word_aligned_dataset import scan_bids_eeg_channel_counts
 from .openneuro_eeg_continuous_dataset import OpenNeuroEEGContinuousDataset
+from .sparrkulee_eeg_continuous_dataset import (
+    SparrKULeeEEGContinuousDataset,
+    scan_sparrkulee_eeg_channel_counts,
+)
 from .subsampled_dataset import SubsampledRecordingDataset
 
 
@@ -31,11 +35,15 @@ _DATASET_ALIASES = {
     "openneuro_ds007808": "openneuro_ds007808",
     "openneuroeeg_ds007808": "openneuro_ds007808",
     "openneuroEEG_ds007808": "openneuro_ds007808",
+    "sparrkulee": "sparrkulee",
+    "sparrkulee_eeg": "sparrkulee",
+    "sparrkuleeeeg": "sparrkulee",
 }
 
 _DEFAULT_TASKS = {
     "openneuro_ds004408": ["listening"],
     "openneuro_ds007808": ["listening", "listeningcovert"],
+    "sparrkulee": ["listeningActive"],
 }
 
 
@@ -96,7 +104,7 @@ def _exclude(
 
 
 class MultiEEGDataModule(pl.LightningDataModule):
-    """Combine multiple continuous OpenNeuro EEG datasets for pre-training.
+    """Combine multiple continuous EEG datasets for pre-training.
 
     ``words_per_segment``, ``window_onset_offset`` and
     ``allow_missing_word_alignment`` remain in the signature only because the
@@ -184,10 +192,19 @@ class MultiEEGDataModule(pl.LightningDataModule):
     def _infer_max_channel_dim(self) -> Optional[int]:
         counts = []
         for config in self.datasets_config:
-            tasks = config.get("tasks", self._default_tasks(config["type"]))
-            counts.extend(
-                scan_bids_eeg_channel_counts(config["data_root"], tasks=tasks)
-            )
+            canonical = self._canonical_type(config["type"])
+            tasks = config.get("tasks", self._default_tasks(canonical))
+            if canonical == "sparrkulee":
+                counts.extend(
+                    scan_sparrkulee_eeg_channel_counts(
+                        config["data_root"],
+                        tasks=tasks,
+                    )
+                )
+            else:
+                counts.extend(
+                    scan_bids_eeg_channel_counts(config["data_root"], tasks=tasks)
+                )
         if not counts:
             return None
         return max(item.n_channels for item in counts)
@@ -264,7 +281,13 @@ class MultiEEGDataModule(pl.LightningDataModule):
             if sessions:
                 sessions = sessions[:1]
 
-        return OpenNeuroEEGContinuousDataset(
+        dataset_class = (
+            SparrKULeeEEGContinuousDataset
+            if canonical == "sparrkulee"
+            else OpenNeuroEEGContinuousDataset
+        )
+
+        return dataset_class(
             data_root=config["data_root"],
             dataset_name=config.get("dataset_name", canonical),
             segment_length=config.get("segment_length", self.segment_length),
