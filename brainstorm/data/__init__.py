@@ -15,6 +15,8 @@ from .eeg_word_aligned_dataset import (
     OpenNeuroEEGWordAlignedDataset,
     PooledWordAlignedDataset,
 )
+from .eegdash_eeg_continuous_dataset import EEGDashEEGContinuousDataset
+from .zuco_eeg_continuous_dataset import ZuCoEEGContinuousDataset
 from .smn4lang_dataset import SMN4LangMEGDataset
 from .samplers import RecordingShuffleSampler
 from .multi_dataset import MultiMEGDataset
@@ -42,6 +44,8 @@ __all__ = [
     "EEGDashWordAlignedDataset",
     "OpenNeuroEEGWordAlignedDataset",
     "PooledWordAlignedDataset",
+    "EEGDashEEGContinuousDataset",
+    "ZuCoEEGContinuousDataset",
     "SMN4LangMEGDataset",
     "RecordingShuffleSampler",
     "MultiMEGDataset",
