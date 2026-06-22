@@ -5,49 +5,60 @@ This launcher runs one independent experiment per GPU and automatically assigns 
 1. train on continuous **reading** EEG (EEGDash NM000228 + ZuCo NR);
 2. train on continuous **listening** EEG (ds004408 + ds007808 + SparrKULee), initialized from the best checkpoint produced in stage 1.
 
-The existing Docker working directory, dataset mounts and preprocessing cache are preserved. In particular, all stages keep using:
+The existing Docker working directory and dataset mounts are preserved. All stages use:
 
 ```text
 /workspace/datasets/...
-./data/cache/eeg_reading_listening_continuous
+./data/cache/eeg_preprocessed
 ./logs/eeg_reading_listening_training
 ./checkpoints/eeg_reading_listening_training
 ```
 
 ## Experiment count
 
-The fixed-50-Hz control matrix contains:
+The retained bands are:
 
-```text
-6 bands × 4 tokenizers × 2 initializations = 48 pipelines
-```
-
-Four bands exceed the 25 Hz Nyquist limit of a 50 Hz output signal, so they are repeated with a higher target sampling rate:
-
-```text
-4 affected bands × 4 tokenizers × 2 initializations = 32 additional pipelines
-```
-
-Total:
-
-```text
-80 experiment pipelines
-160 training stages (80 reading + 80 listening)
-80 final listening models
-```
-
-Frequency definitions:
-
-| Band | Range | Fixed control | Nyquist-aware repetition |
+| Band | Range | Fixed 50 Hz | Nyquist-aware |
 |---|---:|---:|---:|
 | alpha | 8–12 Hz | 50 Hz | — |
 | beta | 13–24 Hz | 50 Hz | — |
-| beta-gamma | 13–45 Hz | 50 Hz | 100 Hz |
 | low-gamma | 30–45 Hz | 50 Hz | 100 Hz |
-| gamma | 30–55 Hz | 50 Hz | 128 Hz |
-| high-gamma | 70–120 Hz | 50 Hz | 250 Hz |
+| full-band | 0.1–50 Hz | 50 Hz | 128 Hz |
 
-The fixed-50-Hz runs above 25 Hz are deliberate controls of the current filter-then-resample pipeline. MNE anti-alias filtering means those runs do **not** preserve the complete requested gamma band after resampling; the Nyquist-aware repetitions are the scientifically valid versions for retaining those frequencies.
+The fixed-50-Hz versions of low-gamma and full-band are deliberate controls of the MEG-XL filter-then-resample setup. They do not preserve the complete requested frequency range after resampling, but they are kept to test whether that behavior contributes to performance. The Nyquist-aware counterparts retain the requested bands.
+
+Each tokenizer/initialization pair therefore contains six profiles:
+
+```text
+alpha fixed50
+beta fixed50
+low-gamma fixed50
+low-gamma Nyquist-aware
+full-band fixed50
+full-band Nyquist-aware
+```
+
+With two tokenizers and two initialization modes:
+
+```text
+6 profiles × 2 tokenizers × 2 initializations = 24 pipelines
+48 training stages = 24 reading + 24 listening
+24 final listening models
+```
+
+Default tokenizers:
+
+```text
+biocodec
+brainomni_base
+```
+
+Default initialization modes:
+
+```text
+scratch
+pretrained
+```
 
 ## Run
 
@@ -62,14 +73,19 @@ Defaults:
 - GPU workers: `0 1`;
 - one training process per GPU;
 - initial batch-size candidates: `16 12 8 6 4 2 1`;
-- initializations: `scratch pretrained`;
-- tokenizers: `biocodec brainomni_base brainomni_tiny braintokenizer`;
-- 50 epochs per stage, inherited from the existing config;
+- 50 epochs per stage, inherited from the existing configs;
 - continue with the next queued pipeline after a failure.
+
+The shared cache can be overridden explicitly:
+
+```bash
+EEG_CACHE_DIR=./data/cache/eeg_preprocessed \
+  bash scripts/run_eeg_reading_then_listening_sweep.sh
+```
 
 ## Automatic batch sizing
 
-Before the first full run for a `(stage, band, sampling profile, tokenizer, GPU-memory size)` combination, the launcher executes a two-step probe from the largest candidate to the smallest. The first candidate that completes is cached in `batch_sizes.tsv`. If a real run still raises an OOM, it is automatically retried with the next smaller candidate.
+Before the first full run for a `(stage, band, sampling profile, tokenizer, GPU-memory size)` combination, the launcher executes a two-step probe from the largest candidate to the smallest. The first candidate that completes is cached in `batch_sizes.tsv`. If a real run raises an OOM, it is retried with the next smaller candidate.
 
 To start conservatively at batch size 4 and only try smaller values:
 
@@ -87,7 +103,7 @@ EEG_AUTO_BATCH=false EEG_DEFAULT_BATCH_SIZE=4 \
 
 ## Useful smoke tests
 
-Generate the full queue without launching Docker:
+Generate the complete queue without launching Docker:
 
 ```bash
 EEG_DRY_RUN=1 bash scripts/run_eeg_reading_then_listening_sweep.sh
@@ -121,11 +137,11 @@ results/eeg_reading_listening_sweep/<timestamp>/
 └── stages/
 ```
 
-The actual model outputs remain in the established locations:
+The actual model outputs remain in:
 
 ```text
 logs/eeg_reading_listening_training/<experiment>/
 checkpoints/eeg_reading_listening_training/<experiment>/
 ```
 
-A completed reading stage exposes `checkpoint_best.pt` (or `checkpoint_latest.pt` as fallback), which is passed to the corresponding listening stage through `model.promoted_checkpoint`.
+A completed reading stage exposes `checkpoint_best.pt`, or `checkpoint_latest.pt` as fallback. That checkpoint is passed to the corresponding listening stage through `model.promoted_checkpoint`.
