@@ -402,7 +402,8 @@ run_stage() {
 }
 
 find_stage_checkpoint() {
-  local experiment="$1" checkpoint_root="checkpoints/eeg_reading_listening_training/${experiment}"
+  local experiment="$1"
+  local checkpoint_root="checkpoints/eeg_reading_listening_training/${experiment}"
   if [[ -s "${checkpoint_root}/checkpoint_best.pt" ]]; then
     printf './%s\n' "${checkpoint_root}/checkpoint_best.pt"
   elif [[ -s "${checkpoint_root}/checkpoint_latest.pt" ]]; then
@@ -413,7 +414,8 @@ find_stage_checkpoint() {
 }
 
 stage_already_completed() {
-  local experiment="$1" result="logs/eeg_reading_listening_training/${experiment}/final_results.json"
+  local experiment="$1"
+  local result="logs/eeg_reading_listening_training/${experiment}/final_results.json"
   [[ -s "$result" ]] || return 1
   python3 - "$result" <<'PY'
 import json
