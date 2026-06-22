@@ -68,7 +68,7 @@ datasets_config:
 
 data:
   task_mode: "listening"
-  cache_dir: "./data/cache/eeg_continuous"
+  cache_dir: "./data/cache/eeg_preprocessed"
   segment_length: 150.0
   subsegment_duration: 3.0
 

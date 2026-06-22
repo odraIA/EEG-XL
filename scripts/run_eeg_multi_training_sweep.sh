@@ -213,7 +213,7 @@ for init_mode in "${INIT_MODES[@]}"; do
         "model.sampling_rate=${target_sfreq%.*}"
         "data.l_freq=${l_freq}"
         "data.h_freq=${h_freq}"
-        "data.cache_dir=./data/cache/eeg_multi_training/${band}_${tokenizer}"
+        "data.cache_dir=./data/cache/eeg_preprocessed"
         "logging.experiment_name=${exp}"
         "logging.save_dir=./logs/eeg_multi_training"
         "checkpoint.save_dir=./checkpoints/eeg_multi_training"

@@ -181,7 +181,7 @@ class MultiEEGDataModule(pl.LightningDataModule):
         subsegment_duration: float = 3.0,
         words_per_segment: int = 50,
         window_onset_offset: float = -0.5,
-        cache_dir: str = "./data/cache/eeg_continuous",
+        cache_dir: str = "./data/cache/eeg_preprocessed",
         l_freq: float = 0.1,
         h_freq: float = 40.0,
         target_sfreq: float = 50.0,
