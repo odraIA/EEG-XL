@@ -21,6 +21,10 @@ from .eeg_continuous_multi_datamodule import (
 class MultiEEGDataModule(LegacyContinuousEEGDataModule):
     """Use complete physical runs and provide an optional target-time mask."""
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        kwargs.setdefault("cache_dir", "./data/cache/eeg_preprocessed")
+        super().__init__(*args, **kwargs)
+
     def _create_dataset(
         self,
         config: Dict[str, Any],
