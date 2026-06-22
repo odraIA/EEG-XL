@@ -5,10 +5,11 @@ set -uo pipefail
 #   1) reading EEG
 #   2) listening EEG initialized from the best reading checkpoint
 #
-# The default matrix contains:
-#   - 48 fixed-50-Hz controls: 6 bands x 4 tokenizers x 2 initializations
-#   - 32 Nyquist-aware repetitions: 4 affected bands x 4 tokenizers x 2 initializations
-#   - 80 experiment pipelines total, each with two training stages (160 stage runs)
+# Default matrix:
+#   - alpha and beta at 50 Hz
+#   - low-gamma and full-band both at 50 Hz and Nyquist-aware sampling rates
+#   - 6 profiles x 2 tokenizers x 2 initializations = 24 pipelines
+#   - 48 stage runs in total (24 reading + 24 listening)
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR" || exit 1
@@ -33,17 +34,17 @@ MAX_STEPS="${EEG_MAX_STEPS:-}"
 NUM_EPOCHS="${EEG_NUM_EPOCHS:-}"
 LIMIT="${EEG_SWEEP_LIMIT:-0}"
 DRY_RUN="${EEG_DRY_RUN:-0}"
+CACHE_DIR="${EEG_CACHE_DIR:-./data/cache/eeg_preprocessed}"
 
 read -r -a GPUS <<< "${EEG_GPUS:-0 1}"
 read -r -a INIT_MODES <<< "${EEG_INIT_MODES:-scratch pretrained}"
-read -r -a TOKENIZERS <<< "${EEG_TOKENIZERS:-biocodec brainomni_base brainomni_tiny braintokenizer}"
+read -r -a TOKENIZERS <<< "${EEG_TOKENIZERS:-biocodec brainomni_base}"
 read -r -a BATCH_CANDIDATES <<< "$BATCH_CANDIDATES_RAW"
 
 if [[ ${#GPUS[@]} -lt 1 ]]; then
   echo "EEG_GPUS must contain at least one GPU id." >&2
   exit 2
 fi
-
 if [[ -n "$MAX_STEPS" && -n "$NUM_EPOCHS" ]]; then
   echo "Set only one of EEG_MAX_STEPS or EEG_NUM_EPOCHS." >&2
   exit 2
@@ -61,15 +62,11 @@ RUNS_FILE="${SWEEP_ROOT}/runs.tsv"
 
 mkdir -p \
   "$SWEEP_ROOT" \
-  data/cache/eeg_reading_listening_continuous \
+  "$CACHE_DIR" \
   logs/eeg_reading_listening_training \
   checkpoints/eeg_reading_listening_training \
   results/eeg_reading_listening_sweep \
   wandb
-
-sanitize() {
-  printf '%s' "$1" | tr -c '[:alnum:]_.-' '_'
-}
 
 is_true() {
   case "${1,,}" in
@@ -78,12 +75,13 @@ is_true() {
   esac
 }
 
+sanitize() {
+  printf '%s' "$1" | tr -c '[:alnum:]_.-' '_'
+}
+
 is_oom_failure() {
-  local exit_code="$1"
-  local log_path="$2"
-  if [[ "$exit_code" == "137" || "$exit_code" == "134" ]]; then
-    return 0
-  fi
+  local exit_code="$1" log_path="$2"
+  [[ "$exit_code" == "137" || "$exit_code" == "134" ]] && return 0
   grep -Eiq \
     'CUDA out of memory|OutOfMemoryError|CUDA error: out of memory|CUBLAS_STATUS_ALLOC_FAILED|CUDA error: an illegal memory access|DefaultCPUAllocator:.*allocate memory' \
     "$log_path" 2>/dev/null
@@ -123,41 +121,15 @@ tokenizer_overrides() {
         'model.tokenizer_downsample_ratio=64' \
         'model.overlap_ratio=0.25'
       ;;
-    brainomni_tiny)
-      printf '%s\n' \
-        'model.tokenizer_name=brainomni_tiny' \
-        'model.tokenizer_variant=tiny' \
-        'model.tokenizer_checkpoint=./brainstorm/neuro_tokenizers/tiny/BrainOmni.pt' \
-        'model.tokenizer_ckpt=./brainstorm/neuro_tokenizers/tiny/BrainOmni.pt' \
-        'model.tokenizer_config_path=./brainstorm/neuro_tokenizers/tiny/model_cfg.json' \
-        'model.vocab_size=512' \
-        'model.num_quantizers=4' \
-        'model.num_quantizers_used=4' \
-        'model.tokenizer_downsample_ratio=64' \
-        'model.overlap_ratio=0.25'
-      ;;
-    braintokenizer)
-      printf '%s\n' \
-        'model.tokenizer_name=braintokenizer' \
-        'model.tokenizer_variant=default' \
-        'model.tokenizer_checkpoint=./brainstorm/neuro_tokenizers/braintokenizer/BrainTokenizer.pt' \
-        'model.tokenizer_ckpt=./brainstorm/neuro_tokenizers/braintokenizer/BrainTokenizer.pt' \
-        'model.tokenizer_config_path=./brainstorm/neuro_tokenizers/braintokenizer/model_cfg.json' \
-        'model.vocab_size=512' \
-        'model.num_quantizers=4' \
-        'model.num_quantizers_used=4' \
-        'model.tokenizer_downsample_ratio=64' \
-        'model.overlap_ratio=0.0'
-      ;;
     *)
-      echo "Unknown tokenizer '$1'." >&2
+      echo "Unknown tokenizer '$1'. Expected biocodec or brainomni_base." >&2
       return 1
       ;;
   esac
 }
 
 write_job_matrix() {
-  local count=0
+  local count=0 init tokenizer
   printf 'job_id\tband\tprofile\ttarget_sfreq\tl_freq\th_freq\ttokenizer\tinitialization\n' > "$QUEUE_FILE"
 
   emit_job() {
@@ -166,29 +138,25 @@ write_job_matrix() {
     if [[ "$LIMIT" != "0" && "$count" -gt "$LIMIT" ]]; then
       return 0
     fi
-    local job_id
-    job_id="$(printf '%03d' "$count")_${band}_${profile}_${tokenizer}_${init}"
-    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-      "$job_id" "$band" "$profile" "$sfreq" "$low" "$high" "$tokenizer" "$init" >> "$QUEUE_FILE"
+    printf '%03d_%s_%s_%s_%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      "$count" "$band" "$profile" "$tokenizer" "$init" \
+      "$band" "$profile" "$sfreq" "$low" "$high" "$tokenizer" "$init" >> "$QUEUE_FILE"
   }
 
-  local init tokenizer
   for init in "${INIT_MODES[@]}"; do
     for tokenizer in "${TOKENIZERS[@]}"; do
-      # Fixed-50-Hz controls. For bands above 25 Hz this deliberately tests the
-      # current MEG-XL filter-then-resample behavior without preserving the full band.
       emit_job alpha_8_12 fixed50 50 8 12 "$tokenizer" "$init"
       emit_job beta_13_24 fixed50 50 13 24 "$tokenizer" "$init"
-      emit_job beta_gamma_13_45 fixed50 50 13 45 "$tokenizer" "$init"
-      emit_job low_gamma_30_45 fixed50 50 30 45 "$tokenizer" "$init"
-      emit_job gamma_30_55 fixed50 50 30 55 "$tokenizer" "$init"
-      emit_job high_gamma_70_120 fixed50 50 70 120 "$tokenizer" "$init"
 
-      # Nyquist-aware repetitions only for the four bands affected at 50 Hz.
-      emit_job beta_gamma_13_45 nyquist 100 13 45 "$tokenizer" "$init"
+      # These fixed-50-Hz controls intentionally reproduce MEG-XL's
+      # filter-then-resample setup even though the requested frequencies exceed
+      # the 25 Hz Nyquist limit of the final signal.
+      emit_job low_gamma_30_45 fixed50 50 30 45 "$tokenizer" "$init"
+      emit_job full_band_0p1_50 fixed50 50 0.1 50 "$tokenizer" "$init"
+
+      # Scientifically valid counterparts that preserve the complete bands.
       emit_job low_gamma_30_45 nyquist 100 30 45 "$tokenizer" "$init"
-      emit_job gamma_30_55 nyquist 128 30 55 "$tokenizer" "$init"
-      emit_job high_gamma_70_120 nyquist 250 70 120 "$tokenizer" "$init"
+      emit_job full_band_0p1_50 nyquist 128 0.1 50 "$tokenizer" "$init"
     done
   done
 
@@ -198,7 +166,7 @@ write_job_matrix() {
 }
 
 claim_job() {
-  local line index
+  local index line
   exec 9>"$QUEUE_LOCK"
   flock 9
   index="$(cat "$NEXT_FILE")"
@@ -241,7 +209,7 @@ record_batch_size() {
 base_command() {
   local config="$1" experiment="$2" sfreq="$3" low="$4" high="$5" tokenizer="$6" batch="$7"
   local -n output_ref="$8"
-  local tok
+  local -a tok
   mapfile -t tok < <(tokenizer_overrides "$tokenizer") || return 1
 
   output_ref=(
@@ -251,7 +219,7 @@ base_command() {
     "model.sampling_rate=${sfreq%.*}"
     "data.l_freq=${low}"
     "data.h_freq=${high}"
-    'data.cache_dir=./data/cache/eeg_reading_listening_continuous'
+    "data.cache_dir=${CACHE_DIR}"
     "training.batch_size=${batch}"
     'trainer.devices=1'
     'trainer.strategy=auto'
@@ -276,8 +244,7 @@ run_docker_command() {
       --rm --no-deps \
       --name "$container_name" \
       -e "WANDB_MODE=${WANDB_MODE}" \
-      "$SERVICE" \
-      bash -lc "$quoted" \
+      "$SERVICE" bash -lc "$quoted" \
       2>&1 | tee "$log_path" >&2
   return "${PIPESTATUS[0]}"
 }
@@ -338,7 +305,6 @@ probe_batch_size() {
       echo "Batch probe failed for a non-OOM reason; see ${probe_log}" >&2
       return "$status"
     fi
-    echo "[GPU ${gpu}] batch=${candidate} does not fit; trying a smaller batch." >&2
   done
 
   echo "No batch candidate fits for ${stage}/${band}/${profile}/${tokenizer} on GPU ${gpu}." >&2
@@ -352,9 +318,7 @@ next_smaller_batch() {
       printf '%s\n' "$candidate"
       return 0
     fi
-    if [[ "$candidate" == "$current" ]]; then
-      seen=1
-    fi
+    [[ "$candidate" == "$current" ]] && seen=1
   done
   if [[ "$current" -gt 1 ]]; then
     printf '%s\n' $((current - 1))
@@ -364,8 +328,9 @@ next_smaller_batch() {
 }
 
 run_stage() {
-  local stage="$1" config="$2" gpu="$3" experiment="$4" sfreq="$5" low="$6" high="$7" tokenizer="$8" init_mode="$9" promoted_checkpoint="${10:-}" initial_batch="${11}"
-  local batch="$initial_batch" stage_dir log_path container_name status smaller
+  local stage="$1" config="$2" gpu="$3" experiment="$4" sfreq="$5" low="$6" high="$7" tokenizer="$8" init_mode="$9"
+  local promoted_checkpoint="${10:-}" batch="${11}"
+  local stage_dir log_path container_name status smaller
   local -a command
 
   while true; do
@@ -390,10 +355,7 @@ run_stage() {
     if [[ "$stage" == "reading" ]]; then
       case "$init_mode" in
         scratch)
-          command+=(
-            'model.train_from_scratch=true'
-            'model.use_promoted_checkpoint=false'
-          )
+          command+=('model.train_from_scratch=true' 'model.use_promoted_checkpoint=false')
           ;;
         pretrained)
           command+=(
@@ -440,8 +402,7 @@ run_stage() {
 }
 
 find_stage_checkpoint() {
-  local experiment="$1"
-  local checkpoint_root="checkpoints/eeg_reading_listening_training/${experiment}"
+  local experiment="$1" checkpoint_root="checkpoints/eeg_reading_listening_training/${experiment}"
   if [[ -s "${checkpoint_root}/checkpoint_best.pt" ]]; then
     printf './%s\n' "${checkpoint_root}/checkpoint_best.pt"
   elif [[ -s "${checkpoint_root}/checkpoint_latest.pt" ]]; then
@@ -452,13 +413,13 @@ find_stage_checkpoint() {
 }
 
 stage_already_completed() {
-  local experiment="$1"
-  local result="logs/eeg_reading_listening_training/${experiment}/final_results.json"
+  local experiment="$1" result="logs/eeg_reading_listening_training/${experiment}/final_results.json"
   [[ -s "$result" ]] || return 1
   python3 - "$result" <<'PY'
 import json
 import sys
 from pathlib import Path
+
 path = Path(sys.argv[1])
 try:
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -472,7 +433,6 @@ process_job() {
   local gpu="$1" job_line="$2"
   local job_id band profile sfreq low high tokenizer init_mode
   local reading_exp listening_exp reading_batch listening_batch reading_checkpoint
-  local status message
 
   IFS=$'\t' read -r job_id band profile sfreq low high tokenizer init_mode <<< "$job_line"
   reading_exp="eeg_${band}_${profile}_${sfreq}hz_${tokenizer}_${init_mode}_reading_seed${SEED}"
@@ -519,20 +479,15 @@ process_job() {
     }
   fi
 
-  status=OK
-  message="reading_checkpoint=${reading_checkpoint}"
-  append_run_result "$job_id" "$gpu" "$status" "$reading_batch" "$listening_batch" "$reading_exp" "$listening_exp" "$message"
-  return 0
+  append_run_result "$job_id" "$gpu" OK "$reading_batch" "$listening_batch" "$reading_exp" "$listening_exp" "reading_checkpoint=${reading_checkpoint}"
 }
 
 worker() {
   local gpu="$1" job_line
   while job_line="$(claim_job)"; do
-    if ! process_job "$gpu" "$job_line"; then
-      if ! is_true "$CONTINUE_ON_ERROR"; then
-        echo "[GPU ${gpu}] Stopping worker because CONTINUE_ON_ERROR=${CONTINUE_ON_ERROR}." >&2
-        return 1
-      fi
+    if ! process_job "$gpu" "$job_line" && ! is_true "$CONTINUE_ON_ERROR"; then
+      echo "[GPU ${gpu}] Stopping worker because CONTINUE_ON_ERROR=${CONTINUE_ON_ERROR}." >&2
+      return 1
     fi
   done
   echo "[GPU ${gpu}] Queue empty."
@@ -548,15 +503,15 @@ Sweep root: ${SWEEP_ROOT}
 Jobs: ${TOTAL_JOBS}
 Training stages: $((TOTAL_JOBS * 2))
 GPUs: ${GPUS[*]}
-Bands: alpha_8_12 beta_13_24 beta_gamma_13_45 low_gamma_30_45 gamma_30_55 high_gamma_70_120
-Profiles: fixed50 for all bands; Nyquist-aware repeats for beta-gamma/low-gamma/gamma/high-gamma
+Bands: alpha_8_12 beta_13_24 low_gamma_30_45 full_band_0p1_50
+Profiles: fixed50 for all bands; Nyquist-aware repetitions for low-gamma and full-band
 Tokenizers: ${TOKENIZERS[*]}
 Initializations: ${INIT_MODES[*]}
 Default batch: ${DEFAULT_BATCH_SIZE}
 Auto batch: ${AUTO_BATCH}
 Batch candidates: ${BATCH_CANDIDATES[*]}
 Gradient checkpointing: ${GRADIENT_CHECKPOINTING}
-Data cache (unchanged): ./data/cache/eeg_reading_listening_continuous
+Data cache: ${CACHE_DIR}
 Reading config: ${READING_CONFIG}
 Listening config: ${LISTENING_CONFIG}
 MEG-XL checkpoint: ${CRISS_CROSS_CHECKPOINT}
