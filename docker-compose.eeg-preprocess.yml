@@ -1,0 +1,29 @@
+services:
+  eeg_preprocess:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scrabrain-megxl:latest
+    working_dir: /workspace
+    init: true
+    shm_size: "${SHM_SIZE:-64gb}"
+    volumes:
+      - .:/workspace
+      - ${EEG_DATASETS_DIR:-./datasets}:/workspace/datasets:ro
+      - ./datasets_info:/workspace/datasets_info:ro
+      - ./data/cache:/workspace/data/cache
+      - ./logs:/workspace/logs
+      - ./hf_cache:/workspace/hf_cache
+    environment:
+      EEG_DATASETS_DIR: /workspace/datasets
+      HDF5_USE_FILE_LOCKING: "FALSE"
+      HF_HOME: /workspace/hf_cache
+      HYDRA_FULL_ERROR: "1"
+      MPLCONFIGDIR: /workspace/hf_cache/matplotlib
+      OMP_NUM_THREADS: ${EEG_PREPROCESS_OMP_THREADS:-4}
+      PYTHONUNBUFFERED: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      TRANSFORMERS_CACHE: /workspace/hf_cache/transformers
+      UV_PROJECT_ENVIRONMENT: /opt/venv
+    command: >
+      bash -lc 'uv run --no-sync python scripts/preprocess_eeg_reading_listening.py --help'
