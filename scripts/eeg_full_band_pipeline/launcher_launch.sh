@@ -1,5 +1,8 @@
 launch() {
-  local gpu="$1" init="$2" name="scrabrain_fullband_${init}_${STAMP}" id
+  local gpu="$1"
+  local init="$2"
+  local name="scrabrain_fullband_${init}_${STAMP}"
+  local id
   docker rm -f "$name" >/dev/null 2>&1 || true
   id="$(EEG_GPU="$gpu" EEG_GPU_COUNT=1 WANDB_MODE="${WANDB_MODE:-offline}" \
     docker compose -f "$TRAIN_YML" run -d --no-deps --name "$name" \

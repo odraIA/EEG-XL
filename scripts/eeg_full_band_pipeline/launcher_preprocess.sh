@@ -1,5 +1,8 @@
 preprocess() {
-  local label="$1" config="$2" name="scrabrain_pre_${label}_${STAMP}" id status
+  local label="$1"
+  local config="$2"
+  local name="scrabrain_pre_${label}_${STAMP}"
+  local id status
   docker rm -f "$name" >/dev/null 2>&1 || true
   id="$(docker compose -f "$PRE_YML" run -d --no-deps --name "$name" eeg_preprocess \
     uv run --no-sync python scripts/preprocess_eeg_reading_listening.py \
