@@ -37,8 +37,6 @@ if [[ ! -f "$CHECKPOINT" ]]; then
   exit 1
 fi
 
-# Docker Compose remains attached to the training container, while nohup places
-# the complete command in the background and redirects all output to RUN_LOG.
 nohup env \
   EEG_GPU="$GPU" \
   WANDB_MODE="$WANDB_MODE" \
@@ -48,7 +46,7 @@ nohup env \
     "$SERVICE" \
     bash -lc '
       exec uv run --no-sync python -m brainstorm.train_criss_cross_eeg_continuous \
-        --config-name=train_criss_cross_eeg_reading_listening_megxl_joint \
+        --config-name=train_criss_cross_eeg_reading_listening_megxl_cached \
         logging.experiment_name="$1" \
         "${@:2}"
     ' bash "$EXPERIMENT" "$@" \
@@ -60,7 +58,7 @@ printf '%s\n' "$PID" > "$LATEST_PID"
 ln -sfn "$(basename "$RUN_LOG")" "$LATEST_LOG"
 
 echo "Experiment: $EXPERIMENT"
-echo "Mode: MEG-XL checkpoint -> EEG only (no LibriBrain/MEG replay)"
+echo "Mode: MEG-XL checkpoint -> cached EEG only"
 echo "GPU: $GPU"
 echo "Checkpoint: $CHECKPOINT"
 echo "PID: $PID"
