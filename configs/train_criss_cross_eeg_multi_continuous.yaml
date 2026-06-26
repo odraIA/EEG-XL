@@ -72,6 +72,14 @@ data:
   segment_length: 150.0
   subsegment_duration: 3.0
 
+  # Normal EEG runs remain unchanged. Only experiment-specific configs should
+  # set this to true and provide meg_datasets_config.
+  mix_eeg_meg: false
+  meg_cache_dir: "./data/cache/meg_preprocessed"
+  meg_recording_subsample_prop: null
+  shuffle_segments: false
+  shuffle_segment_duration: 3.0
+
   # Retained because the shared EEG training entrypoint accepts them. The
   # continuous loader does not use word alignment.
   words_per_segment: 50
@@ -83,8 +91,24 @@ model:
   # 0=GRAD, 1=MAG, 2=EEG. No separate modality embedding is introduced.
   num_sensor_types: 3
 
+  # Joint-transfer options are disabled by default and do not affect EEG-only
+  # runs. The dedicated joint config enables all three.
+  eeg_as_meg_sensor_type: false
+  eeg_meg_sensor_type_id: 1
+  initialize_eeg_from_meg: false
+
   # Uses more VRAM but avoids recomputing activations in the backward pass.
   use_gradient_checkpointing: false
+
+
+# Ignored while data.mix_eeg_meg=false.
+joint:
+  meg_batch_size: 1
+  eeg_batch_size: 1
+  meg_loss_weight: 1.0
+  eeg_loss_weight: 1.0
+  train_loader_mode: "max_size_cycle"
+  val_loader_mode: "min_size"
 
 
 logging:
