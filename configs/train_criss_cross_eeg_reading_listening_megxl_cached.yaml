@@ -1,0 +1,6 @@
+defaults:
+  - train_criss_cross_eeg_reading_listening_megxl_joint
+  - _self_
+
+data:
+  cache_dir: "./data/cache/eeg_preprocessed"
