@@ -1,0 +1,249 @@
+Dataset: alice_eeg
+Path: /workspace/datasets/alice_eeg
+Generated: 2026-06-26T17:57:23
+
+Content summary
+- Directories scanned: 1
+- Files scanned: 157
+- Total file size: 4.2 GB
+- Skipped directory names: .cache, .git, .ipynb_checkpoints, __pycache__, cache, checkpoints, logs
+
+Top-level content
+- [root files]: 157 files, 4.2 GB
+
+File extensions
+- .eeg: 49
+- .vhdr: 49
+- .vmrk: 49
+- .txt: 4
+- .zip: 2
+- .csv: 1
+- .doc: 1
+- .mat: 1
+- .sfp: 1
+
+Training-hours estimate
+- Selection: raw recordings with readable duration
+- Note: all selected recordings are counted as trainable hours; explicit train/val/test splits are not inferred unless encoded as separate files.
+- Total selected recordings: 49
+- Total training hours: 9.969 h (09:58:08)
+
+Hours by task
+task	recordings	hours	duration
+unknown	49	9.969	09:58:08
+
+Detected recording candidates
+kind	task	subject	session	run	duration	channels	sfreq	method	path
+raw	unknown				00:12:13	62	500	mne header	S01.vhdr
+raw	unknown				00:12:11	62	500	mne header	S02.vhdr
+raw	unknown				00:12:15	62	500	mne header	S03.vhdr
+raw	unknown				00:12:17	62	500	mne header	S04.vhdr
+raw	unknown				00:12:26	61	500	mne header	S05.vhdr
+raw	unknown				00:12:15	62	500	mne header	S06.vhdr
+raw	unknown				00:12:18	62	500	mne header	S07.vhdr
+raw	unknown				00:12:19	62	500	mne header	S08.vhdr
+raw	unknown				00:12:17	62	500	mne header	S09.vhdr
+raw	unknown				00:12:09	62	500	mne header	S10.vhdr
+raw	unknown				00:12:19	62	500	mne header	S11.vhdr
+raw	unknown				00:12:10	62	500	mne header	S12.vhdr
+raw	unknown				00:12:17	62	500	mne header	S13.vhdr
+raw	unknown				00:12:14	62	500	mne header	S14.vhdr
+raw	unknown				00:12:18	62	500	mne header	S15.vhdr
+raw	unknown				00:12:14	62	500	mne header	S16.vhdr
+raw	unknown				00:12:11	62	500	mne header	S17.vhdr
+raw	unknown				00:12:20	62	500	mne header	S18.vhdr
+raw	unknown				00:12:27	62	500	mne header	S19.vhdr
+raw	unknown				00:12:17	62	500	mne header	S20.vhdr
+raw	unknown				00:12:22	62	500	mne header	S21.vhdr
+raw	unknown				00:12:10	62	500	mne header	S22.vhdr
+raw	unknown				00:12:10	62	500	mne header	S23.vhdr
+raw	unknown				00:12:10	62	500	mne header	S24.vhdr
+raw	unknown				00:12:11	62	500	mne header	S25.vhdr
+raw	unknown				00:12:07	62	500	mne header	S26.vhdr
+raw	unknown				00:12:09	62	500	mne header	S27.vhdr
+raw	unknown				00:12:13	62	500	mne header	S28.vhdr
+raw	unknown				00:12:07	62	500	mne header	S29.vhdr
+raw	unknown				00:12:11	62	500	mne header	S30.vhdr
+raw	unknown				00:12:10	62	500	mne header	S31.vhdr
+raw	unknown				00:12:08	62	500	mne header	S32.vhdr
+raw	unknown				00:12:08	62	500	mne header	S33.vhdr
+raw	unknown				00:12:10	62	500	mne header	S34.vhdr
+raw	unknown				00:12:07	62	500	mne header	S35.vhdr
+raw	unknown				00:12:08	62	500	mne header	S36.vhdr
+raw	unknown				00:12:07	62	500	mne header	S37.vhdr
+raw	unknown				00:12:08	61	500	mne header	S38.vhdr
+raw	unknown				00:12:09	62	500	mne header	S39.vhdr
+raw	unknown				00:12:11	62	500	mne header	S40.vhdr
+raw	unknown				00:12:10	62	500	mne header	S41.vhdr
+raw	unknown				00:12:08	62	500	mne header	S42.vhdr
+raw	unknown				00:12:09	62	500	mne header	S43.vhdr
+raw	unknown				00:12:09	62	500	mne header	S44.vhdr
+raw	unknown				00:12:10	62	500	mne header	S45.vhdr
+raw	unknown				00:12:10	62	500	mne header	S46.vhdr
+raw	unknown				00:12:09	62	500	mne header	S47.vhdr
+raw	unknown				00:12:08	62	500	mne header	S48.vhdr
+raw	unknown				00:12:12	62	500	mne header	S49.vhdr
+mat	unknown				unknown				datasets.mat
+
+Duration read notes
+- datasets.mat: MAT file is not HDF5/v7.3, duration not inferred without loading it
+
+Folder tree (max depth 4)
+.
+  - AliceChapterOne-EEG.csv
+  - audio.zip
+  - comprehension-questions.doc
+  - comprehension-scores.txt
+  - datasets.mat
+  - easycapM10-acti61_elec.sfp
+  - LICENSE.txt
+  - metadata_report.txt
+  - proc.zip
+  - README.txt
+  - S01.eeg
+  - S01.vhdr
+  - S01.vmrk
+  - S02.eeg
+  - S02.vhdr
+  - S02.vmrk
+  - S03.eeg
+  - S03.vhdr
+  - S03.vmrk
+  - S04.eeg
+  - S04.vhdr
+  - S04.vmrk
+  - S05.eeg
+  - S05.vhdr
+  - S05.vmrk
+  - S06.eeg
+  - S06.vhdr
+  - S06.vmrk
+  - S07.eeg
+  - S07.vhdr
+  - S07.vmrk
+  - S08.eeg
+  - S08.vhdr
+  - S08.vmrk
+  - S09.eeg
+  - S09.vhdr
+  - S09.vmrk
+  - S10.eeg
+  - S10.vhdr
+  - S10.vmrk
+  - S11.eeg
+  - S11.vhdr
+  - S11.vmrk
+  - S12.eeg
+  - S12.vhdr
+  - S12.vmrk
+  - S13.eeg
+  - S13.vhdr
+  - S13.vmrk
+  - S14.eeg
+  - S14.vhdr
+  - S14.vmrk
+  - S15.eeg
+  - S15.vhdr
+  - S15.vmrk
+  - S16.eeg
+  - S16.vhdr
+  - S16.vmrk
+  - S17.eeg
+  - S17.vhdr
+  - S17.vmrk
+  - S18.eeg
+  - S18.vhdr
+  - S18.vmrk
+  - S19.eeg
+  - S19.vhdr
+  - S19.vmrk
+  - S20.eeg
+  - S20.vhdr
+  - S20.vmrk
+  - S21.eeg
+  - S21.vhdr
+  - S21.vmrk
+  - S22.eeg
+  - S22.vhdr
+  - S22.vmrk
+  - S23.eeg
+  - S23.vhdr
+  - S23.vmrk
+  - S24.eeg
+  - S24.vhdr
+  - S24.vmrk
+  - S25.eeg
+  - S25.vhdr
+  - S25.vmrk
+  - S26.eeg
+  - S26.vhdr
+  - S26.vmrk
+  - S27.eeg
+  - S27.vhdr
+  - S27.vmrk
+  - S28.eeg
+  - S28.vhdr
+  - S28.vmrk
+  - S29.eeg
+  - S29.vhdr
+  - S29.vmrk
+  - S30.eeg
+  - S30.vhdr
+  - S30.vmrk
+  - S31.eeg
+  - S31.vhdr
+  - S31.vmrk
+  - S32.eeg
+  - S32.vhdr
+  - S32.vmrk
+  - S33.eeg
+  - S33.vhdr
+  - S33.vmrk
+  - S34.eeg
+  - S34.vhdr
+  - S34.vmrk
+  - S35.eeg
+  - S35.vhdr
+  - S35.vmrk
+  - S36.eeg
+  - S36.vhdr
+  - S36.vmrk
+  - S37.eeg
+  - S37.vhdr
+  - S37.vmrk
+  - S38.eeg
+  - S38.vhdr
+  - S38.vmrk
+  - S39.eeg
+  - S39.vhdr
+  - S39.vmrk
+  - S40.eeg
+  - S40.vhdr
+  - S40.vmrk
+  - S41.eeg
+  - S41.vhdr
+  - S41.vmrk
+  - S42.eeg
+  - S42.vhdr
+  - S42.vmrk
+  - S43.eeg
+  - S43.vhdr
+  - S43.vmrk
+  - S44.eeg
+  - S44.vhdr
+  - S44.vmrk
+  - S45.eeg
+  - S45.vhdr
+  - S45.vmrk
+  - S46.eeg
+  - S46.vhdr
+  - S46.vmrk
+  - S47.eeg
+  - S47.vhdr
+  - S47.vmrk
+  - S48.eeg
+  - S48.vhdr
+  - S48.vmrk
+  - S49.eeg
+  - S49.vhdr
+  - S49.vmrk

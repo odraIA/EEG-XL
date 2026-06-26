@@ -1,0 +1,117 @@
+Dataset: alice-eeg-shared
+Path: /workspace/datasets/alice-eeg-shared
+Generated: 2026-06-26T17:57:22
+
+Content summary
+- Directories scanned: 15
+- Files scanned: 69
+- Total file size: 2.3 MB
+- Skipped directory names: .cache, .git, .ipynb_checkpoints, __pycache__, cache, checkpoints, logs
+
+Top-level content
+- training-emnlp-2019: 27 files, 970.1 KB
+- helpers: 13 files, 28.6 KB
+- rnng-acl-2018: 9 files, 902.9 KB
+- oscillations-ptrsb-2019: 8 files, 149.9 KB
+- surprisal-plosone-2019: 6 files, 38.6 KB
+- preprocessing: 4 files, 252.9 KB
+- [root files]: 2 files, 3.7 KB
+
+File extensions
+- .csv: 27
+- .m: 24
+- .md: 6
+- .mat: 5
+- .rmd: 2
+- .r: 2
+- [no extension]: 1
+- .lay: 1
+- .sfp: 1
+
+Training-hours estimate
+- Selection: no recordings with readable duration
+- Note: all selected recordings are counted as trainable hours; explicit train/val/test splits are not inferred unless encoded as separate files.
+- Total training hours: unavailable
+
+Detected recording candidates
+kind	task	subject	session	run	duration	channels	sfreq	method	path
+mat	unknown				unknown				oscillations-ptrsb-2019/datasets.mat
+mat	unknown				unknown				rnng-acl-2018/datasets.mat
+mat	unknown				unknown				training-emnlp-2019/datasets.mat
+
+Duration read notes
+- oscillations-ptrsb-2019/datasets.mat: MAT file is not HDF5/v7.3, duration not inferred without loading it
+- rnng-acl-2018/datasets.mat: MAT file is not HDF5/v7.3, duration not inferred without loading it
+- training-emnlp-2019/datasets.mat: MAT file is not HDF5/v7.3, duration not inferred without loading it
+
+Folder tree (max depth 4)
+.
+  - helpers/
+  - oscillations-ptrsb-2019/
+  - preprocessing/
+  - rnng-acl-2018/
+  - surprisal-plosone-2019/
+  - training-emnlp-2019/
+  - .gitignore
+  - README.md
+    - add_sig_chans.m
+    - do_alice_regression.m
+    - do_beta_stats.m
+    - easycapM10-acti32.lay
+    - easycapM10-acti61_elec.sfp
+    - easycapM10-acti61_neighb.mat
+    - flip_betas.m
+    - get_alice2_eeg_ica.m
+    - get_alice2_trials.m
+    - get_high_impedence.m
+    - get_sig_clusters2.m
+    - plot_group_betas.m
+    - plot_stat_multiplot.m
+    - alice_pipeline_power_phase.m
+    - AliceChapterOne-Nodecounts.csv
+    - datasets.mat
+    - README.md
+    - run-phase-power-export-to-R.m
+    - run-power-phase-analysis.Rmd
+    - run-whole-head-group-stats.m
+    - run-whole-head-regressions.m
+    - AliceChapterOne-EEG.csv
+    - README.md
+    - run_single_subject_preprocessing.m
+    - timelock_single.m
+    - regressions-rnng/
+    - regressions-rnng-nocomp/
+    - AllAlice Triggers Spreadsheet_Order.csv
+    - datasets.mat
+    - export_alice_to_R.m
+    - README.md
+    - roi-model-comparison.R
+    - run-group-analysis.m
+    - run_paramaterized_regressors.m
+      - alice180-predictors-rnng.csv
+      - alice180-predictors-rnng-nocomp.csv
+    - README.md
+    - roi_definitions.mat
+    - run_group_analysis.m
+    - run_roi_analysis.R
+    - run_roi_export_to_R.m
+    - run_single_subject_correlations.m
+    - lstm-predictors/
+    - rnng-predictors/
+    - AllAlice Triggers Spreadsheet_Order.csv
+    - datasets.mat
+    - export_alice_to_R.m
+    - README.md
+    - run-eeg-export.m
+    - run-training-analysis.Rmd
+      - lstm_100k—order-word-surprisal.csv
+      - lstm_1m—order-word-surprisal.csv
+      - lstm_1point4m—order-word-surprisal.csv
+      - lstm_250k—order-word-surprisal.csv
+      - lstm_39k—order-word-surprisal.csv
+      - lstm_500k—order-word-surprisal.csv
+      - lstm_750k—order-word-surprisal.csv
+      - gigaword-materials/
+      - top365-materials/
+        - parsing-logs/
+        - parsing-logs/
