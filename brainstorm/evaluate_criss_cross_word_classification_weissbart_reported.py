@@ -1,4 +1,4 @@
-"""Weissbart fine-tuning entry point with MEG-XL-compatible reporting."""
+"""Weissbart fine-tuning entry point with optimized MEG-XL reporting."""
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ from brainstorm.megxl_test_reporting import (
     generate_run_report,
     maybe_generate_comparison_from_environment,
 )
+from brainstorm.optimized_word_finetuning import install_optimized_word_finetuning
 
 
 _BASE_GET_DATASET_CLASS = evaluator.get_dataset_class
@@ -70,6 +71,7 @@ def main() -> Any:
     evaluator.get_default_max_channel_dim = get_default_max_channel_dim
     evaluator.get_dataset_extra_kwargs = get_dataset_extra_kwargs
     evaluator.get_num_sensor_types_for_config = get_num_sensor_types_for_config
+    install_optimized_word_finetuning(evaluator)
 
     if not any(
         argument == "--config-name" or argument.startswith("--config-name=")
