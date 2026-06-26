@@ -8,16 +8,14 @@ set -Eeuo pipefail
 #   2. EEG model originally trained from scratch (reading -> listening).
 #   3. EEG model initialized from pretrained MEG-XL (reading -> listening).
 #
-# Each container performs fine-tuning and, at the end, reloads its best validation
-# checkpoint and evaluates it on the Weissbart test split. The script then writes
-# a CSV and Markdown comparison of the three final test evaluations.
+# Exactly three Docker containers are launched, sequentially, on the same GPU.
+# Each container performs fine-tuning, reloads its best validation checkpoint,
+# evaluates the Weissbart test split, enriches the test with the MEG-XL paper
+# metrics, and generates per-run plots. The third container also aggregates all
+# three runs and creates Figure-3/Figure-6-style comparison plots.
 #
 # Run from the repository root:
 #   bash scripts/run_weissbart_three_way_finetuning.sh
-#
-# Useful overrides:
-#   GPU=0 WANDB_MODE=offline TRAIN_PCT=1.0 NUM_EPOCHS=50 \
-#     bash scripts/run_weissbart_three_way_finetuning.sh
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
@@ -82,19 +80,26 @@ run_experiment() {
   local label="$1"
   local train_from_scratch="$2"
   local initialization_checkpoint="$3"
+  local build_combined_report="$4"
 
   local experiment_name="weissbart_${label}_${RUN_ID}"
   local container_name="weissbart_${label}_${RUN_ID}"
   local save_dir="$LOG_ROOT/$label"
   local checkpoint_dir="$CHECKPOINT_ROOT/$label"
   local hydra_dir="$HYDRA_ROOT/$label"
+  local extra_container_env=()
 
   CURRENT_EXPERIMENT="$experiment_name"
   mkdir -p "$save_dir" "$checkpoint_dir" "$hydra_dir"
 
-  # Remove only a stale container with the exact generated name. Successful runs
-  # use --rm, so normally there is nothing to remove here.
   docker rm -f "$container_name" >/dev/null 2>&1 || true
+
+  if [[ "$build_combined_report" == "1" ]]; then
+    extra_container_env+=(
+      -e "MEGXL_COMPARISON_RUNS=random_init=$LOG_ROOT/random_init;eeg_from_scratch=$LOG_ROOT/eeg_from_scratch;eeg_pretrained=$LOG_ROOT/eeg_pretrained"
+      -e "MEGXL_COMPARISON_OUTPUT=$RESULTS_ROOT"
+    )
+  fi
 
   echo
   echo "================================================================================"
@@ -103,6 +108,7 @@ run_experiment() {
   echo "Initialization checkpoint: $initialization_checkpoint"
   echo "Random initialization: $train_from_scratch"
   echo "Fine-tuning data: Weissbart word-aligned listening EEG"
+  echo "Final metric: balanced top-10 accuracy over top-50 and top-250 vocabularies"
   echo "Final evaluation: best validation checkpoint on the test split"
   echo "================================================================================"
 
@@ -113,8 +119,9 @@ run_experiment() {
       --name "$container_name" \
       -e "NVIDIA_VISIBLE_DEVICES=$GPU" \
       -e "WANDB_MODE=$WANDB_MODE" \
+      "${extra_container_env[@]}" \
       eval_eeg_listening \
-      uv run --no-sync python -m brainstorm.evaluate_criss_cross_word_classification_weissbart \
+      uv run --no-sync python -m brainstorm.evaluate_criss_cross_word_classification_weissbart_reported \
         --config-name=eval_criss_cross_word_classification_weissbart_eeg \
         "model.train_from_scratch=$train_from_scratch" \
         model.use_promoted_checkpoint=false \
@@ -134,118 +141,40 @@ run_experiment() {
         "logging.checkpoint_dir=$checkpoint_dir" \
         "hydra.run.dir=$hydra_dir"
 
-  local final_results="$save_dir/final_results.json"
-  local best_checkpoint="$checkpoint_dir/checkpoint_best.pt"
-  require_file "$final_results" "final test results for $experiment_name"
-  require_file "$best_checkpoint" "best fine-tuned checkpoint for $experiment_name"
+  require_file "$save_dir/final_results.json" "final test results for $experiment_name"
+  require_file "$save_dir/paper_test_metrics.csv" "MEG-XL metrics for $experiment_name"
+  require_file "$save_dir/paper_report_manifest.json" "MEG-XL report manifest for $experiment_name"
+  require_file "$save_dir/final_test_top10_accuracy.png" "final test graph for $experiment_name"
+  require_file "$checkpoint_dir/checkpoint_best.pt" "best fine-tuned checkpoint for $experiment_name"
 
   echo "COMPLETED: $experiment_name"
-  echo "Results: $final_results"
-  echo "Best checkpoint: $best_checkpoint"
+  echo "Results: $save_dir/final_results.json"
+  echo "Paper metrics: $save_dir/paper_test_metrics.csv"
+  echo "Figures: $save_dir/paper_report_manifest.json"
+  echo "Best checkpoint: $checkpoint_dir/checkpoint_best.pt"
 }
 
 # The order below is intentional and matches the requested comparison.
-run_experiment "random_init" true "$MEGXL_ARCH_CHECKPOINT"
-run_experiment "eeg_from_scratch" false "$SCRATCH_EEG_CHECKPOINT"
-run_experiment "eeg_pretrained" false "$PRETRAINED_EEG_CHECKPOINT"
+run_experiment "random_init" true "$MEGXL_ARCH_CHECKPOINT" 0
+run_experiment "eeg_from_scratch" false "$SCRATCH_EEG_CHECKPOINT" 0
+run_experiment "eeg_pretrained" false "$PRETRAINED_EEG_CHECKPOINT" 1
 
 CURRENT_EXPERIMENT="summary"
 
-SUMMARY_CSV="$RESULTS_ROOT/weissbart_three_way_test_metrics.csv"
-SUMMARY_MD="$RESULTS_ROOT/weissbart_three_way_test_metrics.md"
-
-python3 - "$LOG_ROOT" "$CHECKPOINT_ROOT" "$SUMMARY_CSV" "$SUMMARY_MD" <<'PY'
-import csv
-import json
-import sys
-from pathlib import Path
-
-log_root = Path(sys.argv[1])
-checkpoint_root = Path(sys.argv[2])
-csv_path = Path(sys.argv[3])
-md_path = Path(sys.argv[4])
-
-ordered_runs = [
-    ("random_init", "Arquitectura aleatoria"),
-    ("eeg_from_scratch", "Checkpoint EEG entrenado desde cero"),
-    ("eeg_pretrained", "Checkpoint EEG inicializado desde MEG-XL"),
-]
-
-metric_keys = [
-    "balanced_top10_accuracy_retrieval50",
-    "top10_accuracy_retrieval50",
-    "balanced_top10_accuracy_retrieval250",
-    "top10_accuracy_retrieval250",
-    "n_samples_retrieval50",
-    "n_samples_retrieval250",
-    "loss",
-    "mean_cosine_similarity",
-]
-
-rows = []
-for label, description in ordered_runs:
-    result_path = log_root / label / "final_results.json"
-    with result_path.open(encoding="utf-8") as handle:
-        payload = json.load(handle)
-    metrics = payload.get("test_metrics", {})
-    row = {
-        "order": len(rows) + 1,
-        "run": label,
-        "initialization": description,
-        "experiment_name": payload.get("experiment_name", ""),
-        "checkpoint_best": str(checkpoint_root / label / "checkpoint_best.pt"),
-        "final_results": str(result_path),
-    }
-    for key in metric_keys:
-        row[key] = metrics.get(key, "")
-    rows.append(row)
-
-csv_path.parent.mkdir(parents=True, exist_ok=True)
-fieldnames = list(rows[0].keys())
-with csv_path.open("w", newline="", encoding="utf-8") as handle:
-    writer = csv.DictWriter(handle, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(rows)
-
-md_columns = [
-    "order",
-    "initialization",
-    "balanced_top10_accuracy_retrieval50",
-    "top10_accuracy_retrieval50",
-    "balanced_top10_accuracy_retrieval250",
-    "top10_accuracy_retrieval250",
-    "loss",
-    "mean_cosine_similarity",
-]
-
-def render(value):
-    if isinstance(value, float):
-        return f"{value:.6f}"
-    return str(value)
-
-with md_path.open("w", encoding="utf-8") as handle:
-    handle.write("# Weissbart three-way final test comparison\n\n")
-    handle.write("| " + " | ".join(md_columns) + " |\n")
-    handle.write("| " + " | ".join(["---"] * len(md_columns)) + " |\n")
-    for row in rows:
-        handle.write("| " + " | ".join(render(row[column]) for column in md_columns) + " |\n")
-
-print("\nFinal comparison:")
-for row in rows:
-    print(
-        f"{row['order']}. {row['initialization']}: "
-        f"balanced top-10@50={render(row['balanced_top10_accuracy_retrieval50'])}, "
-        f"top-10@50={render(row['top10_accuracy_retrieval50'])}, "
-        f"balanced top-10@250={render(row['balanced_top10_accuracy_retrieval250'])}"
-    )
-print(f"CSV: {csv_path}")
-print(f"Markdown: {md_path}")
-PY
+require_file "$RESULTS_ROOT/weissbart_three_way_test_metrics.csv" "three-way long-format metrics"
+require_file "$RESULTS_ROOT/megxl_paper_metrics_summary.csv" "MEG-XL aggregate metrics"
+require_file "$RESULTS_ROOT/megxl_pairwise_welch_tests.csv" "Welch comparison table"
+require_file "$RESULTS_ROOT/megxl_figure3_top10_retrieval50.png" "MEG-XL Figure 3-style graph"
+require_file "$RESULTS_ROOT/megxl_figure6_top10_retrieval250.png" "MEG-XL Figure 6-style graph"
+require_file "$RESULTS_ROOT/megxl_paper_report_manifest.json" "combined report manifest"
 
 echo
 echo "================================================================================"
 echo "ALL THREE WEISSBART RUNS COMPLETED"
 echo "Run ID: $RUN_ID"
-echo "Comparison CSV: $SUMMARY_CSV"
-echo "Comparison Markdown: $SUMMARY_MD"
+echo "Metrics: $RESULTS_ROOT/weissbart_three_way_test_metrics.csv"
+echo "Aggregate mean/SEM: $RESULTS_ROOT/megxl_paper_metrics_summary.csv"
+echo "Welch tests: $RESULTS_ROOT/megxl_pairwise_welch_tests.csv"
+echo "Top-50 graph: $RESULTS_ROOT/megxl_figure3_top10_retrieval50.png"
+echo "Top-250 graph: $RESULTS_ROOT/megxl_figure6_top10_retrieval250.png"
 echo "================================================================================"
