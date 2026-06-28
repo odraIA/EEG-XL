@@ -1,0 +1,82 @@
+# Stage 2 of the EEG curriculum: continuous language listening without ds004408.
+#
+# ds004408 is deliberately held out for later supervised fine-tuning and
+# comparison with published results.
+# Alice EEG and Weissbart EEG are also excluded from this stage because the
+# current loaders build 150-second examples by concatenating short word-aligned
+# windows rather than preserving a genuinely continuous recording.
+
+defaults:
+  - train_criss_cross_eeg_reading_listening_continuous
+  - _self_
+
+
+datasets_config:
+  - type: "sparrkulee"
+    data_root: "/workspace/datasets/sparrkulee"
+    subjects: null
+    sessions: null
+    tasks: ["listeningActive"]
+    val_subjects:
+      - "sub-101"
+      - "sub-102"
+      - "sub-103"
+      - "sub-104"
+      - "sub-105"
+    cover_all_samples: false
+    short_stream_policy: "error"
+
+  - type: "openneuro_ds007808"
+    data_root: "/workspace/datasets/OpenNeuroEEG_ds007808"
+    subjects: null
+    sessions: null
+    tasks: ["listening", "listeningcovert"]
+    val_sessions:
+      - "ses-20240621"
+      - "ses-20240624"
+      - "ses-20240625"
+      - "ses-20240626"
+      - "ses-20240627"
+      - "ses-20240628"
+      - "ses-20240701"
+      - "ses-20241119"
+      - "ses-20241227"
+    listeningcovert_policy: "full_recording_listening_targets"
+    listening_trial_type: "listening"
+    listening_interval_start: "onset"
+    group_listeningcovert_by: "recording"
+    merge_gap_seconds: 0.0
+    cover_all_samples: false
+    short_stream_policy: "error"
+
+
+data:
+  task_mode: "language_listening"
+  cache_dir: "./data/cache/eeg_preprocessed"
+  max_channel_dim: 128
+  infer_max_channel_dim: false
+
+
+model:
+  train_from_scratch: false
+  use_promoted_checkpoint: true
+  promoted_checkpoint: null
+  num_sensor_types: 3
+
+
+logging:
+  experiment_name: "criss-cross-eeg-language-listening-stage"
+  save_dir: "./logs/eeg_language_curriculum"
+
+
+checkpoint:
+  save_dir: "./checkpoints/eeg_language_curriculum"
+
+
+trainer:
+  devices: 1
+  strategy: "auto"
+
+
+training:
+  batch_size: 1
