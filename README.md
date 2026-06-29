@@ -1,176 +1,201 @@
-# ScraBrain
+# Estat actual del dataset i dels entrenaments
 
-Final project of AI Master about decoding EEG and MEG for imagined speech
-recognition.
+Hola Vicent i Alfons, he creat aquesta branca i he ordenat el desastre que tenia al github ajajaj. Aquest repositori conserva el README original de `MEG-XL` en `README_MEGXL.md`. Este fitxer resumeix l'estat actual dels datasets locals, els entrenaments EEG que s'han preparat i els resultats que hi ha generats fins ara.
 
-## Entorno Docker con uv
+## Dataset disponible ara mateix
 
-La imagen base es `pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime`, por lo que
-PyTorch, CUDA y `torchrun` vienen de la imagen. Las dependencias del proyecto se
-declaran en `pyproject.toml` y se fijan en `uv.lock`.
+En `datasets/` hi ha estes carpetes:
 
-Durante el build se crea la venv en `/workspace/.venv` con acceso a los
-`site-packages` de la imagen base. Esto permite que:
+| Ruta | Estat observat | Ús principal en el codi |
+|---|---:|---|
+| `datasets/eegdash/data/nm000228` | BIDS parcial amb `sub-kent0034`, fitxers EEG i metadades | Lectura natural, tasques `delong` i `control` |
+| `datasets/zuco2` | Directori present, sense fitxers visibles en l'escaneig actual | Lectura natural ZuCo, tasca `NR` |
+| `datasets/sparrkulee` | Directori present, sense fitxers visibles en l'escaneig actual | Escolta, tasca `listeningActive` |
+| `datasets/OpenNeuroEEG` | Directori present, sense fitxers visibles en l'escaneig actual | Contenidor genèric d'OpenNeuro EEG |
+| `datasets/armeni` | Directori present, sense fitxers visibles en l'escaneig actual | Avaluacions MEG/word classification Armeni |
+| `datasets/libribrain` | Cache local de HuggingFace amb metadades de Sherlock | Avaluacions MEG/word classification LibriBrain |
 
-```bash
-python
-torchrun
-timm
-pnpl
-sklearn
-h5py
-pywt
-```
+També hi ha `data/cache/zuco`. Les rutes exactes que espera la fase d'escolta del sweep són `datasets/OpenNeuroEEG_ds004408`, `datasets/OpenNeuroEEG_ds007808` i `datasets/sparrkulee`. En l'estat actual, les dos carpetes `OpenNeuroEEG_ds004408` i `OpenNeuroEEG_ds007808` no apareixen en `datasets/`.
 
-se resuelvan correctamente sin reinstalar `torch`, `torchvision` ni `torchaudio`
-desde PyPI.
+Els pesos base que sí estan presents són:
 
-## Token de Hugging Face
+- `checkpoints/baseline/meg-xl-med.ckpt` (de MEG-XL)
+- `brainstorm/neuro_tokenizers/biocodec_ckpt.pt` (del tokenizer)
 
-`docker-compose.yml` lee el token desde `HF_TOKEN=${HF_TOKEN}`. Define el token
-en un `.env` local no versionado:
+Els checkpoints intermedis que els fine-tuning usen per defecte no estan ara mateix en `checkpoints/`:
 
-```bash
-HF_TOKEN=hf_xxx
-```
+- `checkpoints/eeg_full_band_reading_then_listening_compare/.../eeg_full_band_0p1_50_fixed50_50hz_biocodec_from_scratch_listening_seed42/checkpoint_best.pt`
+- `checkpoints/eeg_full_band_reading_then_listening_compare/.../eeg_full_band_0p1_50_fixed50_50hz_biocodec_pretrained_listening_seed42/checkpoint_best.pt`
 
-`.env` ya esta incluido en `.gitignore`.
+Per tant, per replicar els fine-tuning des de zero cal primer executar el sweep de lectura -> escolta, o restaurar eixos checkpoints en les rutes esperades.
 
-## Build
+## Entrenament EEG full-band: lectura -> escolta
 
-```bash
-docker compose build
-```
+El llançador principal és `scripts/run_eeg_full_band_reading_then_listening_sweep.sh`. El script carrega la canalització modular de `scripts/eeg_full_band_pipeline/` i executa dos pipelines:
 
-Si cambias `pyproject.toml` o `uv.lock`, reconstruye la imagen. Si ya existia el
-volumen de la venv y quieres forzar que se repueble desde la imagen nueva:
+- `pretrained`: inicialitza la lectura amb `checkpoints/baseline/meg-xl-med.ckpt`.
+- `from_scratch`: inicialitza la lectura amb pesos aleatoris.
 
-```bash
-docker compose down -v
-docker compose build
-```
+Els dos pipelines fan primer lectura i només passen a escolta si la lectura acaba correctament. La configuració comuna és:
 
-## Sweep principal
+- banda `0.1-50 Hz` (MEG-XL és fins a 40 ja l'he canviat)
+- freqüència objectiu `50 Hz`
+- tokenitzador `BioCodec`
+- llavor per defecte `42`
+- dos GPUs per defecte amb `EEG_GPUS="0 1"`
+- cache principal `data/cache/eeg_preprocessed`
 
-El flujo habitual sigue siendo:
+La fase de lectura usa `configs/train_criss_cross_eeg_reading_continuous.yaml`:
 
-```bash
-bash run_sweep.sh --detach
-```
+- EEGDash `delong` i `control`
+- ZuCo `NR`
+- split per subjecte
 
-Para revisar lo que lanzaria sin ejecutar contenedores:
+La fase d'escolta usa `configs/train_criss_cross_eeg_listening_continuous.yaml`:
 
-```bash
-bash run_sweep.sh --dry-run
-```
+- OpenNeuro `ds004408`, tasca `listening`
+- OpenNeuro `ds007808`, tasques `listening` i `listeningcovert`
+- SparrKULee `listeningActive`
 
-`run_sweep.sh` mantiene el uso de `docker compose run` detached sobre los
-servicios `precompute_stats` y `meg_training_job`.
+Cada pipeline guarda el millor checkpoint de lectura i el passa com a `promoted_checkpoint` a la fase d'escolta. Les eixides per defecte es creen en:
 
-### Ajustar uso de GPU
+- `results/eeg_full_band_reading_then_listening_compare/<RUN_ID>`
+- `logs/eeg_full_band_reading_then_listening_compare/<RUN_ID>`
+- `checkpoints/eeg_full_band_reading_then_listening_compare/<RUN_ID>`
 
-El entrenamiento DDP usa 2 GPUs por defecto. No es obligatorio usar ambas, pero
-con 2 GPUs el `batch_size` es por GPU y el batch global es
-`BATCH_SIZE × numero_de_GPUs`.
+## Fine-tuning three-way en Alice
 
-Para aumentar uso sin ir directo al maximo, sube primero el batch por GPU:
+El script `scripts/run_alice_three_way_finetuning.sh` compara tres inicialitzacions de manera seqüencial en una GPU:
 
-```bash
-bash run_sweep.sh --batch-size 160 --eval-batch-size 160 --detach
-bash run_sweep.sh --batch-size 192 --eval-batch-size 192 --detach
-```
+| Ordre | Etiqueta | Inicialització |
+|---:|---|---|
+| 1 | `random_init` | arquitectura CrissCross aleatòria |
+| 2 | `eeg_from_scratch` | checkpoint EEG entrenat de zero en lectura -> escolta |
+| 3 | `eeg_pretrained` | checkpoint EEG inicialitzat des de MEG-XL i entrenat en lectura -> escolta |
 
-Si aparece `CUDA out of memory`, baja `BATCH_SIZE` o reduce la resolucion CWT:
+La configuració usa `datasets/alice_eeg` com a arrel, subjectes `main` de l'Alice EEG, split sense fuga per text/sentence, 50 èpoques, batch size 1 i selecció final del millor checkpoint de validació. Avalua Top-10 amb vocabularis de 50, 250 i 601 paraules; el vocabulari de 601 paraules permet comparar amb Chen et al.
 
-```bash
-bash run_sweep.sh --batch-size 160 --n-freqs 64 --detach
-```
+Resultat consolidat disponible:
 
-El log de cada epoca muestra el pico de memoria CUDA para decidir el siguiente
-incremento. Para `docker compose up meg_training_job`, los equivalentes son
-`TRAIN_BATCH_SIZE`, `TRAIN_EVAL_BATCH_SIZE`, `TRAIN_N_FREQS`,
-`TRAIN_NUM_WORKERS` y `TRAIN_EVAL_NUM_WORKERS`.
+- `results/alice_three_way/20260627_123237`
+- execució completada el 27 de juny de 2026
+- `random_init`: 12:32:37 -> 14:34:38
+- `eeg_from_scratch`: 14:34:38 -> 19:09:44
+- `eeg_pretrained`: 19:09:44 -> 23:44:13
 
-Para lanzar con una sola GPU:
+## Fine-tuning three-way en Weissbart
 
-```bash
-bash run_sweep.sh --train-gpus 1 --cuda-visible-devices 0 --batch-size 192 --detach
-```
+El script `scripts/run_weissbart_three_way_finetuning.sh` fa la mateixa comparacio three-way sobre Weissbart EEG:
 
-## Logs del sweep
+| Ordre | Etiqueta | Inicialització |
+|---:|---|---|
+| 1 | `random_init` | arquitectura CrissCross aleatòria |
+| 2 | `eeg_from_scratch` | checkpoint EEG entrenat de zero en lectura -> escolta |
+| 3 | `eeg_pretrained` | checkpoint EEG inicialitzat des de MEG-XL i entrenat en lectura -> escolta |
 
-Ver el coordinador:
+La configuració usa `datasets/WeissbartEEG` com a arrel, split sense fuga per sentence, 50 èpoques, batch size 1 i avaluació Top-10 amb vocabularis de 50 i 250 paraules.
 
-```bash
-tail -f logs/latest_classic_coordinator.log
-```
+Resultat consolidat disponible:
 
-Ver el log global del sweep:
+- `results/weissbart_three_way/20260626_130140`
+- execució completada el 26 de juny de 2026
+- `random_init`: 13:01:40 -> 14:12:33
+- `eeg_from_scratch`: 14:12:33 -> 16:25:55
+- `eeg_pretrained`: 16:25:55 -> 17:55:58
 
-```bash
-tail -f logs/latest_classic_sweep.log
-```
+## Resultats aconseguits fins ara
 
-Ver un experimento concreto:
+Les columnes de 50 i 250 paraules mostren `balanced_top10_accuracy`. Les columnes d'Alice amb 601 paraules mostren les exactituds Top-1/Top-10 del CSV de comparació amb Chen et al. Les comparacions estadístiques Welch no són informatives encara, perquè només hi ha una llavor per model (`n=1`).
 
-```bash
-tail -f logs/speech__resnet18__partial_ft.log
-```
+### Alice EEG
 
-## Parar el coordinador
+| Model | Top-10, 50 paraules | Top-10, 250 paraules | Top-1, 601 paraules | Top-10, 601 paraules |
+|---|---:|---:|---:|---:|
+| `random_init` | 18.64% | 3.85% | 0.30% | 2.61% |
+| `eeg_from_scratch` | 82.61% | 78.40% | 61.42% | 75.50% |
+| `eeg_pretrained` | 88.72% | 81.15% | 71.21% | 77.81% |
+| `preprint_arxiv` | — | — | 4.10% | 26.82% |
 
-El modo `--detach` escribe el PID en `.sweep_coordinator_classic.pid`:
 
-```bash
-kill "$(cat .sweep_coordinator_classic.pid)"
-```
+En Alice, el checkpoint EEG inicialitzat des de MEG-XL és el millor en totes les mètriques principals. En vocabulari de 601 paraules, supera clarament la referència de Chen et al. indicada en el codi: Top-1 `4.10%` i Top-10 `26.82%` en validació.
 
-Para el sweep speech-image, usa `.sweep_coordinator_speech_image.pid`.
+### Weissbart EEG
 
-## Precompute y entrenamiento manual
+| Model | Top-10, 50 paraules | Top-10, 250 paraules |
+|---|---:|---:|
+| `random_init` | 19.57% | 4.49% |
+| `eeg_from_scratch` | 43.37% | 17.13% |
+| `eeg_pretrained` | 47.97% | 19.23% |
 
-Precalcular stats:
+En Weissbart, el checkpoint EEG inicialitzat des de MEG-XL també queda per damunt del checkpoint EEG entrenat de zero i de la inicialització aleatòria.
 
-```bash
-docker compose run --rm precompute_stats
-```
+## Com replicar-ho
 
-Comprobar el entrypoint de entrenamiento:
+1. Verifica els pesos base:
 
 ```bash
-docker compose run --rm meg_training_job train_ddp.py --help
+test -f checkpoints/baseline/meg-xl-med.ckpt
+test -f brainstorm/neuro_tokenizers/biocodec_ckpt.pt
 ```
 
-Probar las variantes de proyección sensor->RGB:
+2. Prepara les rutes de dades que falten si vols repetir tota la cadena:
 
 ```bash
-docker compose run --rm meg_training_job train_ddp.py --sensor_projection mean
-docker compose run --rm meg_training_job train_ddp.py --sensor_projection pca
-bash run_sweep.sh --sensor-projections conv,mean,pca
+datasets/eegdash/data
+datasets/zuco2
+datasets/OpenNeuroEEG_ds004408
+datasets/OpenNeuroEEG_ds007808
+datasets/sparrkulee
+datasets/alice_eeg
+datasets/WeissbartEEG
 ```
 
-## Shell de depuracion
-
-Levantar una shell persistente:
+3. Executa el sweep EEG lectura -> escolta. Per defecte usa dos GPUs:
 
 ```bash
-docker compose up -d dev_shell
-docker compose exec dev_shell bash
+EEG_GPUS="0 1" bash scripts/run_eeg_full_band_reading_then_listening_sweep.sh
 ```
 
-Comprobar CUDA y paquetes dentro del contenedor:
+Si ja tens el preprocessat i vols saltar-lo:
 
 ```bash
-python - <<'PY'
-import torch
-import timm
-import pnpl
-import sklearn
-import h5py
-import pywt
-
-print("python ok")
-print("torch", torch.__version__, "cuda", torch.cuda.is_available())
-print("cuda devices", torch.cuda.device_count())
-PY
+EEG_SKIP_PREPROCESS=true EEG_GPUS="0 1" bash scripts/run_eeg_full_band_reading_then_listening_sweep.sh
 ```
+
+4. Localitza els dos `checkpoint_best.pt` finals de la fase d'escolta i, si no estan en les rutes per defecte dels scripts de fine-tuning, passa'ls com a variables d'entorn:
+
+```bash
+SCRATCH_EEG_CHECKPOINT=/ruta/al/checkpoint_from_scratch.pt \
+PRETRAINED_EEG_CHECKPOINT=/ruta/al/checkpoint_pretrained.pt \
+bash scripts/run_weissbart_three_way_finetuning.sh
+```
+
+5. Replica Alice amb els mateixos checkpoints:
+
+```bash
+SCRATCH_EEG_CHECKPOINT=/ruta/al/checkpoint_from_scratch.pt \
+PRETRAINED_EEG_CHECKPOINT=/ruta/al/checkpoint_pretrained.pt \
+bash scripts/run_alice_three_way_finetuning.sh
+```
+
+6. Revisa les eixides:
+
+```bash
+find results/weissbart_three_way -maxdepth 3 -type f | sort
+find results/alice_three_way -maxdepth 3 -type f | sort
+```
+
+Els CSV principals són:
+
+- `megxl_paper_metrics_summary.csv`
+- `megxl_pairwise_welch_tests.csv`
+- `weissbart_three_way_test_metrics.csv`
+- `alice_three_way_test_metrics.csv`
+- `alice_reference_three_way_comparison.csv`
+
+
+## Que estic fent ara?
+
+OpenNeuro ds007808 sí que té un parell de treballs publicats sobre el dataset en resultats en els que puc comparar quantitativament. De forma que l'he llevat de l'entrenament i ja l'he preparat en format word_alligned per a poder fer fine-tuning sobre eixe dataset i comparar per a tindre ja resultats finals.
+
+En memoria/ estic redactant poquet a poquet però no ho tingueu en compte, tinc la memòria oficial a l'overleaf i Vicent me l'està corregint. Qualsevol cosa em dieu.
