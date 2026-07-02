@@ -23,7 +23,7 @@ data:
   max_channel_dim: 128
   montage_name: "biosemi128"
   drop_bad_channels: true
-  eeg_sensor_type: "grad"
+  eeg_sensor_type: "eeg"
 
   # TextGrids contain word and phoneme tiers. Only these word tiers are labels.
   word_tier_names: ["word", "words"]

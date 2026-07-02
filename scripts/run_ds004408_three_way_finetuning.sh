@@ -112,7 +112,7 @@ prepare_word_aligned() {
       -e "WANDB_MODE=$WANDB_MODE" eval_eeg_listening \
       uv run --no-sync python scripts/prepare_ds004408_word_aligned.py \
         --root "$DS004408_ROOT" --cache-dir "$WORD_ALIGNED_CACHE" \
-        --output-dir "$WORD_ALIGNED_OUTPUT" --eeg-sensor-type grad \
+        --output-dir "$WORD_ALIGNED_OUTPUT" --eeg-sensor-type eeg \
         --montage-name biosemi128 --drop-bad-channels "$warm_flag"
 
   require_file "$WORD_ALIGNED_OUTPUT/summary.json" "word-aligned summary"
