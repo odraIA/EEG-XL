@@ -8,6 +8,7 @@
     }
   ],
   "latex-workshop.latex.recipe.default": "tectonic",
+  "latex-workshop.latex.autoBuild.run": "onSave",
   "latex-workshop.latex.tools": [
     {
       "name": "tectonic",
