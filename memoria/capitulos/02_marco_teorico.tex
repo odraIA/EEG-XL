@@ -182,7 +182,7 @@ Esta diferencia es lo suficientemente importante como para dedicarle un par de s
         \draw[field] (4.3,0.55) .. controls (3.25,0.0) and (3.45,-0.95) .. (4.25,-1.16);
 
         \draw[dashed, thick, gray] (0,-1.4) -- (0,3.25);
-        \node[align=center, font=\small] at (0,0.9) {Misma actividad\\neuronal subyacente};
+        \node[align=center, font=\small] at (0,1) {Misma actividad\\neuronal subyacente};
         \draw[arrow] (-0.6,0.5) -- (-2.1,0.5);
         \draw[arrow] (0.6,0.5) -- (2.1,0.5);
 
@@ -497,7 +497,7 @@ La frecuencia de las palabras es otro factor importante. Las palabras funcionale
         font=\footnotesize,
         word/.style={draw, rounded corners=1mm, minimum width=1.25cm,
                      minimum height=7mm, align=center, fill=gray!8},
-        win/.style={draw, rounded corners=1mm, minimum width=1.9cm,
+        win/.style={draw, rounded corners=1mm, minimum width=1.25cm,
                     minimum height=9mm, align=center, fill=blue!7},
         model/.style={draw, rounded corners=2mm, minimum width=2.4cm,
                     minimum height=1.25cm, align=center, thick, fill=orange!9},
@@ -517,12 +517,13 @@ La frecuencia de las palabras es otro factor importante. Las palabras funcionale
             \draw[gray, dashed] (\n.south) -- ++(0,-8mm) node[below, font=\scriptsize]{\lab};
         }
 
-        \node[win, below=17mm of w1] (x1) {$\mathbf{x}_1$\\ventana EEG/MEG};
+        \node[win, below=17mm of w1] (x1) {$\mathbf{x}_1$};
         \node[win, below=17mm of w2] (x2) {$\mathbf{x}_2$};
         \node[win, below=17mm of w3] (x3) {$\mathbf{x}_3$};
         \node[win, below=17mm of w4] (x4) {$\mathbf{x}_4$};
         \node[win, below=17mm of w5] (x5) {$\mathbf{x}_5$};
         \node[win, below=17mm of w6] (x6) {$\mathbf{x}_6$};
+        \node[left=2mm of x1, align=right] {ventana\\EEG/MEG};
 
         \node[model, right=14mm of x6] (local) {Codificador local\\espacial + convoluciones};
         \node[model, right=7mm of local] (context) {Transformer\\contextual};
