@@ -238,7 +238,8 @@ results/*
 !results/weissbart_three_way/**
 !results/alice_three_way/**
 !results/alice_three_way/
-
+!results/ds004408_three_way/**
+!results/ds004408_three_way/
 promotions/
 wandb/
 hf_cache/
