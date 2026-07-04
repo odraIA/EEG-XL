@@ -673,7 +673,7 @@ def generate_group_outputs(
             / safe_slug(str(run_id))
             / f"{safe_slug(str(split))}_{variant}_top{top_k}_retrieval{retrieval_size}"
         )
-        write_pivot_csv(stem.with_suffix(".csv"), rows, "series", value_field="value")
+        write_pivot_csv(stem.with_suffix(".csv"), rows, "series")
         csv_outputs.append(str(stem.with_suffix(".csv")))
         if plt is not None:
             figure_outputs.extend(plot_comparison(plt, stem, rows))
