@@ -242,6 +242,8 @@ results/*
 !results/ds004408_three_way/
 !results/training_top10_accuracy/
 !results/training_top10_accuracy/**
+!results/ds004408_four_way/
+!results/ds004408_four_way/**
 promotions/
 wandb/
 hf_cache/
