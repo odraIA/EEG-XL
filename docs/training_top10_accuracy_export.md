@@ -17,9 +17,12 @@ Por defecto busca historiales en:
 La salida se escribe en `results/training_top10_accuracy/<RUN_ID>/` e incluye:
 
 - `top10_training_curves_long.csv`
+- `pretraining_metrics_long.csv`
 - `top10_training_curves_manifest.csv`
 - `top10_training_curves_manifest.json`
 - CSVs pivotados en `comparison/` y `per_run/`
+- CSVs pivotados de preentrenamiento en `pretraining/global/` y
+  `pretraining/by_dataset/`
 - figuras `.png` y `.pdf` cuando haya métricas compatibles
 
 ## Ejemplos
@@ -60,4 +63,21 @@ bash scripts/export_training_top10_accuracy_docker.sh --no-figures
 El script exporta lo que esté guardado. En ds004408, si
 `evaluation.evaluate_test_during_training=false`, durante entrenamiento habrá
 validación por época, pero no test por época. El manifiesto marca cada historial
-sin columnas top-10 solicitadas como `no_requested_top10_columns`.
+sin columnas top-10 pero con métricas de preentrenamiento como
+`ok_pretraining_only`.
+
+El currículo de `run_eeg_language_curriculum_three_models.sh` no guarda
+top-10 retrieval durante el preentrenamiento continuo, porque no es una tarea
+supervisada de clasificación de palabras. Para esos runs se exportan las
+métricas disponibles por época:
+
+- `train/loss`
+- `train/accuracy`
+- `val/loss`
+- `val/accuracy`
+- `val/<dataset>_loss`
+- `val/<dataset>_acc`
+
+Las métricas por dataset aparecen en `pretraining_metrics_long.csv` con la
+columna `dataset`, y sus gráficas/CSVs pivotados se guardan en
+`pretraining/by_dataset/`.
