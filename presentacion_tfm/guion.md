@@ -2,178 +2,138 @@
 
 Presentación: `presentacion_tfm/main.tex`.
 
-La idea del guion es que cada diapositiva tenga muy poco texto y que el contenido fuerte lo pongas tú oralmente. El tono propuesto es académico, pero con una entrada divulgativa para que el tribunal entienda rápidamente por qué el problema es difícil.
+La presentación está pensada para tener poco texto visible y apoyarse en una explicación oral clara. El estilo sigue la segunda presentación de referencia: tema Beamer `Madrid`, verde oscuro, bloques nativos, tablas sobrias y notas de presentador integradas con `\note{...}`.
 
 ## 0. Portada - 0:00-0:20
 
 **Qué decir**
 
-Buenas, soy Ricardo Díaz Peris y voy a presentar mi TFM, titulado *Transferencia de modelos MEG de contexto largo a EEG para clasificación contextual de palabras*. La idea central del trabajo es estudiar si un modelo aprendido con MEG, una señal no invasiva pero de mayor calidad, puede servir como punto de partida para trabajar con EEG, que es más ruidoso pero mucho más cercano a un uso real y portable.
+Buenas, soy Ricardo Díaz Peris y voy a presentar mi TFM, titulado *Transferencia de modelos MEG de contexto largo a EEG para clasificación contextual de palabras*. La idea central es estudiar si una arquitectura aprendida con MEG puede servir como punto de partida para EEG, que es más ruidoso pero mucho más viable para aplicaciones portables.
 
-## 1. La pregunta del trabajo - 0:20-1:05
-
-**Qué decir**
-
-La pregunta que resume el trabajo es esta: ¿puede un modelo aprendido con MEG ayudar a decodificar palabras desde EEG? MEG y EEG no son equivalentes, pero ambas observan actividad cerebral relacionada con el procesamiento del lenguaje. MEG ofrece mejores condiciones de señal, mientras que EEG es mucho más accesible. Mi trabajo intenta construir un puente entre ambas modalidades.
-
-La métrica principal del resultado final es Top-10 balanceada con 250 palabras. El azar es un 4 %, y el mejor modelo alcanza un 22,32 %. Esto no significa que el problema de brain-to-text esté resuelto, pero sí que la adaptación queda claramente por encima del azar.
-
-## 2. Por qué importa: comunicación sin cirugía - 1:05-1:55
+## 1. El problema: decodificar el cerebro no es "leer la mente" - 0:20-1:15
 
 **Qué decir**
 
-El contexto general son las interfaces cerebro-computador aplicadas al lenguaje. A largo plazo, estas tecnologías podrían ayudar a personas que conservan la capacidad cognitiva de comunicarse pero no pueden articular habla. Los resultados más espectaculares suelen venir de registros invasivos, con electrodos implantados. Eso tiene mucho valor clínico, pero también riesgos y limitaciones prácticas.
+Antes de entrar en el modelo, conviene aclarar qué problema estamos resolviendo. No estamos leyendo pensamientos de forma directa. Lo que se intenta aprender es una relación estadística entre señales cerebrales no invasivas y estímulos lingüísticos. El objetivo a largo plazo de las BCI y del brain-to-text es traducir señales cerebrales en lenguaje útil para comunicación, pero eso sigue siendo difícil porque la señal es ruidosa, variable, depende del contexto y los datos alineados cerebro-texto son escasos.
 
-Por eso es interesante explorar señales no invasivas. Este TFM no aborda todavía un sistema clínico completo, sino una tarea controlada: clasificación contextual de palabras alineadas temporalmente con la señal cerebral.
-
-## 3. Qué capta realmente un casco de EEG - 1:55-2:55
+## 2. Intrusivo vs. no intrusivo - 1:15-2:00
 
 **Qué decir**
 
-Aquí puedes enseñar el casco si decides llevarlo. Yo lo usaría como recurso divulgativo, no como demostración técnica arriesgada. La explicación debe ser muy clara: el casco no lee pensamientos. Registra diferencias de potencial en el cuero cabelludo, del orden de microvoltios, que proceden de actividad neuronal sincronizada, pero mezcladas con mucho ruido.
+Los métodos invasivos suelen ofrecer mejor señal, pero requieren cirugía. Eso los hace muy potentes en contextos clínicos concretos, pero poco escalables. En cambio, EEG y MEG son no invasivos. MEG tiene mejor calidad de señal, pero es caro y poco portable. EEG es más barato y portable, aunque mucho más ruidoso. Por eso tiene sentido preguntarse si podemos aprender de MEG y transferir algo útil hacia EEG.
 
-Ese ruido incluye parpadeos, movimiento ocular, tensión muscular, mala impedancia de los electrodos y ruido eléctrico. Por tanto, el reto del modelo no es traducir pensamientos directamente, sino encontrar patrones estadísticos muy débiles en una señal muy contaminada.
-
-**Consejo de defensa**
-
-Si llevas el casco, úsalo durante 45-60 segundos. Enséñalo, señala electrodos y vuelve rápido al pipeline. Evita depender de una demo en directo que pueda fallar. Si quieres enseñar señal, mejor llevar una captura o vídeo ya preparado con señal cruda y un parpadeo marcado.
-
-## 4. EEG y MEG no ven el cerebro igual - 2:55-3:45
+## 3. Comparativa de métodos no intrusivos - 2:00-2:45
 
 **Qué decir**
 
-EEG y MEG son no invasivas, pero miden magnitudes físicas distintas. EEG mide potenciales eléctricos sobre el cuero cabelludo; MEG mide campos magnéticos alrededor de la cabeza. EEG es barato y portable, pero tiene peor relación señal-ruido y peor resolución espacial. MEG tiene más calidad espacial y menos distorsión por tejidos, pero requiere equipamiento costoso y no portable.
+La tabla resume el compromiso entre modalidades. EEG y MEG tienen alta resolución temporal, que es importante para lenguaje porque las palabras ocurren en escalas de milisegundos. fMRI tiene buena resolución espacial, pero peor resolución temporal. El TFM se centra en EEG y MEG porque el objetivo es clasificar palabras alineadas en el tiempo, no reconstruir semántica global a partir de imágenes cerebrales lentas.
 
-Esto es importante porque mi hipótesis no es que EEG y MEG sean lo mismo. La hipótesis es más prudente: comprobar si un modelo de contexto largo entrenado con MEG puede aportar una inicialización útil cuando se adapta a EEG.
-
-## 5. La hipótesis: aprender con contexto largo - 3:45-4:35
+## 4. Qué capta realmente un casco de EEG - 2:45-3:45
 
 **Qué decir**
 
-El lenguaje no ocurre en instantes aislados. Las palabras forman frases, las frases forman un contexto, y la señal cerebral también tiene dependencias temporales. MEG-XL parte precisamente de esta idea: en lugar de mirar ventanas muy cortas, modela fragmentos largos de señal.
+Aquí se puede enseñar el casco. Un casco EEG mide diferencias de potencial en el cuero cabelludo. La señal útil está mezclada con parpadeos, movimiento ocular, tensión muscular, mala impedancia y ruido eléctrico. Por eso el casco no lee pensamientos: mide señales de microvoltios muy contaminadas. Esta es precisamente la razón de que el preprocesamiento, el contexto largo y el preentrenamiento sean necesarios.
 
-En este trabajo mantengo esa idea de contexto largo y la llevo a EEG. Cada ejemplo de preentrenamiento contiene 150 segundos de señal, que posteriormente se dividen en bloques de tres segundos.
+**Cómo usar el casco**
 
-## 6. De MEG-XL a EEG-XL - 4:35-5:25
+Enséñalo durante menos de un minuto. Señala electrodos, regiones aproximadas y cables. No hagas una demo en directo salvo que esté muy probada. Si quieres mostrar señal, mejor llevar una captura preparada.
 
-**Qué decir**
-
-El flujo general es este. Partimos de MEG-XL como arquitectura y, en algunas condiciones, como checkpoint. Después construimos un adaptador EEG para poder representar montajes con distinto número de canales y posiciones de electrodos. A continuación se hace un preentrenamiento autosupervisado con EEG: primero lectura y después escucha. Finalmente, se ajusta el modelo en ds004408 para la tarea de clasificación contextual de palabras.
-
-El objetivo no es cambiar todo el modelo, sino conservar lo que hace valioso a MEG-XL y adaptar la entrada a las características del EEG.
-
-## 7. Datos: empezar por lectura, acabar en escucha - 5:25-6:20
+## 5. Pregunta de investigación - 3:45-4:30
 
 **Qué decir**
 
-La disponibilidad de datos EEG de lenguaje es una limitación importante. Por eso combino conjuntos de lectura y escucha. En lectura utilizo ZuCo 2.0 y Nieuwland; en escucha utilizo SparrKULee y OpenNeuro ds007808. Todos pasan por una interfaz común: canales EEG, posiciones de sensores, máscaras y ventanas de 150 segundos.
+La pregunta formal del trabajo es si un modelo MEG de contexto largo puede adaptarse a EEG para clasificación contextual de palabras. El punto de partida es MEG-XL, la adaptación es EEG-XL, y la evaluación se realiza como recuperación Top-10 de palabras en ds004408. Es importante recalcar que no se genera texto libre: se evalúa si la palabra correcta aparece entre las candidatas mejor puntuadas.
 
-El conjunto ds004408 se reserva para el fine-tuning y la evaluación final. Esta separación es importante porque evita usar en el preentrenamiento el mismo conjunto sobre el que luego voy a medir la clasificación de palabras.
-
-## 8. Preprocesamiento - 6:20-7:10
+## 6. Propuesta: de MEG-XL a EEG-XL - 4:30-5:30
 
 **Qué decir**
 
-Como los datasets tienen frecuencias, montajes y escalas diferentes, el preprocesamiento es una parte central del trabajo. Primero se filtra la señal, después se remuestrea a 50 Hz, se normaliza y se extraen ventanas completas de 150 segundos. Además, se construye una representación común con posiciones de sensores y máscaras para indicar qué canales existen realmente en cada montaje.
+La propuesta conserva la idea central de MEG-XL: representar señales cerebrales largas como tokens, añadir información física de sensores y usar un Transformer criss-cross para modelar tiempo y sensores. La adaptación a EEG consiste en soportar distinto número de canales, distintas posiciones y sensores ausentes mediante máscaras y embeddings de sensor.
 
-Aunque el filtrado inicial llega hasta 40 Hz, al remuestrear a 50 Hz la frecuencia de Nyquist final limita la banda efectiva aproximadamente a 25 Hz. Esta decisión reduce mucho el coste computacional y mantiene compatibilidad con MEG-XL.
-
-## 9. Arquitectura - 7:10-8:05
+## 7. Datasets: lectura para adaptar, escucha para acercarse a la tarea final - 5:30-6:20
 
 **Qué decir**
 
-La arquitectura conserva los componentes principales de MEG-XL. BioCodec convierte cada canal en tokens discretos mediante cuantización vectorial residual. Después esos tokens se combinan con la información espacial del sensor, el tipo de sensor y la máscara de canales. El Transformer criss-cross modela relaciones temporales y espaciales sin tener que aplicar atención completa sobre todos los pares canal-tiempo.
+El entrenamiento se organiza en una progresión. Primero se usan datasets de lectura, como ZuCo y Nieuwland, porque aportan EEG lingüístico. Después se pasa a escucha, con SparrKULee y ds007808, porque se acerca más al dominio de palabras habladas. ds004408 se reserva para fine-tuning y evaluación, evitando contaminar el preentrenamiento con el dataset final.
 
-Lo que cambia para EEG es sobre todo la representación de entrada: posiciones de electrodos, tipo de sensor EEG y máscaras para montajes heterogéneos.
-
-## 10. Preentrenamiento autosupervisado - 8:05-8:55
+## 8. Preprocesamiento común - 6:20-7:10
 
 **Qué decir**
 
-Durante el preentrenamiento el modelo no ve palabras ni transcripciones. Se ocultan bloques de la señal y el modelo tiene que reconstruir los códigos de BioCodec. En cada ventana hay 50 bloques de tres segundos y se enmascaran 20.
+Para combinar datasets distintos hay que normalizar la entrada. Se filtra la señal, se remuestrea a 50 Hz, se construyen ventanas de 150 segundos y se incorporan posiciones y máscaras de sensores. Un detalle importante es Nyquist: aunque el filtro inicial llegue a 40 Hz, al remuestrear a 50 Hz la banda efectiva queda limitada aproximadamente a 25 Hz.
 
-Esto obliga al modelo a aprender regularidades temporales y espaciales del EEG sin depender de etiquetas lingüísticas. La hipótesis es que esa representación previa facilita después el ajuste supervisado sobre palabras.
-
-## 11. Ajuste supervisado - 8:55-9:45
+## 9. Preentrenamiento autosupervisado - 7:10-8:00
 
 **Qué decir**
 
-La parte supervisada utiliza ds004408. Para cada palabra se extrae una ventana de tres segundos alrededor de su inicio. Se agrupan 50 palabras, lo que vuelve a producir una entrada de 150 segundos. El modelo genera una representación cerebral y una cabeza de proyección la lleva al espacio de embeddings de T5.
+Durante el preentrenamiento el modelo no predice palabras. BioCodec discretiza la señal por canal, se ocultan bloques temporales y el Transformer aprende a reconstruir esos tokens ocultos. Esto obliga al modelo a aprender regularidades generales del EEG antes de usar etiquetas lingüísticas.
 
-La evaluación se formula como recuperación: se compara la predicción con embeddings de un vocabulario de 50 o 250 palabras y se comprueba si la palabra correcta está entre las 10 más cercanas.
-
-## 12. Diseño experimental - 9:45-10:40
+## 10. Fine-tuning: recuperación contextual de palabras - 8:00-8:55
 
 **Qué decir**
 
-El diseño compara cuatro condiciones para separar efectos. La primera es un control sin preentrenamiento. La segunda preentrena EEG desde cero. La tercera parte de MEG-XL, pero usa un embedding específico de EEG. La cuarta también parte de MEG-XL, pero reutiliza directamente el embedding aprendido para magnetómetros.
+En el ajuste supervisado se alinean ventanas EEG con palabras. Cada palabra tiene un inicio temporal, se extrae una ventana alrededor de ella y se trabaja con secuencias de 50 palabras. La salida se proyecta al espacio de embeddings de T5-large, y la evaluación pregunta si la palabra correcta aparece entre las 10 más cercanas por similitud coseno.
 
-Con esto puedo distinguir tres cosas: cuánto aporta el preentrenamiento EEG, cuánto aporta la transferencia desde MEG-XL y qué ocurre con la representación del tipo de sensor.
-
-## 13. Resultado principal - 10:40-11:55
+## 11. Diseño experimental: separar efectos - 8:55-9:50
 
 **Qué decir**
 
-Este es el resultado central. El control sin preentrenamiento se queda prácticamente en azar: 4,05 % frente al 4 % esperado. El modelo preentrenado con EEG desde cero sube a 19,95 %. Esto muestra que el preentrenamiento autosupervisado es la parte más importante.
+El diseño experimental compara cuatro condiciones para separar efectos. La condición sin preentrenamiento mide el control. El modelo EEG desde cero mide cuánto aporta el preentrenamiento autosupervisado. Las dos condiciones inicializadas desde MEG-XL permiten medir si hay transferencia desde MEG y si conviene mantener o redefinir el embedding de tipo de sensor.
 
-La transferencia desde MEG-XL añade una mejora más moderada. Con embedding EEG se obtiene 20,56 %, y reutilizando el embedding MEG se alcanza el mejor resultado: 22,32 %. En esta ejecución, la reutilización del embedding de magnetómetro funciona ligeramente mejor.
-
-## 14. Qué nos dicen las curvas - 11:55-12:45
+## 12. Resultado principal - 9:50-11:10
 
 **Qué decir**
 
-Las curvas de validación muestran otro punto importante: los mejores checkpoints aparecen muy pronto, entre las primeras épocas. Continuar el ajuste no mejora la validación e incluso puede deteriorarla. Esto es coherente con la naturaleza del EEG: hay mucha variabilidad y es fácil que un modelo de alta capacidad sobreajuste.
+El azar en Top-10 con 250 candidatos es un 4 %. Sin preentrenamiento el modelo queda prácticamente en azar, con 4,05 %. Al preentrenar con EEG se sube a 19,95 %. Con inicialización MEG-XL y embedding EEG se alcanza 20,56 %. El mejor resultado es 22,32 % con inicialización MEG-XL y embedding MEG reutilizado. La conclusión principal es que el preentrenamiento EEG produce el salto dominante, y la transferencia desde MEG añade una mejora moderada.
 
-Por eso no solo importa el valor final, sino también la dinámica de entrenamiento. El preentrenamiento parece proporcionar una representación útil rápidamente, pero el fine-tuning debe controlarse con cuidado.
-
-## 15. Lectura final de los resultados - 12:45-13:35
+## 13. Dinámica de validación - 11:10-11:55
 
 **Qué decir**
 
-La lectura final es triple. Primero, la adaptación técnica de MEG-XL a EEG es viable. Segundo, el preentrenamiento EEG es la fuente principal de mejora. Tercero, la transferencia desde MEG-XL parece aportar, pero hay que confirmarlo con más semillas y protocolos más alineados con trabajos previos.
+Las curvas muestran que los mejores checkpoints aparecen pronto. Esto es coherente con una tarea de EEG: al hacer fine-tuning durante demasiado tiempo, el modelo puede sobreajustar. La representación aprendida es útil, pero el ajuste supervisado tiene que controlarse cuidadosamente.
 
-También hay que ser prudente: no es un sistema brain-to-text abierto, no genera frases libres y no se debe vender como lectura de pensamiento. Es una tarea controlada de recuperación de palabras que sirve como paso intermedio.
-
-## 16. Casco EEG en la defensa - 13:35-14:10
+## 14. Interpretación de los resultados - 11:55-12:55
 
 **Qué decir**
 
-Yo incluiría el casco porque ayuda a que el tribunal vea físicamente qué tipo de señal estamos intentando usar. La clave es integrarlo en el discurso: enseñar los electrodos, explicar que la señal es débil y ruidosa, y conectarlo con las decisiones del trabajo: filtrado, normalización, máscaras, preentrenamiento y cuidado con el sobreajuste.
+La lectura honesta es que la adaptación es viable y queda claramente por encima del azar. El resultado no demuestra que el problema de brain-to-text esté resuelto, pero sí que una arquitectura de contexto largo puede transferirse a EEG en una tarea controlada. También hay que ser prudente porque faltan más semillas, más particiones y comparaciones bajo protocolos idénticos.
 
-No lo usaría como demo espectacular. Lo usaría como objeto explicativo, porque refuerza la parte divulgativa sin quitar seriedad.
-
-## 17. Conclusión - 14:10-14:45
+## 15. Dónde encaja el casco EEG en la defensa - 12:55-13:35
 
 **Qué decir**
 
-Como conclusión, la transferencia MEG-EEG no resuelve el problema completo, pero abre una vía útil. El mejor modelo alcanza 5,58 veces el azar en la métrica principal. La mayor mejora viene del preentrenamiento EEG y la transferencia desde MEG-XL añade una ganancia adicional.
+Llevar el casco tiene sentido como recurso divulgativo. Sirve para que el tribunal vea físicamente qué tipo de señal se está usando y por qué es difícil. Pero debe ser breve: enseñar electrodos, explicar ruido y volver al modelo. No conviene que el casco se coma la defensa.
 
-El trabajo futuro pasa por repetir con más semillas, comparar tokenizadores y bandas de frecuencia, ampliar datasets y, especialmente, adquirir señales propias con cascos EEG para acercar el sistema a condiciones reales.
-
-## 18. Gracias - 14:45-15:00
+## 16. Conclusiones - 13:35-14:45
 
 **Qué decir**
 
-Muchas gracias. Quedo abierto a preguntas.
+Como conclusión, se ha adaptado una arquitectura inspirada en MEG-XL a EEG, se ha entrenado con datasets de lectura y escucha y se ha evaluado en recuperación de palabras. El mejor modelo alcanza 22,32 % Top-10 balanceada, unas 5,58 veces el azar. La contribución principal es mostrar una vía viable de transferencia MEG-EEG, aunque todavía hacen falta más semillas, más datasets, más análisis de bandas y registros propios con casco EEG.
 
-## Preguntas previsibles y respuestas cortas
+## 17. Gracias - 14:45-15:00
 
-### ¿Esto decodifica pensamiento?
+**Qué decir**
 
-No. El sistema no lee pensamientos ni genera texto libre. Evalúa una tarea controlada de recuperación de palabras alineadas temporalmente con estímulos conocidos.
+Con esto termino la presentación. Muchas gracias, y quedo abierto a preguntas.
 
-### ¿Por qué usar EEG si MEG tiene mejor señal?
+## Preguntas probables del tribunal
 
-Porque EEG es más portable y viable en escenarios reales. MEG es útil como fuente de aprendizaje o como modalidad de alta calidad, pero no como dispositivo cotidiano.
+### ¿Por qué no hacer directamente generación de texto?
 
-### ¿Por qué el resultado de 22,32 % es relevante?
+Porque el objetivo del TFM es una tarea controlada y medible. La generación libre requiere muchos más datos, una evaluación más compleja y protocolos diferentes. Este trabajo se centra en comprobar si la transferencia MEG-EEG ayuda en clasificación contextual de palabras.
 
-Porque la métrica principal tiene un azar del 4 %. El modelo queda claramente por encima del azar en una recuperación Top-10 balanceada sobre 250 palabras.
+### ¿El casco EEG puede leer pensamientos?
 
-### ¿Qué aporta más: EEG o MEG-XL?
+No. Registra potenciales eléctricos débiles en el cuero cabelludo, mezclados con múltiples artefactos. El modelo no lee pensamientos; aprende asociaciones estadísticas entre señal cerebral y palabras en una tarea experimental concreta.
 
-En esta ejecución, el salto dominante lo aporta el preentrenamiento autosupervisado con EEG. La transferencia desde MEG-XL añade una mejora adicional menor.
+### ¿Cuál es la contribución principal?
 
-### ¿Qué haría después?
+La adaptación de una arquitectura de contexto largo inspirada en MEG-XL a EEG, junto con una evaluación experimental que separa el efecto del preentrenamiento EEG, la inicialización desde MEG y el embedding de sensor.
 
-Repetir con más semillas, estudiar más bandas y tokenizadores, comparar con protocolos exactamente iguales a trabajos previos y crear un dataset propio de escucha continua con casco EEG.
+### ¿Qué resultado es más importante?
+
+El salto de 4,05 % sin preentrenamiento a 19,95 % con preentrenamiento EEG. Ese es el efecto dominante. La transferencia desde MEG aporta una mejora adicional, pero más moderada.
+
+### ¿Qué falta para hacerlo más sólido?
+
+Más semillas, más sujetos, más datasets, comparaciones bajo protocolos idénticos y análisis específicos de bandas, tokenización y generalización entre sesiones.
