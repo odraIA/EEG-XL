@@ -10,7 +10,7 @@ La primera conclusión es que la adaptación técnica de MEG-XL a EEG es viable.
 
 En segundo lugar, el preentrenamiento autosupervisado sobre EEG aporta la mejora más importante. En la evaluación sobre OpenNeuro ds004408, el modelo sin preentrenamiento se mantiene prácticamente en el nivel de azar cuando se utiliza la métrica principal de Top-10 balanceada sobre 250 palabras. En cambio, el modelo preentrenado con EEG desde cero alcanza un resultado claramente superior, lo que indica que aprender una representación previa de la señal cerebral antes del ajuste supervisado es fundamental en este escenario.
 
-La tercera conclusión es que la transferencia desde MEG-XL produce una mejora adicional, aunque más moderada que la obtenida por el propio preentrenamiento EEG. La mejor condición experimental alcanza un 22,32 \% de Top-10 balanceada sobre 250 palabras, frente al 4 \% esperado por azar. Este resultado sitúa la adaptación en un rango competitivo respecto a trabajos previos sobre el mismo tipo de tarea, aunque debe interpretarse con prudencia porque los experimentos se han realizado con una única semilla y las particiones no siempre son idénticas a las de otros trabajos.
+La tercera conclusión es que la transferencia desde MEG-XL produce una mejora adicional, aunque más moderada que la obtenida por el propio preentrenamiento EEG. La mejor condición experimental alcanza un 22,32 \% de Top-10 balanceada sobre 250 palabras, frente al 4 \% esperado por azar. Este resultado sitúa la adaptación en un rango competitivo respecto a trabajos previos sobre el mismo tipo de tarea.
 
 Por último, el ajuste supervisado debe controlarse cuidadosamente. Los mejores checkpoints aparecen en pocas épocas y continuar entrenando no mejora la validación. Esto sugiere que el modelo aprovecha pronto las representaciones aprendidas previamente, pero también que el EEG presenta un riesgo elevado de sobreajuste. Esta observación es coherente con la naturaleza ruidosa y variable de la señal EEG.
 
@@ -34,7 +34,7 @@ Por último, el objetivo de reproducibilidad se ha abordado mediante la organiza
 
 \section{Líneas de trabajo futuro}
 
-La primera línea de trabajo futuro consiste en repetir los experimentos con más semillas, más particiones y más tokenizadores. Los resultados actuales son prometedores, pero una única ejecución no permite extraer conclusiones estadísticas sólidas. También sería conveniente realizar barridos con menos datos supervisados de ds004408 para comprobar si la transferencia desde MEG-XL mejora realmente la eficiencia de adaptación en regímenes de pocos datos.
+La primera línea de trabajo futuro consiste en repetir los experimentos con más semillas, más particiones y más tokenizadores. También sería conveniente realizar barridos con menos datos supervisados de ds004408 para comprobar si la transferencia desde MEG-XL mejora realmente la eficiencia de adaptación en regímenes de pocos datos.
 
 Otra línea importante es estudiar con más detalle el efecto de las bandas de frecuencia y de la frecuencia de muestreo. En este trabajo se ha trabajado con una frecuencia final de 50 Hz, lo que limita la información representable por la frecuencia de Nyquist. En experimentos futuros sería útil comparar distintas bandas, frecuencias de muestreo y filtros, así como analizar si determinadas componentes espectrales son más relevantes para la clasificación de palabras en EEG.
 
