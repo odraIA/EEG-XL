@@ -2,7 +2,11 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
 \usepackage[spanish,es-tabla]{babel}
+\DeclareUnicodeCharacter{00BF}{\textquestiondown}
+\DeclareUnicodeCharacter{00A1}{\textexclamdown}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
@@ -13,6 +17,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit,calc,shapes.geometric,decorations.pathreplacing}
 \usepackage{hyperref}
+\hypersetup{unicode=true}
 
 % Para imprimir las notas del presentador, cambiar a:
 % \setbeameroption{show notes on second screen=right}
@@ -64,12 +69,13 @@
 \newcommand{\source}[1]{\vspace{1mm}{\tiny\color{muted}Fuente: #1}}
 \newcommand{\bigmetric}[2]{{\huge\bfseries\color{deepgreen}{#1}\par}\vspace{0.8mm}{\scriptsize #2\par}\vspace{3mm}}
 \newcommand{\smallmetric}[2]{{\Large\bfseries\color{deepgreen}{#1}\par}{\scriptsize #2\par}}
+\newlength{\footerlogowidth}
+\setlength{\footerlogowidth}{\dimexpr\paperwidth/4-1.5mm\relax}
 \newcommand{\footerlogos}{%
-  \includegraphics[height=5mm,keepaspectratio]{logo_upv.png}%
-  \hspace{3mm}%
-  \includegraphics[height=5mm,keepaspectratio]{logo_miarfid.png}%
-  \hspace{3mm}%
-  \includegraphics[height=5mm,keepaspectratio]{logo_dsiic.png}%
+  \makebox[\footerlogowidth][c]{\includegraphics[height=6mm,keepaspectratio]{logo_upv.jpg}}%
+  \makebox[\footerlogowidth][c]{\includegraphics[height=6mm,keepaspectratio]{logo_miarfid.png}}%
+  \makebox[\footerlogowidth][c]{\includegraphics[height=6mm,keepaspectratio]{logo_dsiic.png}}%
+  \makebox[\footerlogowidth][c]{\includegraphics[height=5mm,trim=25 115 25 115,clip,keepaspectratio]{logo_vrain.png}}%
 }
 
 \setbeamercolor{footer logos}{fg=muted,bg=white}
@@ -77,12 +83,12 @@
   \leavevmode%
   \begin{beamercolorbox}[wd=\paperwidth,ht=7.2mm,dp=1.2mm,leftskip=3mm,rightskip=3mm]{footer logos}%
     \raisebox{-0.3mm}{\footerlogos}%
-    \hfill{\scriptsize\insertframenumber/\inserttotalframenumber}%
+    \llap{\scriptsize\insertframenumber/\inserttotalframenumber}%
   \end{beamercolorbox}%
 }
 
 \title[EEG-XL]{Transferencia de modelos MEG de contexto largo a EEG}
-\subtitle{Clasificación contextual de palabras en lectura y escucha natural}
+\subtitle{Clasificación de palabras en escucha natural}
 \author{Ricardo Díaz Peris}
 \newcommand{\tutors}{Tutores: Vicent Juan Botti Navarro, Alfons Juan Císcar}
 \institute{MIARFID - UPV}
@@ -113,9 +119,15 @@
     \includegraphics[height=0.38\textheight,keepaspectratio]{portada_limpia.png}
   \end{center}
 
-  \note{Abrir con una frase simple: el trabajo estudia si una arquitectura aprendida con MEG puede servir como punto de partida para EEG, que es más ruidoso pero más realista para aplicaciones portables.}
 \end{frame}
 }
+
+% Índice ----------------------------------------------------------------------
+\begin{frame}[c]{Índice}
+  \tableofcontents
+\end{frame}
+
+\section{Motivación y contexto}
 
 % 2 ---------------------------------------------------------------------------
 \begin{frame}[c]{¿Cómo de difícil es leer la mente? (Decodificación de lenguaje)}
@@ -130,10 +142,10 @@
 
       \begin{block}{Por qué sigue siendo difícil}
         \begin{itemize}
-          \item La señal cerebral no invasiva es indirecta, ruidosa y variable.
-          \item Cada palabra ocurre dentro de un contexto temporal y lingüístico.
+          \item Señal cerebral no invasiva indirecta, ruidosa y variable.
+          \item Cada palabra contexto temporal y lingüístico.
           \item Los datos cerebro--texto alineados son escasos y caros.
-          \item La generalización entre sujetos, sesiones y datasets sigue siendo limitada.
+          \item Generalización sujetos, sesiones y datasets limitada.
         \end{itemize}
       \end{block}
     \end{column}
@@ -146,7 +158,6 @@
     \end{column}
   \end{columns}
 
-  \note{Dejar claro desde el principio que el trabajo no promete lectura mental. Se estudia una asociación estadística entre señal cerebral y palabras en una tarea controlada.}
 \end{frame}
 
 % % 3 ---------------------------------------------------------------------------
@@ -185,7 +196,6 @@
 %   \end{tikzpicture}
 %   \end{center}
 
-%   \note{El mensaje no es que EEG sea mejor que MEG o que lo invasivo no sirva. El mensaje es que si queremos algo escalable, el EEG es una modalidad clave, aunque técnicamente sea más difícil.}
 % \end{frame}
 
 % 4 ---------------------------------------------------------------------------
@@ -194,7 +204,7 @@
   \begin{columns}[c,totalwidth=\linewidth]
     \begin{column}{0.34\linewidth}
       \centering
-      \includegraphics[width=\linewidth,height=0.29\textheight,keepaspectratio]{ecog.jpg}\par
+      \includegraphics[width=\linewidth,height=0.29\textheight,keepaspectratio]{imagenes/ecog.jpg}\par
       \vspace{0.5mm}
       {\bfseries ECoG}\par
       \vspace{3mm}
@@ -221,12 +231,11 @@
       {\bfseries BCI con EEG en videojuegos}
     \end{column}
   \end{columns}
-
-  \note{Usar esta diapositiva para aterrizar visualmente las siglas. ECoG queda en el lado invasivo; EEG, MEG y fMRI son no invasivos; el ejemplo de Perrikaryal ayuda a conectar EEG con BCI real o divulgativa antes de pasar a la comparación técnica.}
+ 
 \end{frame}
 
 % 5 ---------------------------------------------------------------------------
-\begin{frame}[c]{Comparativa de métodos no intrusivos}
+\begin{frame}[c]{Comparativa de métodos no invasivos}
   \small
   \setlength{\tabcolsep}{4pt}
   \renewcommand{\arraystretch}{1.25}
@@ -235,9 +244,9 @@
     \toprule
     Método & Temporal & Espacial & Coste & Encaje en decodificación de lenguaje \\
     \midrule
-    EEG & Alta & Baja & Bajo & Más práctico para BCI portable; muy ruidoso para texto natural \\
-    MEG & Alta & Media & Alto & Buen candidato para aprender representaciones temporales de lenguaje \\
-    fMRI & Baja & Alta & Alto & Útil para semántica; menos adecuada para palabra a palabra en tiempo real \\
+    EEG & Alta & Baja & Bajo & BCI portable; ruidoso para texto natural \\
+    MEG & Alta & Media & Alto & Aprender representación temporal lenguaje \\
+    fMRI & Baja & Alta & Alto & Útil semántica; no nivel palabra tiempo real \\
     \bottomrule
   \end{tabular}
   \end{center}
@@ -245,10 +254,9 @@
   \vspace{4mm}
 
   \begin{alertblock}{Hipótesis del TFM}
-    Si MEG permite aprender representaciones de mayor calidad, una arquitectura de contexto largo entrenada con MEG podría ser un buen punto de partida para EEG.
+    MEG permite aprender representaciones de mayor calidad, ¿arquitectura de contexto largo entrenada con MEG punto de partida para EEG?.
   \end{alertblock}
 
-  \note{Esta diapositiva justifica por qué la transferencia MEG--EEG tiene sentido: MEG puede ayudar a aprender, EEG es más interesante como modalidad final.}
 \end{frame}
 
 % 5 ---------------------------------------------------------------------------
@@ -321,7 +329,6 @@
       \node[legendtext] at (6.45,-1.60) {campo magnético};
   \end{tikzpicture}}
 
-  \note{Usar esta diapositiva como puente: MEG y EEG observan actividad relacionada, pero la ven a través de sensores y magnitudes diferentes. Por eso la transferencia requiere adaptación y no solo reusar el checkpoint.}
 \end{frame}
 
 % 6 ---------------------------------------------------------------------------
@@ -342,7 +349,7 @@
  
     \begin{column}{0.59\linewidth}
       \begin{block}{Lo que mide}
-        Diferencias de potencial en el cuero cabelludo, generadas por actividad neuronal sincronizada y observadas a través de electrodos.
+        Diferencias potencial cuero cabelludo, generadas por actividad neuronal sincronizada observada por electrodos.
       \end{block}
 
       \begin{alertblock}{Lo que también capta}
@@ -350,12 +357,11 @@
       \end{alertblock}
 
       \begin{exampleblock}{Resumen}
-        Registra señales de microvoltios mezcladas con  mucho ruido. Precisamente por eso hacen falta preprocesamiento, contexto largo y preentrenamiento.
+        Registra señales microvoltios con  mucho ruido. Por eso hacen falta preprocesamiento, contexto largo y preentrenamiento.
       \end{exampleblock}
     \end{column}
   \end{columns}
 
-  \note{Aquí tiene sentido enseñar físicamente el casco. Mantenerlo breve: señalar electrodos, explicar microvoltios y ruido, y volver al modelo. No hacer demo en directo si no está muy controlada.}
 \end{frame}
 
 % 16 --------------------------------------------------------------------------
@@ -387,12 +393,22 @@
 %     \end{column}
 %   \end{columns}
 
-%   \note{El casco puede mejorar mucho la defensa si no se convierte en una distracción. La frase clave: no lee pensamientos, mide una señal débil y ruidosa.}
 % \end{frame}
 
-\begin{frame}[c]{Momento casco}
-
+\begin{frame}{Momento casco}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south east,inner sep=0pt]
+      at ([yshift=8.4mm]current page.south east) {%
+        \includegraphics[height=0.814\paperheight,keepaspectratio]{openbci_software.jpg}%
+      };
+    \node[inner sep=0pt]
+      at ([xshift=32.4mm]current page.west) {%
+        \includegraphics[width=0.24\paperwidth,keepaspectratio]{openbci_helmet.png}%
+      };
+  \end{tikzpicture}
 \end{frame}
+
+\section{Hipótesis y propuesta}
 
 % 6 ---------------------------------------------------------------------------
 \begin{frame}[c]{Hipótesis}
@@ -433,7 +449,6 @@
     \end{tikzpicture}
   \end{center}
 
-  \note{Esta es la formulación compacta del TFM. Conviene decir que no se evalúa generación libre de texto, sino recuperación de palabras en una tarea controlada.}
 \end{frame}
 
 % 7 ---------------------------------------------------------------------------
@@ -442,7 +457,7 @@
     \hspace*{0.05\linewidth}
     \begin{column}{0.36\linewidth}
       \begin{block}{Idea central}
-        Modelo de pocos parámetros que sea capaz de entender MEG y especializar con pocos datos.
+        Modelo pocos parámetros capaz de entender MEG y especializar con pocos datos.
       \end{block}
 
       \begin{block}{Cambio necesario}
@@ -453,7 +468,7 @@
     \begin{column}{0.55\linewidth}
       \centering
       \begin{tikzpicture}[node distance=4mm, every node/.style={font=\scriptsize}]
-        \node[draw=deepgreen, fill=deepgreen!8, rounded corners, text width=46mm, align=center] (a) {\textbf{1. Señal EEG continua}\\ventanas de 150 s};
+        \node[draw=deepgreen, fill=deepgreen!8, rounded corners, text width=46mm, align=center] (a) {\textbf{1. Señal M/EEG continua}\\ventanas de 150 s};
         \node[draw=greenish, fill=greenish!12, rounded corners, text width=46mm, align=center, below=of a] (b) {\textbf{2. BioCodec (EEG)}\\tokens discretos por canal};
         \node[draw=warning, fill=warning!18, rounded corners, text width=46mm, align=center, below=of b] (c) {\textbf{3. Embedding de sensor}\\posición 3D + tipo + máscara};
         \node[draw=accent, fill=accent!12, rounded corners, text width=46mm, align=center, below=of c] (d) {\textbf{4. Transformer criss-cross}\\atención temporal + espacial};
@@ -463,11 +478,12 @@
     \end{column}
   \end{columns}
 
-  \note{Explicar la tubería de arriba a abajo. Lo importante es que no se fuerza la señal a una imagen ni a una matriz fija sin semántica; se mantiene sensor y tiempo.}
 \end{frame}
 
+\section{Datos y metodología}
+
 % 8 ---------------------------------------------------------------------------
-\begin{frame}[c]{Datasets: lectura para adaptar, escucha para acercarse a la tarea final}
+\begin{frame}[c]{Datasets}
   \small
   \begin{columns}[c,totalwidth=\linewidth]
     \begin{column}{0.31\linewidth}
@@ -518,8 +534,6 @@
     \draw[-{Latex[length=2mm]}, thick, deepgreen] (listen) -- (ft);
   \end{tikzpicture}
   \end{center}
-
-  \note{Subrayar que ds004408 se reserva para evitar contaminación de evaluación. La secuencia lectura--escucha tiene sentido porque faltan datasets grandes de escucha continua en EEG.}
 \end{frame}
 
 % 9 ---------------------------------------------------------------------------
@@ -600,7 +614,6 @@
     \end{column}
   \end{columns}
 
-  \note{Explicar que esta parte no es secundaria: si el modelo va a combinar datasets, hay que homogeneizar frecuencia, escala, ventanas y sensores ausentes. Remarcar que solo se conservan ventanas completas de 150 segundos; el tramo final se descarta si no llega a esa duración.}
 \end{frame}
 
 % 10 --------------------------------------------------------------------------
@@ -620,7 +633,6 @@
     \parbox[t]{0.20\linewidth}{\centering\smallmetric{20/50}{máscara}}%
   }
 
-  \note{El mensaje clave: durante el preentrenamiento no se entrena a reconocer palabras. Se aprende una representación previa que después se ajusta a la tarea supervisada.}
 \end{frame}
 
 % 11 --------------------------------------------------------------------------
@@ -632,7 +644,7 @@
         \begin{itemize}
           \item Cada palabra tiene un tiempo de inicio.
           \item Se extrae una ventana EEG de 3 s.
-          \item 50 palabras forman una entrada de 150 s.s
+          \item 50 palabras forman una entrada de 150 s.
         \end{itemize}
       \end{block}
 
@@ -654,7 +666,6 @@
     \end{column}
   \end{columns}
 
-  \note{Explicar que la pregunta de evaluación no es generar texto, sino si la palabra correcta queda entre las 10 más parecidas dentro de un vocabulario cerrado.}
 \end{frame}
 
 % 12 --------------------------------------------------------------------------
@@ -685,8 +696,9 @@
     \end{itemize}
   \end{block}
 
-  \note{Esta diapositiva es importante metodológicamente. No hay que vender solo el mejor resultado: hay que explicar que las condiciones separan qué componente aporta la mejora.}
 \end{frame}
+
+\section{Resultados}
 
 % 13 --------------------------------------------------------------------------
 \begin{frame}[c]{Resultado principal}
@@ -698,6 +710,8 @@
 
       \begin{center}
         \bigmetric{22,32\%}{mejor modelo: MEG-XL + embedding MEG}
+        \smallmetric{$\sim$20\%}{estado del arte comparable en ds004408}
+        \vspace{2mm}
         \bigmetric{4,00\%}{azar uniforme con 250 candidatos}
       \end{center}
     \end{column}
@@ -719,13 +733,12 @@
 
       \vspace{3mm}
 
-      \begin{exampleblock}{Lectura rápida}
-        La mejora dominante viene del preentrenamiento EEG; la transferencia desde MEG-XL añade una ganancia menor pero positiva.
+      \begin{exampleblock}{Lectura principal}
+        Se supera la referencia aproximada de d'Ascoli et al. ($\sim$20\%) en la misma métrica: +2,32 pp. La comparación es descriptiva.
       \end{exampleblock}
     \end{column}
   \end{columns}
 
-  \note{Primero leer el azar y el mejor resultado. Después explicar la comparación por filas: sin preentrenamiento no aprende, EEG desde cero da el salto principal, MEG-XL mejora algo más.}
 \end{frame}
 
 % 14 --------------------------------------------------------------------------
@@ -762,20 +775,19 @@
     \end{column}
   \end{columns}
 
-  \note{No entrar en todos los detalles de la gráfica. El mensaje es que la ganancia se obtiene pronto y que el ajuste supervisado prolongado puede ser perjudicial.}
 \end{frame}
 
 % 15 --------------------------------------------------------------------------
-\begin{frame}[c]{Interpretación de los resultados}
+\begin{frame}[c]{Interpretación resultados}
   \small
   \begin{columns}[T,totalwidth=\linewidth]
     \begin{column}{0.30\linewidth}
       \begin{block}{Viabilidad}
         \begin{minipage}[t][30mm][t]{\linewidth}
         \begin{itemize}
-          \item La arquitectura puede adaptarse a EEG.
-          \item El sistema queda claramente por encima del azar.
-          \item El contexto largo es compatible con la tarea.
+          \item Arquitectura puede adaptarse a EEG.
+          \item Sistema supera el azar.
+          \item Contexto largo compatible también con EEG.
         \end{itemize}
         \end{minipage}
       \end{block}
@@ -786,9 +798,9 @@
       \begin{block}{Qué aporta más}
         \begin{minipage}[t][30mm][t]{\linewidth}
         \begin{itemize}
-          \item El mayor salto viene del preentrenamiento EEG.
+          \item Mayor salto viene del preentrenamiento EEG.
           \item MEG-XL aporta una mejora adicional moderada.
-          \item El embedding MEG reutilizado fue el mejor en esta ejecución.
+          \item Embedding MEG reutilizado mejor en esta ejecución.
         \end{itemize}
         \end{minipage}
       \end{block}
@@ -800,8 +812,8 @@
         \begin{minipage}[t][30mm][t]{\linewidth}
         \begin{itemize}
           \item Una única semilla.
-          \item Protocolos no idénticos a todos los trabajos previos.
-          \item No es generación libre de texto.
+          \item Perdemos info por Nyquist.
+          \item No generación libre de texto.
         \end{itemize}
         \end{minipage}
       \end{alertblock}
@@ -818,63 +830,49 @@
     \end{tikzpicture}
   \end{center}
 
-  \note{Esta diapositiva debe sonar madura: buen resultado, pero sin venderlo como una superioridad definitiva.}
 \end{frame}
+
+\section{Conclusiones}
 
 % 17 --------------------------------------------------------------------------
 \begin{frame}[c]{Conclusiones}
   \small
-  \begin{columns}[T,totalwidth=\linewidth]
-    \begin{column}{0.30\linewidth}
+  \begin{columns}[c,totalwidth=\linewidth]
+    \begin{column}{0.40\linewidth}
       \begin{block}{Qué se ha conseguido}
-        \begin{minipage}[t][30mm][t]{\linewidth}
         \begin{itemize}
           \item Adaptar MEG-XL a EEG heterogéneo.
           \item Entrenar con lectura y escucha.
           \item Evaluar recuperación de palabras en ds004408.
         \end{itemize}
-        \end{minipage}
       \end{block}
-    \end{column}
-    \hfill
 
-    \begin{column}{0.30\linewidth}
-      \begin{block}{Resultado central}
-        \begin{minipage}[t][30mm][t]{\linewidth}
+      \vspace{3mm}
+
+      \begin{exampleblock}{Resultado central}
         \begin{itemize}
           \item 22,32\% Top-10 balanceada.
-          \item 5,58 veces el azar.
+          \item Supera estado arte menos parámetros.
           \item El preentrenamiento EEG es decisivo.
         \end{itemize}
-        \end{minipage}
-      \end{block}
+      \end{exampleblock}
     \end{column}
     \hfill
 
-    \begin{column}{0.30\linewidth}
+    \begin{column}{0.56\linewidth}
       \begin{block}{Trabajo futuro}
-        \begin{minipage}[t][30mm][t]{\linewidth}
         \begin{itemize}
           \item Más semillas y particiones.
+          \item Posible paper si confirma mejora sobre el estado arte.
           \item Más bandas, remuestreos, tokenizadores y datasets.
-          \item Registros propios con casco EEG.
+          \item Separar embeddings por zonas del cerebro.
+          \item Agregar LLMs para generación libre de texto.
+          \item Probar modelo con registros propios con casco EEG.
         \end{itemize}
-        \end{minipage}
       \end{block}
     \end{column}
   \end{columns}
 
-  \vspace{3mm}
-
-  \begin{center}
-    \begin{tikzpicture}
-      \node[draw=deepgreen, fill=soft, rounded corners=3pt, inner xsep=8pt, inner ysep=4pt, text width=0.86\linewidth, align=center]{
-        \textbf{Conclusión final:} una arquitectura de contexto largo inspirada en MEG-XL puede adaptarse a EEG y obtener resultados competitivos en una tarea controlada de clasificación contextual de palabras.
-      };
-    \end{tikzpicture}
-  \end{center}
-
-  \note{Cerrar con tres ideas: viable, por encima de azar, falta confirmar con más experimentación.}
 \end{frame}
 
 % 18 --------------------------------------------------------------------------
@@ -883,16 +881,16 @@
 \setbeamercolor{background canvas}{bg=deepgreen}
 \begin{frame}
   \begin{columns}[c,totalwidth=\linewidth]
-    \begin{column}{0.43\linewidth}
+    \begin{column}{0.5\linewidth}
       \centering
       {\Huge\bfseries\color{white}Gracias\par}
       \vspace{7mm}
       {\Large\color{white}Preguntas, recomendaciones, incordios\par}
     \end{column}
 
-    \begin{column}{0.52\linewidth}
+    \begin{column}{0.5\linewidth}
       \centering
-      \includegraphics[width=\linewidth,height=0.78\textheight,keepaspectratio]{imagenes/luffy_transparent_2.png}
+      \hspace*{-8mm}\includegraphics[width=\linewidth,height=0.78\textheight,keepaspectratio]{imagenes/luffy_transparent_2.png}
     \end{column}
   \end{columns}
 \end{frame}

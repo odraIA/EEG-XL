@@ -2,13 +2,13 @@
 
 ## 0. Portada - 0:00-0:20
 
-Buenas, soy Ricardo Díaz Peris y voy a presentar mi TFM, titulado *Transferencia de modelos MEG de contexto largo a EEG para clasificación contextual de palabras*. La idea central es estudiar si una arquitectura aprendida con MEG puede servir como punto de partida para EEG, que es más ruidoso pero mucho más viable para aplicaciones portables.
+Buenas, soy Ricardo Díaz Peris y voy a presentar mi TFM, titulado *Transferencia de modelos MEG de contexto largo a EEG para clasificación de palabras en escucha natural*. He tenido la suerte de que mis tutores sean Vicent Botti y Alfons Juan y es un trabajo del MIARFID de la UPV.
 
 ## 1. ¿Cómo de difícil es leer la mente? - 0:20-1:15
 
 ¿Cómo de difícil es leer la mente? Pongo este título para sumar sensacionalismo pero realmente el objetivo no es leer pensamientos de forma directa. Lo que se intenta aprender es una relación entre señales cerebrales y estímulos lingüísticos. El objetivo a largo plazo de las BCI y del brain-to-text es traducir señales cerebrales en lenguaje útil para comunicación, pero eso sigue siendo difícil por varios motivos. La señal cerebral no invasiva tiene mucho ruido, y la señal de una palabra no sucede solo durante el tiempo que se dice esa palabra. Sumado a esto, los datos que hay son bastante escasos y MUy diferentes entre usuarios, tú y tú tenéis diferentes señales cerebrales con respecto a la misma palabra y eso es una cosa que el modelo debe aprender.
 
-## 2. Intrusivo vs. no intrusivo - 1:15-2:00
+## 2. Invasivo vs. no invasivo - 1:15-2:00
 
 El origen y motivación del proyecto es que Vicent vio este video en el que esta chica, Ann, consigue volver a hablar utilizando un método invasivo llamado electrocorticografía, que es un método invasivo. Y es que los métodos para detectar señales cerebrales se dividen en 2 clases, invasivos y no invasivos. Los métodos invasivos (como ECoG) requieren cirugía pero suelen ofrecer mejor señal. Eso los hace muy potentes en contextos clínicos concretos al estar tan cerca del cerebro, pero poco escalables. En cambio, el electroencefalograma (EEG), magnetoencefalograma (MEG) y resonancia magnética funcional (fMRI) son no invasivos. Se puede ver fácilmente cuál de las 3 es más portátil, y yo por ese momento lo único que sabía de EEG es esta chica, Perri Karyal, que la usa para jugar a videojuegos sin utilizar el mando.
 
@@ -44,7 +44,7 @@ Con esa idea clara, ya puedo formular la pregunta concreta del TFM.
 
 ## 7. Pregunta de investigación - 4:55-5:35
 
-Hay tres piezas. La primera es MEG-XL, que es el punto de partida: una arquitectura autosupervisada que utiliza contexto largo pensada para señales MEG. A partir de aquí hemos creado EEG-XL, que es la adaptación que permite trabajar con EEG, incorporando posiciones, máscaras y tipo de sensor aplicado a EEG. Y la tercera es la evaluación, que se hace como recuperación Top-10 de palabras en OpenNeuro ds004408.
+En cuanto hablamos de Transformers la mejor opción que existe en la UPV es hablar con Alfons, y a partir de aquí el trabajo se basó en tres partes. Alfons investigó y nos presentó MEG-XL, que es el punto de partida: una arquitectura autosupervisada que utiliza contexto largo pensada para señales MEG. A partir de aquí hemos creado EEG-XL, que es la adaptación que permite trabajar con EEG, incorporando posiciones, máscaras y tipo de sensor aplicado a EEG. Y la tercera es la evaluación, que se hace como recuperación Top-10 de palabras en OpenNeuro ds004408.
 
 Teniendo esta base la pregunta central es esta: ¿puede un modelo MEG de contexto largo adaptarse a EEG para clasificación contextual de palabras? 
 
@@ -62,7 +62,7 @@ El cambio clave respecto a MEG no es solo cambiar el nombre de la modalidad. Es 
 
 Para que este modelo aprenda algo útil, el siguiente problema es con qué datos entrenarlo y cómo ordenar esos datos.
 
-## 9. Datasets: lectura para adaptar, escucha para acercarse a la tarea final - 6:35-7:25
+## 9. Datasets - 6:35-7:25
 
 Dediqué mucho tiempo buscando datasets ya que no existen casi datasets de escucha continua en EEG. De hecho, hace nada han sacado un benchmark de EEG en el que NO se incluye nada de percepción del habla. El entrenamiento se organiza como una progresión. Primero uso datasets de lectura, como ZuCo 2.0 y Nieuwland. No son exactamente la misma tarea final, pero ya aportan al modelo una primera idea de EEG relacionado con procesamiento lingüístico y permiten una adaptación inicial de la arquitectura a señales EEG.
 
@@ -102,7 +102,7 @@ La salida del modelo se proyecta a un espacio de 1024 dimensiones, que correspon
 
 Esto es lo que llamo clasificación contextual de palabras. No se clasifica una palabra aislada sin contexto, sino una secuencia de palabras, de forma que el Transformer puede usar información temporal alrededor de cada posición.
 
-Para saber qué parte de la mejora viene de cada decisión, planteé cuatro condiciones experimentales.
+Para saber qué parte de la mejora viene de cada decisión, planteé cuatro experimentos.
 
 ## 13. Diseño experimental: separar efectos - 9:55-10:50
 
@@ -123,6 +123,8 @@ La métrica principal es Top-10 balanceada sobre las 250 palabras más frecuente
 El modelo sin preentrenamiento obtiene 4,05 %, prácticamente azar. Esto es importante porque muestra que el fine-tuning directo con EEG no basta. Cuando añadimos preentrenamiento EEG desde cero, el resultado sube a 19,95 %, casi cinco veces el azar. Ese es el salto grande del trabajo.
 
 Después, al inicializar desde MEG-XL y usar embedding EEG, se alcanza 20,56 %. Y el mejor resultado aparece con MEG-XL reutilizando el embedding MEG, con 22,32 %, que equivale a 5,58 veces el azar.
+
+Además, este 22,32 % supera la referencia comparable de d'Ascoli et al. en Broderick/OpenNeuro ds004408, que está alrededor del 20 % de Top-10 balanceada sobre 250 palabras. La mejora es de unos 2,32 puntos porcentuales. Lo diría con cuidado: es una comparación descriptiva, porque no todos los detalles de partición e implementación son idénticos, pero sí es la referencia más directa por métrica y conjunto de datos.
 
 La lectura rápida es esta: el preentrenamiento EEG es el factor decisivo. La transferencia desde MEG-XL también ayuda, pero la ganancia es más moderada. Por tanto, no vendería el resultado como que MEG resuelve EEG, sino como que MEG aporta una inicialización útil encima de un preentrenamiento EEG que ya es fundamental.
 
@@ -158,21 +160,22 @@ La conclusión final sería: una arquitectura de contexto largo pensada inicialm
 
 ## 18. Gracias - 14:45-15:00
 
-Con esto termino la presentación. Muchas gracias por vuestra atención, y quedo abierto a preguntas.
+Con esto termino la presentación. Muchas gracias por vuestra atención, y quedo abierto a preguntas, propuestas o incordios.
+
 
 # Preguntas probables del tribunal
 
 ## ¿Por qué no hacer directamente generación de texto?
 
-Porque en este TFM quería una tarea controlada y medible. La generación libre exige muchos más datos, una evaluación más compleja y protocolos diferentes. Aquí el objetivo es comprobar si la transferencia MEG-EEG ayuda en recuperación contextual de palabras.
+Porque en este TFM queríamos una tarea controlada y medible. La generación libre exige muchos más datos, una evaluación más compleja y protocolos diferentes. Aquí el objetivo es comprobar si la transferencia MEG-EEG ayuda en recuperación contextual de palabras. Pero existen trabajos que intentan combinar la decodificación de palabras con LLMs para generación de frases, es un trabajo futuro posible.
 
 ## ¿El casco EEG puede leer pensamientos?
 
-No. El casco registra potenciales eléctricos débiles en el cuero cabelludo, mezclados con artefactos. El modelo aprende asociaciones estadísticas entre señal EEG y palabras dentro de una tarea experimental concreta.
+No. El casco registra potenciales eléctricos débiles en el cuero cabelludo, mezclados con "artefactos". El modelo aprende asociaciones estadísticas entre señal EEG y palabras dentro de una tarea experimental concreta.
 
 ## ¿Cuál es la contribución principal?
 
-La adaptación de una arquitectura de contexto largo inspirada en MEG-XL a EEG, junto con una evaluación que separa el efecto del preentrenamiento EEG, la inicialización desde MEG-XL y el embedding de sensor.
+La adaptación de una arquitectura de contexto largo inspirada en MEG-XL a EEG con pocos parámetros.
 
 ## ¿Qué resultado es más importante?
 
@@ -184,4 +187,4 @@ Mi lectura es que el embedding MEG no debe interpretarse literalmente como “es
 
 ## ¿Qué falta para que el resultado sea más sólido?
 
-Más semillas, más particiones, más sujetos, comparación bajo protocolos idénticos y análisis específicos de bandas, tokenización y generalización entre sesiones.
+Más semillas, más particiones, más sujetos, comparación bajo protocolos idénticos y análisis específicos de bandas, zonas cerebrales, tokenización y generalización entre sesiones.
