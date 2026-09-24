@@ -1,0 +1,70 @@
+# Read-only web monitor for scripts/run_ds004408_four_way_finetuning.sh.
+#
+# It runs in its own container, independent of the training containers, and
+# only reads results/ and logs/ (no Docker socket, read-only filesystem).
+#
+#   docker compose -f docker-compose.ds004408-monitor.yml up -d
+#   -> http://<server>:8093/            (DS004408_MONITOR_PORT to change)
+#
+# Public HTTPS link without touching the server's reverse proxy (Cloudflare
+# quick tunnel; the URL changes whenever the tunnel container restarts):
+#
+#   docker compose -f docker-compose.ds004408-monitor.yml --profile public up -d
+#   docker compose -f docker-compose.ds004408-monitor.yml logs ds004408_tunnel | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com'
+#
+# Behind the nginx that serves blackwell-dashboard.gti-ia.upv.es, the page
+# works under any sub-path (all URLs are relative):
+#
+#   location /ds004408/ { proxy_pass http://127.0.0.1:8093/; }
+#
+# Prometheus metrics for a Grafana panel are served at /metrics.
+
+name: ds004408-monitor
+
+services:
+  ds004408_monitor:
+    image: python:3.12-slim
+    container_name: ds004408_monitor
+    restart: unless-stopped
+    user: "${DS004408_MONITOR_USER:-65534:65534}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:ro
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+      MONITOR_TITLE: ${DS004408_MONITOR_TITLE:-ds004408 four-way fine-tuning}
+      MONITOR_SHOW_LOGS: ${DS004408_MONITOR_SHOW_LOGS:-1}
+      GPU_DASHBOARD_URL: ${GPU_DASHBOARD_URL:-https://blackwell-dashboard.gti-ia.upv.es/public-dashboards/b9dea8469dea47e7b6f0f9d800936f6f?orgId=1&refresh=10s}
+      STALE_MINUTES: ${STALE_MINUTES:-20}
+      NUM_EPOCHS: ${NUM_EPOCHS:-50}
+      PATIENCE: ${PATIENCE:-10}
+    command: ["python", "scripts/monitor_ds004408_four_way.py", "--root", "/workspace", "--port", "8080"]
+    ports:
+      - "${DS004408_MONITOR_BIND:-0.0.0.0}:${DS004408_MONITOR_PORT:-8093}:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    # nvidia-smi only (utility capability): shows GPU load without creating a
+    # CUDA context, so the pipeline's free-GPU detection is unaffected.
+    # Remove this block on a host without the NVIDIA container toolkit.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [utility]
+
+  ds004408_tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: ds004408_tunnel
+    profiles: ["public"]
+    restart: unless-stopped
+    depends_on: [ds004408_monitor]
+    command: ["tunnel", "--no-autoupdate", "--url", "http://ds004408_monitor:8080"]

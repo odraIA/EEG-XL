@@ -1,0 +1,109 @@
+# Paste these entries into configs/train_criss_cross_eeg_multi_feq.yaml,
+# inside the existing `data.frequency_experiments:` block, alongside
+# beta_13_24 / beta_gamma_13_45 / low_gamma_30_45 / gamma_30_55 / high_gamma_70_120.
+# Names match the band_values() case entries added to
+# scripts/run_eeg_multi_training_sweep.sh so the two stay in sync.
+
+    theta_4_8_fs50:
+      target_sfreq: 50.0
+      l_freq: 4.0
+      h_freq: 8.0
+    theta_4_8_fs100:
+      target_sfreq: 100.0
+      l_freq: 4.0
+      h_freq: 8.0
+    theta_4_8_fs150:
+      target_sfreq: 150.0
+      l_freq: 4.0
+      h_freq: 8.0
+    theta_4_8_fs200:
+      target_sfreq: 200.0
+      l_freq: 4.0
+      h_freq: 8.0
+    theta_4_8_fs250:
+      target_sfreq: 250.0
+      l_freq: 4.0
+      h_freq: 8.0
+
+    alpha_8_13_fs50:
+      target_sfreq: 50.0
+      l_freq: 8.5
+      h_freq: 13.0
+    alpha_8_13_fs100:
+      target_sfreq: 100.0
+      l_freq: 8.5
+      h_freq: 13.0
+    alpha_8_13_fs150:
+      target_sfreq: 150.0
+      l_freq: 8.5
+      h_freq: 13.0
+    alpha_8_13_fs200:
+      target_sfreq: 200.0
+      l_freq: 8.5
+      h_freq: 13.0
+    alpha_8_13_fs250:
+      target_sfreq: 250.0
+      l_freq: 8.5
+      h_freq: 13.0
+
+    # No fs50 entry: h_freq=30.0 exceeds Nyquist(25) at fs=50.
+    beta_13_30_fs100:
+      target_sfreq: 100.0
+      l_freq: 13.5
+      h_freq: 30.0
+    beta_13_30_fs150:
+      target_sfreq: 150.0
+      l_freq: 13.5
+      h_freq: 30.0
+    beta_13_30_fs200:
+      target_sfreq: 200.0
+      l_freq: 13.5
+      h_freq: 30.0
+    beta_13_30_fs250:
+      target_sfreq: 250.0
+      l_freq: 13.5
+      h_freq: 30.0
+
+    # No fs50 entry: h_freq=49.5 exceeds Nyquist(25) at fs=50.
+    gamma_30_49_fs100:
+      target_sfreq: 100.0
+      l_freq: 30.5
+      h_freq: 49.5
+    gamma_30_49_fs150:
+      target_sfreq: 150.0
+      l_freq: 30.5
+      h_freq: 49.5
+    gamma_30_49_fs200:
+      target_sfreq: 200.0
+      l_freq: 30.5
+      h_freq: 49.5
+    gamma_30_49_fs250:
+      target_sfreq: 250.0
+      l_freq: 30.5
+      h_freq: 49.5
+
+    # broadband_megxl: original MEG-XL preprocessing band (0.1-40Hz).
+    # fs50 is a deliberate anchor: it replicates meg-xl-med.ckpt's own
+    # preprocessing exactly, and is Nyquist-violating by design (TFM sec 4.2)
+    # -- it's also identical to this file's own top-level data.l_freq/h_freq/
+    # target_sfreq defaults above.
+    broadband_megxl_fs50:
+      target_sfreq: 50.0
+      l_freq: 0.1
+      h_freq: 40.0
+    broadband_megxl_fs100:
+      target_sfreq: 100.0
+      l_freq: 0.1
+      h_freq: 40.0
+    broadband_megxl_fs150:
+      target_sfreq: 150.0
+      l_freq: 0.1
+      h_freq: 40.0
+    broadband_megxl_fs200:
+      target_sfreq: 200.0
+      l_freq: 0.1
+      h_freq: 40.0
+    broadband_megxl_fs250:
+      target_sfreq: 250.0
+      l_freq: 0.1
+      h_freq: 40.0

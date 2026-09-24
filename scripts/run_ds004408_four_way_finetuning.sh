@@ -14,6 +14,14 @@ set -Eeuo pipefail
 # fine-tunings are assigned to each GPU. With two idle GPUs, all four runs start
 # concurrently. Use GPU_LIST=0,1 to select devices explicitly, or
 # JOBS_PER_GPU=1 to use only one process per GPU.
+#
+# Repeated seeds: SEEDS=42,43,44 (or `bash run_ds004408_four_way_finetuning.sh
+# 42 43 44`) fine-tunes every model once per seed. The seed is passed as the
+# Hydra `seed=` override, so it controls weight init, data order and the hashed
+# sentence split; all four models share the same split within a seed. Jobs are
+# ordered seed-major, so each batch finishes complete seed replicates first.
+# The comparison report aggregates runs per model (mean/std/SEM) and runs
+# pairwise Welch tests when every model has at least two seeds.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT_PATH="$ROOT_DIR/scripts/run_ds004408_four_way_finetuning.sh"
@@ -27,6 +35,10 @@ OMP_NUM_THREADS_PER_JOB="${OMP_NUM_THREADS_PER_JOB:-4}"
 WANDB_MODE="${WANDB_MODE:-offline}"
 BUILD_IMAGE="${BUILD_IMAGE:-0}"
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
+SEEDS="${SEEDS:-42}"
+if (($# > 0)); then
+  SEEDS="$*"
+fi
 
 DS004408_ROOT="${DS004408_ROOT:-./datasets/OpenNeuroEEG_ds004408}"
 BIOCODEC_CHECKPOINT="${BIOCODEC_CHECKPOINT:-./brainstorm/neuro_tokenizers/biocodec_ckpt.pt}"
@@ -64,16 +76,20 @@ JOB_CHECKPOINTS=(
 )
 JOB_EMBEDDING_IDS=(2 2 2 1)
 
+declare -a SEED_LIST=()
 declare -a AVAILABLE_GPUS=()
 declare -a GPU_SLOTS=()
-declare -A CONTAINER_BY_LABEL=()
-declare -A GPU_BY_LABEL=()
-declare -A EMBEDDING_BY_LABEL=()
-declare -A ORDER_BY_LABEL=()
-declare -A STARTED_BY_LABEL=()
-declare -A SAVE_DIR_BY_LABEL=()
-declare -A CHECKPOINT_DIR_BY_LABEL=()
-declare -A LOG_PID_BY_LABEL=()
+declare -a COMPLETED_RUN_SPECS=()
+declare -A LABEL_BY_RUN=()
+declare -A SEED_BY_RUN=()
+declare -A CONTAINER_BY_RUN=()
+declare -A GPU_BY_RUN=()
+declare -A EMBEDDING_BY_RUN=()
+declare -A ORDER_BY_RUN=()
+declare -A STARTED_BY_RUN=()
+declare -A SAVE_DIR_BY_RUN=()
+declare -A CHECKPOINT_DIR_BY_RUN=()
+declare -A LOG_PID_BY_RUN=()
 
 mkdir -p "$RESULTS_ROOT" "$LOG_ROOT" "$CHECKPOINT_ROOT" "$HYDRA_ROOT" \
   "$WORD_ALIGNED_OUTPUT" "$(dirname "$MASTER_LOG")"
@@ -91,6 +107,29 @@ trim() {
   value="${value#"${value%%[![:space:]]*}"}"
   value="${value%"${value##*[![:space:]]}"}"
   printf '%s' "$value"
+}
+
+parse_seeds() {
+  local seed
+  local -A seen=()
+  for seed in ${SEEDS//,/ }; do
+    [[ "$seed" =~ ^[0-9]+$ ]] || {
+      echo "ERROR: Invalid seed '$seed' in SEEDS=$SEEDS" >&2
+      exit 2
+    }
+    [[ -z "${seen[$seed]:-}" ]] || {
+      echo "ERROR: Duplicate seed '$seed' in SEEDS=$SEEDS" >&2
+      exit 2
+    }
+    seen["$seed"]=1
+    SEED_LIST+=("$seed")
+  done
+
+  ((${#SEED_LIST[@]} > 0)) || {
+    echo "ERROR: SEEDS must contain at least one integer seed" >&2
+    exit 2
+  }
+  echo "Seeds: ${SEED_LIST[*]}"
 }
 
 resolve_available_gpus() {
@@ -181,6 +220,7 @@ preflight() {
   require_file "$MEGXL_EEG2_CHECKPOINT" "curriculum checkpoint MEG-XL/eeg2"
   require_file "$MEGXL_EEG1_CHECKPOINT" "curriculum checkpoint MEG-XL/eeg1"
 
+  parse_seeds
   resolve_available_gpus
 }
 preflight
@@ -188,6 +228,7 @@ preflight
 if [[ "${DS004408_FOUR_WAY_WORKER:-0}" != "1" ]]; then
   nohup env DS004408_FOUR_WAY_WORKER=1 RUN_ID="$RUN_ID" MASTER_LOG="$MASTER_LOG" \
     PID_FILE="$PID_FILE" GPU_LIST="$(IFS=,; echo "${AVAILABLE_GPUS[*]}")" \
+    SEEDS="$(IFS=,; echo "${SEED_LIST[*]}")" \
     JOBS_PER_GPU="$JOBS_PER_GPU" OMP_NUM_THREADS_PER_JOB="$OMP_NUM_THREADS_PER_JOB" \
     FREE_GPU_MAX_MEMORY_MIB="$FREE_GPU_MAX_MEMORY_MIB" \
     FREE_GPU_MAX_UTILIZATION="$FREE_GPU_MAX_UTILIZATION" \
@@ -207,14 +248,15 @@ if [[ "${DS004408_FOUR_WAY_WORKER:-0}" != "1" ]]; then
   echo "$RUN_ID" > "$ROOT_DIR/ds004408_four_way.latest"
   echo "ds004408 four-way pipeline launched. PID: $(cat "$PID_FILE")"
   echo "GPUs: ${AVAILABLE_GPUS[*]} | jobs per GPU: $JOBS_PER_GPU"
+  echo "Seeds: ${SEED_LIST[*]} | fine-tunings: $(( ${#JOB_LABELS[@]} * ${#SEED_LIST[@]} ))"
   echo "Log: $MASTER_LOG"
   echo "Results: $RESULTS_ROOT"
   exit 0
 fi
 
 echo $$ > "$PID_FILE"
-printf 'order\tlabel\tembedding_id\tgpu\tcontainer\tstatus\texit_code\tstarted_at\tfinished_at\n' > "$STATUS_FILE"
-printf 'label\tgpu\tcontainer\n' > "$CURRENT_CONTAINERS_FILE"
+printf 'order\tlabel\tseed\tembedding_id\tgpu\tcontainer\tstatus\texit_code\tstarted_at\tfinished_at\n' > "$STATUS_FILE"
+printf 'run\tgpu\tcontainer\n' > "$CURRENT_CONTAINERS_FILE"
 
 if [[ "$BUILD_IMAGE" == "1" || "$BUILD_IMAGE" == "true" ]]; then
   docker compose build eval_eeg_listening
@@ -232,7 +274,7 @@ on_error() {
 trap on_error ERR
 
 append_status() {
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$@" >> "$STATUS_FILE"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$@" >> "$STATUS_FILE"
 }
 
 prepare_word_aligned() {
@@ -259,15 +301,16 @@ prepare_word_aligned() {
   require_file "$WORD_ALIGNED_OUTPUT/word_aligned_manifest.csv" "word-aligned manifest"
   require_file "$WORD_ALIGNED_OUTPUT/alignment_report.json" "alignment report"
   finished="$(date --iso-8601=seconds)"
-  append_status 0 prepare_word_aligned 2 "$prep_gpu" docker-compose-run-rm COMPLETED 0 "$started" "$finished"
+  append_status 0 prepare_word_aligned - 2 "$prep_gpu" docker-compose-run-rm COMPLETED 0 "$started" "$finished"
 }
 
 launch_experiment() {
-  local order="$1" label="$2" train_from_scratch="$3" init_checkpoint="$4"
-  local embedding_id="$5" gpu="$6"
-  local experiment="ds004408_${label}_${RUN_ID}" container="ds004408_${label}_${RUN_ID}"
-  local save_dir="$LOG_ROOT/$label" checkpoint_dir="$CHECKPOINT_ROOT/$label"
-  local hydra_dir="$HYDRA_ROOT/$label" started
+  local order="$1" label="$2" seed="$3" train_from_scratch="$4" init_checkpoint="$5"
+  local embedding_id="$6" gpu="$7"
+  local run_key="${label}_seed${seed}"
+  local experiment="ds004408_${run_key}_${RUN_ID}" container="ds004408_${run_key}_${RUN_ID}"
+  local save_dir="$LOG_ROOT/$label/seed$seed" checkpoint_dir="$CHECKPOINT_ROOT/$label/seed$seed"
+  local hydra_dir="$HYDRA_ROOT/$label/seed$seed" started
 
   if [[ "$embedding_id" != "1" && "$embedding_id" != "2" ]]; then
     echo "ERROR: Unsupported EEG embedding id for $label: $embedding_id" >&2
@@ -284,7 +327,7 @@ launch_experiment() {
   fi
 
   started="$(date --iso-8601=seconds)"
-  echo "START $experiment | GPU=$gpu | physical_sensor=eeg:2 | embedding=$embedding_id | checkpoint=$init_checkpoint"
+  echo "START $experiment | GPU=$gpu | seed=$seed | physical_sensor=eeg:2 | embedding=$embedding_id | checkpoint=$init_checkpoint"
 
   env EEG_GPU="$gpu" WANDB_MODE="$WANDB_MODE" \
     OMP_NUM_THREADS="$OMP_NUM_THREADS_PER_JOB" \
@@ -296,6 +339,7 @@ launch_experiment() {
       eval_eeg_listening \
       uv run --no-sync python -m scripts.evaluate_ds004408_word_classification \
         --config-name=ds004408_word_finetuning \
+        "seed=$seed" \
         "model.train_from_scratch=$train_from_scratch" model.use_promoted_checkpoint=false \
         model.promoted_checkpoint=null "model.criss_cross_checkpoint=$init_checkpoint" \
         "model.eeg_sensor_embedding_type_id=$embedding_id" \
@@ -308,28 +352,30 @@ launch_experiment() {
         "logging.experiment_name=$experiment" "logging.save_dir=$save_dir" \
         "logging.checkpoint_dir=$checkpoint_dir" "hydra.run.dir=$hydra_dir"
 
-  CONTAINER_BY_LABEL["$label"]="$container"
-  GPU_BY_LABEL["$label"]="$gpu"
-  EMBEDDING_BY_LABEL["$label"]="$embedding_id"
-  ORDER_BY_LABEL["$label"]="$order"
-  STARTED_BY_LABEL["$label"]="$started"
-  SAVE_DIR_BY_LABEL["$label"]="$save_dir"
-  CHECKPOINT_DIR_BY_LABEL["$label"]="$checkpoint_dir"
-  printf '%s\t%s\t%s\n' "$label" "$gpu" "$container" >> "$CURRENT_CONTAINERS_FILE"
+  LABEL_BY_RUN["$run_key"]="$label"
+  SEED_BY_RUN["$run_key"]="$seed"
+  CONTAINER_BY_RUN["$run_key"]="$container"
+  GPU_BY_RUN["$run_key"]="$gpu"
+  EMBEDDING_BY_RUN["$run_key"]="$embedding_id"
+  ORDER_BY_RUN["$run_key"]="$order"
+  STARTED_BY_RUN["$run_key"]="$started"
+  SAVE_DIR_BY_RUN["$run_key"]="$save_dir"
+  CHECKPOINT_DIR_BY_RUN["$run_key"]="$checkpoint_dir"
+  printf '%s\t%s\t%s\n' "$run_key" "$gpu" "$container" >> "$CURRENT_CONTAINERS_FILE"
 
-  docker logs --follow "$container" 2>&1 | sed -u "s/^/[$label|gpu$gpu] /" &
-  LOG_PID_BY_LABEL["$label"]=$!
+  docker logs --follow "$container" 2>&1 | sed -u "s/^/[$run_key|gpu$gpu] /" &
+  LOG_PID_BY_RUN["$run_key"]=$!
 }
 
 validate_experiment_outputs() {
-  local label="$1"
-  local save_dir="${SAVE_DIR_BY_LABEL[$label]}"
-  local checkpoint_dir="${CHECKPOINT_DIR_BY_LABEL[$label]}"
+  local run_key="$1"
+  local save_dir="${SAVE_DIR_BY_RUN[$run_key]}"
+  local checkpoint_dir="${CHECKPOINT_DIR_BY_RUN[$run_key]}"
   local missing=0 path description
 
   while IFS='|' read -r path description; do
     if [[ ! -f "$path" ]]; then
-      echo "ERROR: Missing $description for $label: $path" >&2
+      echo "ERROR: Missing $description for $run_key: $path" >&2
       missing=1
     fi
   done <<EOF
@@ -343,62 +389,71 @@ EOF
 }
 
 wait_experiment() {
-  local label="$1"
-  local container="${CONTAINER_BY_LABEL[$label]}"
-  local gpu="${GPU_BY_LABEL[$label]}"
-  local embedding_id="${EMBEDDING_BY_LABEL[$label]}"
-  local order="${ORDER_BY_LABEL[$label]}"
-  local started="${STARTED_BY_LABEL[$label]}"
+  local run_key="$1"
+  local label="${LABEL_BY_RUN[$run_key]}"
+  local seed="${SEED_BY_RUN[$run_key]}"
+  local container="${CONTAINER_BY_RUN[$run_key]}"
+  local gpu="${GPU_BY_RUN[$run_key]}"
+  local embedding_id="${EMBEDDING_BY_RUN[$run_key]}"
+  local order="${ORDER_BY_RUN[$run_key]}"
+  local started="${STARTED_BY_RUN[$run_key]}"
   local exit_code finished status
 
   exit_code="$(docker wait "$container")"
-  wait "${LOG_PID_BY_LABEL[$label]}" || true
+  wait "${LOG_PID_BY_RUN[$run_key]}" || true
   finished="$(date --iso-8601=seconds)"
 
-  if [[ "$exit_code" == "0" ]] && validate_experiment_outputs "$label"; then
+  if [[ "$exit_code" == "0" ]] && validate_experiment_outputs "$run_key"; then
     status="COMPLETED"
     docker rm "$container" >/dev/null
+    COMPLETED_RUN_SPECS+=("$label=${SAVE_DIR_BY_RUN[$run_key]}")
   else
     status="FAILED"
     echo "ERROR: $container exited with $exit_code; keeping it for inspection" >&2
   fi
 
-  append_status "$order" "$label" "$embedding_id" "$gpu" "$container" \
+  append_status "$order" "$label" "$seed" "$embedding_id" "$gpu" "$container" \
     "$status" "$exit_code" "$started" "$finished"
 
   [[ "$status" == "COMPLETED" ]]
 }
 
 run_all_experiments() {
-  local total_jobs="${#JOB_LABELS[@]}"
+  local model_count="${#JOB_LABELS[@]}"
+  local total_jobs=$((model_count * ${#SEED_LIST[@]}))
   local slot_count="${#GPU_SLOTS[@]}"
-  local batch_start job_index slot_index label gpu
-  local -a batch_labels=()
+  local batch_start job_index slot_index model_index seed label gpu run_key
+  local -a batch_runs=()
   local failures=0
 
-  echo "Launching $total_jobs experiments with up to $slot_count concurrent containers"
+  echo "Launching $total_jobs experiments ($model_count models x ${#SEED_LIST[@]} seeds)" \
+    "with up to $slot_count concurrent containers"
 
+  # Seed-major order: job_index = seed_index * model_count + model_index.
   for ((batch_start = 0; batch_start < total_jobs; batch_start += slot_count)); do
-    batch_labels=()
+    batch_runs=()
     for ((slot_index = 0; slot_index < slot_count; slot_index++)); do
       job_index=$((batch_start + slot_index))
       ((job_index < total_jobs)) || break
 
-      label="${JOB_LABELS[$job_index]}"
+      model_index=$((job_index % model_count))
+      seed="${SEED_LIST[$((job_index / model_count))]}"
+      label="${JOB_LABELS[$model_index]}"
       gpu="${GPU_SLOTS[$slot_index]}"
       launch_experiment \
         "$((job_index + 1))" \
         "$label" \
-        "${JOB_TRAIN_FROM_SCRATCH[$job_index]}" \
-        "${JOB_CHECKPOINTS[$job_index]}" \
-        "${JOB_EMBEDDING_IDS[$job_index]}" \
+        "$seed" \
+        "${JOB_TRAIN_FROM_SCRATCH[$model_index]}" \
+        "${JOB_CHECKPOINTS[$model_index]}" \
+        "${JOB_EMBEDDING_IDS[$model_index]}" \
         "$gpu"
-      batch_labels+=("$label")
+      batch_runs+=("${label}_seed${seed}")
     done
 
-    echo "Batch running: ${batch_labels[*]}"
-    for label in "${batch_labels[@]}"; do
-      if ! wait_experiment "$label"; then
+    echo "Batch running: ${batch_runs[*]}"
+    for run_key in "${batch_runs[@]}"; do
+      if ! wait_experiment "$run_key"; then
         failures=$((failures + 1))
       fi
     done
@@ -412,7 +467,12 @@ run_all_experiments() {
 
 generate_comparison_report() {
   local report_gpu="${AVAILABLE_GPUS[0]}"
-  echo "Generating combined four-way report"
+  local spec
+  local -a run_args=()
+  for spec in "${COMPLETED_RUN_SPECS[@]}"; do
+    run_args+=(--run "$spec")
+  done
+  echo "Generating combined four-way report over ${#COMPLETED_RUN_SPECS[@]} runs (seeds: ${SEED_LIST[*]})"
 
   env EEG_GPU="$report_gpu" WANDB_MODE="$WANDB_MODE" \
     OMP_NUM_THREADS="$OMP_NUM_THREADS_PER_JOB" \
@@ -422,10 +482,7 @@ generate_comparison_report() {
       -e "OMP_NUM_THREADS=$OMP_NUM_THREADS_PER_JOB" \
       eval_eeg_listening \
       uv run --no-sync python -m brainstorm.megxl_test_reporting compare \
-        --run "random_init=$LOG_ROOT/random_init" \
-        --run "eeg_from_scratch=$LOG_ROOT/eeg_from_scratch" \
-        --run "megxl_eeg2=$LOG_ROOT/megxl_eeg2" \
-        --run "megxl_eeg1=$LOG_ROOT/megxl_eeg1" \
+        "${run_args[@]}" \
         --output-dir "$RESULTS_ROOT" \
         --retrieval-sizes 50 250 \
         --top-k 10
@@ -448,6 +505,7 @@ rm -f "$PID_FILE"
 
 echo "ds004408 four-way fine-tuning completed."
 echo "GPUs used: ${AVAILABLE_GPUS[*]}"
+echo "Seeds: ${SEED_LIST[*]}"
 echo "Word alignment: $WORD_ALIGNED_OUTPUT/summary.json"
 echo "Metrics: $RESULTS_ROOT/ds004408_four_way_test_metrics.csv"
 echo "Results: $RESULTS_ROOT"
