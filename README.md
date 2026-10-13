@@ -6,7 +6,7 @@ Code for the Master's thesis *"Transferencia de modelos MEG de contexto largo a 
 
 EEG-XL adapts [MEG-XL](https://arxiv.org/abs/2602.02494), a self-supervised model that learns from 150-second windows of continuous MEG, to heterogeneous EEG recordings. The model is pretrained on continuous EEG (reading, then listening) and evaluated on contextual word retrieval on OpenNeuro ds004408.
 
-**Main result:** 22.32 % balanced top-10 accuracy over the 250 most frequent words on the ds004408 test split (chance: 4 %).
+**Main result:** 22.33 % balanced top-10 accuracy over the 250 most frequent words on the ds004408 test split (chance: 4 %).
 
 ## Architecture
 
